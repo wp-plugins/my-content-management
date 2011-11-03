@@ -1,0 +1,522 @@
+# Copyright (C) 2010 My Content Management
+# This file is distributed under the same license as the My Content Management package.
+msgid ""
+msgstr ""
+"Project-Id-Version: My Content Management 1.0.0\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/my-content-management\n"
+"POT-Creation-Date: 2011-11-03 17:53:30+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: mcm-widgets.php:7
+msgid "Custom Post Search"
+msgstr ""
+
+#: mcm-widgets.php:24
+msgid "Post type to search"
+msgstr ""
+
+#: mcm-widgets.php:43
+msgid "Custom Post List"
+msgstr ""
+
+#: mcm-widgets.php:60
+msgid "Post type to list"
+msgstr ""
+
+#: mcm-custom-posts.php:9
+msgid "faq"
+msgstr ""
+
+#: mcm-custom-posts.php:9
+msgid "faqs"
+msgstr ""
+
+#: mcm-custom-posts.php:9
+msgid "FAQ"
+msgstr ""
+
+#: mcm-custom-posts.php:9
+msgid "FAQs"
+msgstr ""
+
+#: mcm-custom-posts.php:10
+msgid "person"
+msgstr ""
+
+#: mcm-custom-posts.php:10
+msgid "people"
+msgstr ""
+
+#: mcm-custom-posts.php:10
+msgid "Person"
+msgstr ""
+
+#: mcm-custom-posts.php:10
+msgid "People"
+msgstr ""
+
+#: mcm-custom-posts.php:11
+msgid "testimonial"
+msgstr ""
+
+#: mcm-custom-posts.php:11
+msgid "testimonials"
+msgstr ""
+
+#: mcm-custom-posts.php:11
+msgid "Testimonial"
+msgstr ""
+
+#: mcm-custom-posts.php:11
+msgid "Testimonials"
+msgstr ""
+
+#: mcm-custom-posts.php:12
+msgid "location"
+msgstr ""
+
+#: mcm-custom-posts.php:12
+msgid "locations"
+msgstr ""
+
+#: mcm-custom-posts.php:12 mcm-custom-posts.php:47
+msgid "Location"
+msgstr ""
+
+#: mcm-custom-posts.php:12
+msgid "Locations"
+msgstr ""
+
+#: mcm-custom-posts.php:13
+msgid "quote"
+msgstr ""
+
+#: mcm-custom-posts.php:13
+msgid "quotes"
+msgstr ""
+
+#: mcm-custom-posts.php:13
+msgid "Quote"
+msgstr ""
+
+#: mcm-custom-posts.php:13
+msgid "Quotes"
+msgstr ""
+
+#: mcm-custom-posts.php:14
+msgid "glossary term"
+msgstr ""
+
+#: mcm-custom-posts.php:14
+msgid "glossary terms"
+msgstr ""
+
+#: mcm-custom-posts.php:14
+msgid "Glossary Term"
+msgstr ""
+
+#: mcm-custom-posts.php:14
+msgid "Glossary Terms"
+msgstr ""
+
+#: mcm-custom-posts.php:15
+msgid "portfolio item"
+msgstr ""
+
+#: mcm-custom-posts.php:15
+msgid "portfolio items"
+msgstr ""
+
+#: mcm-custom-posts.php:15
+msgid "Portfolio Item"
+msgstr ""
+
+#: mcm-custom-posts.php:15
+msgid "Portfolio Items"
+msgstr ""
+
+#: mcm-custom-posts.php:24 mcm-custom-posts.php:62
+msgid "Personal Information"
+msgstr ""
+
+#: mcm-custom-posts.php:26
+msgid "Title"
+msgstr ""
+
+#: mcm-custom-posts.php:27
+msgid "Subtitle"
+msgstr ""
+
+#: mcm-custom-posts.php:28
+msgid "Business"
+msgstr ""
+
+#: mcm-custom-posts.php:29
+msgid "Phone Number"
+msgstr ""
+
+#: mcm-custom-posts.php:30
+msgid "E-mail"
+msgstr ""
+
+#: mcm-custom-posts.php:32 mcm-custom-posts.php:63
+msgid "Location Info"
+msgstr ""
+
+#: mcm-custom-posts.php:34
+msgid "Street Address"
+msgstr ""
+
+#: mcm-custom-posts.php:35
+msgid "City"
+msgstr ""
+
+#: mcm-custom-posts.php:36
+msgid "Neighborhood"
+msgstr ""
+
+#: mcm-custom-posts.php:37
+msgid "State"
+msgstr ""
+
+#: mcm-custom-posts.php:38
+msgid "Postal Code"
+msgstr ""
+
+#: mcm-custom-posts.php:39
+msgid "Phone"
+msgstr ""
+
+#: mcm-custom-posts.php:40
+msgid "Fax"
+msgstr ""
+
+#: mcm-custom-posts.php:41
+msgid "Business Name"
+msgstr ""
+
+#: mcm-custom-posts.php:42
+msgid "Contact Email"
+msgstr ""
+
+#: mcm-custom-posts.php:44 mcm-custom-posts.php:64 mcm-custom-posts.php:65
+msgid "Testimonial/Quote Info"
+msgstr ""
+
+#: mcm-custom-posts.php:46
+msgid "URL"
+msgstr ""
+
+#: mcm-custom-posts.php:49 mcm-custom-posts.php:66
+msgid "Portfolio Info"
+msgstr ""
+
+#: mcm-custom-posts.php:51
+msgid "Medium"
+msgstr ""
+
+#: mcm-custom-posts.php:52
+msgid "Width"
+msgstr ""
+
+#: mcm-custom-posts.php:53
+msgid "Height"
+msgstr ""
+
+#: mcm-custom-posts.php:54
+msgid "Depth"
+msgstr ""
+
+#: mcm-custom-posts.php:55
+msgid "Price"
+msgstr ""
+
+#: mcm-custom-posts.php:56
+msgid "Year"
+msgstr ""
+
+#: mcm-custom-posts.php:114
+msgid "%1$s Listing updated. <a href=\"%2$s\">View %1$s listing</a>"
+msgstr ""
+
+#: mcm-custom-posts.php:115
+msgid "Custom field updated."
+msgstr ""
+
+#: mcm-custom-posts.php:116
+msgid "Custom field deleted."
+msgstr ""
+
+#: mcm-custom-posts.php:117
+msgid "%s listing updated."
+msgstr ""
+
+#. translators: %s: date and time of the revision
+#: mcm-custom-posts.php:119
+msgid "%1$s restored to revision from %2$ss"
+msgstr ""
+
+#: mcm-custom-posts.php:120
+msgid "%1$s published. <a href=\"%2$s\">View %3$s listing</a>"
+msgstr ""
+
+#: mcm-custom-posts.php:121
+msgid "Product listing saved."
+msgstr ""
+
+#: mcm-custom-posts.php:122
+msgid ""
+"%1$s listing submitted. <a target=\"_blank\" href=\"%2$s\">Preview %3$s "
+"listing</a>"
+msgstr ""
+
+#: mcm-custom-posts.php:123
+msgid ""
+"%1$s listing scheduled for: <strong>%1$s</strong>. <a target=\"_blank\" href="
+"\"%2$s\">Preview %3$s item</a>"
+msgstr ""
+
+#: mcm-custom-posts.php:124
+msgid "M j, Y @ G:i"
+msgstr ""
+
+#: mcm-custom-posts.php:125
+msgid ""
+"%1$s draft updated. <a target=\"_blank\" href=\"%s\">Preview %3$s listing</a>"
+msgstr ""
+
+#: my-content-management.php:108
+msgid ""
+"<br /><strong>Note:</strong> Please review the <a class=\"thickbox\" href=\"%"
+"1$s\">changelog</a> before upgrading."
+msgstr ""
+
+#: my-content-management.php:184
+msgid ""
+"Please read the FAQ and other Help documents before making a support request."
+msgstr ""
+
+#: my-content-management.php:189
+msgid ""
+"Thank you for supporting the continuing development of this plug-in! I'll "
+"get back to you as soon as I can."
+msgstr ""
+
+#: my-content-management.php:191
+msgid ""
+"I'll get back to you as soon as I can, after dealing with any support "
+"requests from plug-in supporters."
+msgstr ""
+
+#: my-content-management.php:201
+msgid ""
+"Please note: I do keep records of those who have donated, but if your "
+"donation came from somebody other than your account at this web site, please "
+"note this in your message."
+msgstr ""
+
+#: my-content-management.php:204
+msgid "From:"
+msgstr ""
+
+#: my-content-management.php:207
+msgid ""
+"I have read <a href=\"http://www.joedolson.com/articles/my-content-"
+"management/\">the FAQ for this plug-in</a>."
+msgstr ""
+
+#: my-content-management.php:210
+msgid ""
+"I have <a href=\"http://www.joedolson.com/donate.php\">made a donation to "
+"help support this plug-in</a>."
+msgstr ""
+
+#: my-content-management.php:216
+msgid "Send Support Request"
+msgstr ""
+
+#: my-content-management.php:219
+msgid ""
+"The following additional information will be sent with your support request:"
+msgstr ""
+
+#. #-#-#-#-#  plugin.pot (My Content Management 1.0.0)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
+#: my-content-management.php:240
+msgid "My Content Management"
+msgstr ""
+
+#: my-content-management.php:242
+msgid "Basic Template Tags"
+msgstr ""
+
+#: my-content-management.php:245
+msgid "Post ID"
+msgstr ""
+
+#: my-content-management.php:248
+msgid "Post excerpt (with auto paragraphs)"
+msgstr ""
+
+#: my-content-management.php:251
+msgid "Post excerpt (unmodified)"
+msgstr ""
+
+#: my-content-management.php:254
+msgid "Post content (with auto paragraphs and shortcodes processed)"
+msgstr ""
+
+#: my-content-management.php:257
+msgid "Post content (unmodified)"
+msgstr ""
+
+#: my-content-management.php:260
+msgid "Featured image as thumbnail."
+msgstr ""
+
+#: my-content-management.php:263
+msgid "Featured image at medium size."
+msgstr ""
+
+#: my-content-management.php:266
+msgid "Featured image at large size."
+msgstr ""
+
+#: my-content-management.php:269
+msgid "Featured image at original size."
+msgstr ""
+
+#: my-content-management.php:272
+msgid "Permalink URL for post"
+msgstr ""
+
+#: my-content-management.php:275
+msgid "Post title linked to permalink URL"
+msgstr ""
+
+#: my-content-management.php:278
+msgid "Post title"
+msgstr ""
+
+#: my-content-management.php:281
+msgid "Post shortlink"
+msgstr ""
+
+#: my-content-management.php:284
+msgid "Post last modified date"
+msgstr ""
+
+#: my-content-management.php:287
+msgid "Post publication date"
+msgstr ""
+
+#: my-content-management.php:290
+msgid "Post author display name"
+msgstr ""
+
+#: my-content-management.php:293
+msgid "List of taxonomy terms associated with post."
+msgstr ""
+
+#: my-content-management.php:297
+msgid ""
+"Any custom field can also be referenced via shortcode, using the same "
+"pattern with the name of the custom field: <code>{custom_field_name}</code>"
+msgstr ""
+
+#: my-content-management.php:303
+msgid "Enable Custom Post Types"
+msgstr ""
+
+#: my-content-management.php:311
+msgid "Enable Selected Post Types"
+msgstr ""
+
+#: my-content-management.php:322
+msgid "Get Plug-in Support"
+msgstr ""
+
+#: my-content-management.php:384
+msgid "Template Manager"
+msgstr ""
+
+#: my-content-management.php:395 my-content-management.php:405
+#: my-content-management.php:415
+msgid "List Wrapper"
+msgstr ""
+
+#: my-content-management.php:396 my-content-management.php:406
+#: my-content-management.php:416
+msgid "Item Wrapper"
+msgstr ""
+
+#: my-content-management.php:399
+msgid "Full Template"
+msgstr ""
+
+#: my-content-management.php:409
+msgid "Excerpt Template"
+msgstr ""
+
+#: my-content-management.php:419
+msgid "List Template"
+msgstr ""
+
+#: my-content-management.php:423
+msgid "Save %s Templates"
+msgstr ""
+
+#: my-content-management.php:427
+msgid "Naming for theme templates"
+msgstr ""
+
+#: my-content-management.php:428
+msgid "Theme template for this taxonomy:"
+msgstr ""
+
+#: my-content-management.php:429
+msgid "Theme template for this custom post type:"
+msgstr ""
+
+#: my-content-management.php:430
+msgid "Theme template for archive pages with this post type:"
+msgstr ""
+
+#: my-content-management.php:446
+msgid "No wrapper"
+msgstr ""
+
+#: my-content-management.php:455 my-content-management.php:501
+msgid "Get Support"
+msgstr ""
+
+#: my-content-management.php:456
+msgid "Make a Donation"
+msgstr ""
+
+#: my-content-management.php:502
+msgid "Donate"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://www.joedolson.com/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Creates a set of common custom post types for extended content management: "
+"FAQ, Testimonials, people lists, term lists, etc."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Joseph C Dolson"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://www.joedolson.com"
+msgstr ""

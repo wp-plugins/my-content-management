@@ -24,6 +24,8 @@ Version: 1.0.0
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 $mcm_version = '1.0.0';
+// Enable internationalisation
+load_plugin_textdomain( 'my-content-management',false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
 include(dirname(__FILE__).'/mcm-custom-posts.php' );
 include(dirname(__FILE__).'/mcm-view-custom-posts.php' );
