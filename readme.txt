@@ -34,6 +34,11 @@ Translations are always welcome! The translation files are included in the downl
 
 == Changelog ==
 
+= 1.0.1 =
+
+* Removed a stray variable which was triggering a warning.
+* Added an array check before running a foreach loop on a sometimes-absent value
+
 = 1.0.0 =
 
 * Initial release
@@ -58,4 +63,4 @@ Hey. This was just launched. Got one to ask?
 
 == Upgrade Notice ==
 
-* No notes yet!
+* Couple minor bug fixes, fixing PHP warnings

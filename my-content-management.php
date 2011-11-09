@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.0.0
+Version: 1.0.1
 */
 /*  Copyright 2011  Joe Dolson (email : joe@joedolson.com)
 
@@ -23,7 +23,7 @@ Version: 1.0.0
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-$mcm_version = '1.0.0';
+$mcm_version = '1.0.1';
 // Enable internationalisation
 load_plugin_textdomain( 'my-content-management',false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
@@ -351,7 +351,7 @@ function mcm_enabler() {
 	echo "<ul>".$return."</ul>";
 }
 
-function mcm_template_setter( $post_type ) {
+function mcm_template_setter() {
 	if ( isset($_POST['mcm_save_templates']) ) {
 		$type = $_POST['mcm_post_type'];
 		$option = get_option('mcm_options');
@@ -377,8 +377,10 @@ function mcm_template_setter( $post_type ) {
 				}
 			}
 			$show_fields = '';
-			foreach ( $extra_fields as $k=>$v ) {
-				$show_fields .= "<p><code>&#123;$v[0]&#125;</code>: $v[1]</p>";
+			if ( is_array( $extra_fields ) ) {
+				foreach ( $extra_fields as $k=>$v ) {
+					$show_fields .= "<p><code>&#123;$v[0]&#125;</code>: $v[1]</p>";
+				}
 			}
 			$show_fields = ($show_fields != '')?"<div class='extra_fields'><h4>Added custom fields:</h4>$show_fields</div>":'';
 			$return .= "
@@ -465,6 +467,8 @@ function mcm_show_support_box() {
 			</div>
 			</form>
 			</li>
+			<li><a href="http://profiles.wordpress.org/users/joedolson/"><?php _e('Check out my other plug-ins','my-content-management'); ?></a></li>
+			<li><a href="http://wordpress.org/extend/plugins/my-content-management/"><?php _e('Rate this plug-in','my-content-management'); ?></a></li>
 		</ul>
 		</div>
 	</div>
