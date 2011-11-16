@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.0.1
+Version: 1.0.2
 */
 /*  Copyright 2011  Joe Dolson (email : joe@joedolson.com)
 
@@ -23,7 +23,7 @@ Version: 1.0.1
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-$mcm_version = '1.0.1';
+$mcm_version = '1.0.2';
 // Enable internationalisation
 load_plugin_textdomain( 'my-content-management',false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
@@ -100,8 +100,8 @@ global $types;
 add_action( 'in_plugin_update_message-my-content-management/my-content-management.php', 'mcm_plugin_update_message' );
 function mcm_plugin_update_message() {
 	global $mcm_version;
-	define('PLUGIN_README_URL',  'http://svn.wp-plugins.org/my-content-management/trunk/readme.txt');
-	$response = wp_remote_get( PLUGIN_README_URL, array ('user-agent' => 'WordPress/My Content Management' . $mcm_version . '; ' . get_bloginfo( 'url' ) ) );
+	define('MCM_PLUGIN_README_URL',  'http://svn.wp-plugins.org/my-content-management/trunk/readme.txt');
+	$response = wp_remote_get( MCM_PLUGIN_README_URL, array ('user-agent' => 'WordPress/My Content Management' . $mcm_version . '; ' . get_bloginfo( 'url' ) ) );
 	if ( ! is_wp_error( $response ) || is_array( $response ) ) {
 		$data = $response['body'];
 		$bits=explode('== Upgrade Notice ==',$data);

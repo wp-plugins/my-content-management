@@ -34,6 +34,12 @@ Translations are always welcome! The translation files are included in the downl
 
 == Changelog ==
 
+= 1.0.2 = 
+
+* Defined custom fields for testimonials and quotes were not appearing.
+* Added 'title' as a custom field for testimonials and quotes.
+* Corrected a too-generically named constant.
+
 = 1.0.1 =
 
 * Removed a stray variable which was triggering a warning.

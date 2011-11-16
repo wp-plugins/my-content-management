@@ -41,11 +41,18 @@ $fields =
 			array( '_business',__('Business Name','my-content-management'),'','mcm_text_field'),
 			array( '_email',__('Contact Email','my-content-management'),'','mcm_text_field')
 		),
-		__('Testimonial/Quote Info','my-content-management') =>
+		__('Quotation Info','my-content-management') =>
 		array (
 			array( '_url',__('URL','my-content-management'),'','mcm_text_field'),
+			array( '_title',__('Title','my-content-management'),'','mcm_text_field'),
 			array( '_location',__('Location','my-content-management'),'','mcm_text_field')		
 		),
+		__('Testimonial Info','my-content-management') =>
+		array (
+			array( '_url',__('URL','my-content-management'),'','mcm_text_field'),
+			array( '_title',__('Title','my-content-management'),'','mcm_text_field'),
+			array( '_location',__('Location','my-content-management'),'','mcm_text_field')		
+		),		
 		__('Portfolio Info','my-content-management') =>
 		array (
 			array( '_medium',__('Medium','my-content-management'),'','mcm_text_field'),
@@ -61,8 +68,8 @@ $extras =
 	array( 
 		__('Personal Information','my-content-management') => array( 'mcm_people','side' ),
 		__('Location Info','my-content-management') => array( 'mcm_locations','side' ),
-		__('Testimonial/Quote Info','my-content-management') =>	array( 'mcm_testimonials','side' ),
-		__('Testimonial/Quote Info','my-content-management') =>	array( 'mcm_quotes', 'side' ),
+		__('Testimonial Info','my-content-management') =>	array( 'mcm_testimonials','side' ),
+		__('Quotation Info','my-content-management') =>	array( 'mcm_quotes', 'side' ),
 		__('Portfolio Info','my-content-management') => array( 'mcm_portfolio', 'side' )
 	);
 		
