@@ -10,10 +10,14 @@
 function mcm_get_show_posts(  $type, $display, $taxonomy, $term, $count, $order, $meta_key, $id ) {
 	// allow mcm post types to be abbreviated
 	if ( strpos($type,'mcm_')===0 ) { $type = $type; } else { $type = 'mcm_'.$type; }
+	// allow mcm taxonomies to be abbreviated, but don't interfere if taxonomy='all'
+	if ($taxonomy != 'all') {
+		if (strpos($taxonomy,'mcm_')===0) {} else { $taxonomy = 'mcm_'.$taxonomy; }
+	}
 	if ( $id == false ) {
 		// set up arguments for loop
 		$args = array( 'post_type' => $type, 'posts_per_page'=>$count, 'orderby'=>$order );
-		if ($taxonomy != 'all' && $terms !='') { $args['tax_query'] = array( array( 'taxonomy' => $taxonomy, 'field' => 'slug', 'terms' => $term ) ); }
+		if ($taxonomy != 'all' && $term !='') { $args['tax_query'] = array( array( 'taxonomy' => $taxonomy, 'field' => 'slug', 'terms' => $term ) ); }
 		if ( $order == 'meta_value' || $order == 'meta_value_num' ) { $args['meta_key'] = $meta_key; }
 		$loop = new WP_Query( $args );
 		

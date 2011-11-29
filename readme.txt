@@ -34,6 +34,10 @@ Translations are always welcome! The translation files are included in the downl
 
 == Changelog ==
 
+= 1.0.3 =
+
+* Fixes two bugs with custom taxonomy limits, courtesy @nickd32
+
 = 1.0.2 = 
 
 * Defined custom fields for testimonials and quotes were not appearing.
