@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.0.3
+Version: 1.0.4
 */
 /*  Copyright 2011  Joe Dolson (email : joe@joedolson.com)
 
@@ -23,7 +23,7 @@ Version: 1.0.3
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-$mcm_version = '1.0.3';
+$mcm_version = '1.0.4';
 // Enable internationalisation
 load_plugin_textdomain( 'my-content-management',false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
@@ -42,10 +42,11 @@ function mcm_show_posts($atts) {
 				'term' => '',
 				'count' => -1,
 				'order' => 'menu_order',
+				'direction' => 'DESC',
 				'meta_key' => '',
 				'id' => false
 			), $atts));
-	return mcm_get_show_posts( $type, $display, $taxonomy, $term, $count, $order, $meta_key, $id );
+	return mcm_get_show_posts( $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $id );
 }
 function mcm_search_custom($atts) {
 	extract(shortcode_atts(array(
@@ -128,15 +129,17 @@ get_currentuserinfo();
 	$php_version = phpversion();
 
 	// theme data
-	$theme_path = get_bloginfo('stylesheet_url');
+	$theme_path = get_stylesheet_directory().'/style.css';
 	$theme = get_theme_data($theme_path);
 		$theme_name = $theme['Name'];
 		$theme_uri = $theme['URI'];
 		$theme_parent = $theme['Template'];
 		$theme_version = $theme['Version'];
 	// plugin data
+
 	$plugins = get_plugins();
 	$plugins_string = '';
+
 		foreach( array_keys($plugins) as $key ) {
 			if ( is_plugin_active( $key ) ) {
 				$plugin =& $plugins[$key];
@@ -443,11 +446,12 @@ function mcm_option_list( $array, $current ) {
 	$return = '';
 	if ( is_array($array) ) {
 		foreach ( $array as $key ) {
-			$checked = ( $key == $current )?' selected="selected"':'';
+			$checked = ( $key == $current && $current != '' )?' selected="selected"':'';
 			$return .= "<option value='$key'$checked>&lt;$key&gt; </option>\n";
 		}
 	}
-	$return .= "<option value=''>".__('No wrapper','my-content-management')."</option>";
+	$checked = ($current == '')?' selected="selected"':'';
+	$return .= "<option value=''$checked>".__('No wrapper','my-content-management')."</option>";
 	return $return;
 }
 

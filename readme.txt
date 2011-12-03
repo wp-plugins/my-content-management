@@ -25,6 +25,7 @@ All content can be displayed using the shortcode [my_content type='custom_post_t
 * term (term within named taxonomy)
 * count (number of items to display - default shows all)
 * order (order to show items in - default order is "menu_order" )
+* direction (whether sort is ascending, "ASC", or descending, "DESC" (default))
 * meta_key ( custom field to sort by if 'order' is "meta_value" or "meta_value_num" )
 * id ( comma separated list of IDs to show a set of posts; single ID to show a single post.)
 
@@ -33,6 +34,14 @@ A search form for any custom post type is accessible using the shortcode [custom
 Translations are always welcome! The translation files are included in the download.
 
 == Changelog ==
+
+= 1.0.4 =
+
+* Would you believe that I left out the ability to change the sort direction? Ridiculous.
+* List wrapper was wrapped around items instead of lists.
+* Setting list or item wrappers to 'none' left empty brackets
+* Setting list or item wrappers to 'none' was not remembered in settings.
+* fixed fopen error on servers with allow_url_fopen disabled
 
 = 1.0.3 =
 

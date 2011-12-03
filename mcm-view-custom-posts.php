@@ -7,16 +7,21 @@
 @count = integer = number of posts to display
 @order = string = orderby options: none,ID,author,title,date,modified,parent,rand,comment_count,menu_order,meta_value,meta_value_num
 */
-function mcm_get_show_posts(  $type, $display, $taxonomy, $term, $count, $order, $meta_key, $id ) {
+function mcm_get_show_posts(  $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $id ) {
+global $templates;
+
 	// allow mcm post types to be abbreviated
 	if ( strpos($type,'mcm_')===0 ) { $type = $type; } else { $type = 'mcm_'.$type; }
+	// get wrapper element
+	$elem = ( isset($templates[$type]['wrapper']['list'][$display]) )?$templates[$type]['wrapper']['list'][$display]:'div';
+		
 	// allow mcm taxonomies to be abbreviated, but don't interfere if taxonomy='all'
 	if ($taxonomy != 'all') {
 		if (strpos($taxonomy,'mcm_')===0) {} else { $taxonomy = 'mcm_'.$taxonomy; }
 	}
 	if ( $id == false ) {
 		// set up arguments for loop
-		$args = array( 'post_type' => $type, 'posts_per_page'=>$count, 'orderby'=>$order );
+		$args = array( 'post_type' => $type, 'posts_per_page'=>$count, 'orderby'=>$order, 'order'=>$direction );
 		if ($taxonomy != 'all' && $term !='') { $args['tax_query'] = array( array( 'taxonomy' => $taxonomy, 'field' => 'slug', 'terms' => $term ) ); }
 		if ( $order == 'meta_value' || $order == 'meta_value_num' ) { $args['meta_key'] = $meta_key; }
 		$loop = new WP_Query( $args );
@@ -102,27 +107,31 @@ function mcm_get_show_posts(  $type, $display, $taxonomy, $term, $count, $order,
 				}
 			}
 		}
-	
 	}
+	if ( $elem != '' ) { $front = "<$elem>"; $back = "</$elem>"; } else { $elem = $unelem = '';}
 	$return = "
 	<div class='mcm_posts $type $display'>
+	$front
 		$return
+	$back
 	</div>";
 	return $return;
 }
 
 function mcm_run_template( $post, $display, $column, $type ) {
 global $templates;
-	$postclass = $post['postclass'];
+	$postclass = implode(' ',$post['postclass']);
+
 	switch ( $display ) {
 		case 'full':
 			$wrapper = ( isset($templates[$type]['wrapper']['item']['full']) )?$templates[$type]['wrapper']['item']['full']:'div';
-			$elem = ( isset($templates[$type]['wrapper']['list']['full']) )?$templates[$type]['wrapper']['list']['full']:'div';
+		
+			if ( $wrapper != '' ) { $wrapper = "<$wrapper class='$postclass $column'>"; $unwrapper = "</$wrapper>"; } else { $wrapper = $unwrapper = '';}
 			
 			if ( isset($templates[$type]['full']) && trim( $templates[$type]['full'] ) != '' ) {
-				$return .= "<$wrapper>
+				$return .= "$wrapper
 				".mcm_draw_template($post,$templates[$type]['full'])."
-				</$wrapper>";
+				$unwrapper";
 			} else {
 				$return .= "
 					<h2>$post[title]</h2>
@@ -132,12 +141,13 @@ global $templates;
 		break;
 		case 'excerpt':
 			$wrapper = ( isset($templates[$type]['wrapper']['item']['excerpt']) )?$templates[$type]['wrapper']['item']['excerpt']:'div';
-			$elem = ( isset($templates[$type]['wrapper']['list']['excerpt']) )?$templates[$type]['wrapper']['list']['excerpt']:'div';
+			
+			if ( $wrapper != '' ) { $wrapper = "<$wrapper class='$postclass $column'>"; $unwrapper = "</$wrapper>"; } else { $wrapper = $unwrapper = '';}
 
 			if ( isset($templates[$type]['excerpt']) && trim( $templates[$type]['excerpt'] ) != '' ) {
-				$return .= "<$wrapper>
+				$return .= "$wrapper
 				".mcm_draw_template($post,$templates[$type]['excerpt'])."
-				</$wrapper>";
+				$unwrapper";
 			} else {		
 				$return .= "
 					<h3>$post[title]</h3>
@@ -147,29 +157,26 @@ global $templates;
 		break;
 		case 'list':
 			$wrapper = ( isset($templates[$type]['wrapper']['item']['list']) )?$templates[$type]['wrapper']['item']['list']:'li';
-			$elem = ( isset($templates[$type]['wrapper']['list']['list']) )?$templates[$type]['wrapper']['list']['list']:'ul';
+			
+			if ( $wrapper != '' ) { $wrapper = "<$wrapper class='$postclass $column'>"; $unwrapper = "</$wrapper>"; } else { $wrapper = $unwrapper = '';}
 			
 			if ( isset($templates[$type]['list']) && trim( $templates[$type]['list'] ) != '' ) {
-				$return .= "<$wrapper>
+				$return .= "$wrapper
 				".mcm_draw_template($post,$templates[$type]['list'])."
-				</$wrapper>";
+				$unwrapper";
 			} else {		
 				$return .= "$post[link_title]\n";
 			}
 		break;
 		default:
 			$wrapper = 'div';
-			$elem = 'div';
 			$return .= "
 					<h3>$post[title]</h3>
 					$post[excerpt]
 					<p>$post[link_title]</p>";			
 		break;
 	}
-	$postclass = implode(' ',$postclass);
-	return "<$elem class='$postclass $column'>
-		$return
-	</$elem>";
+	return "$return";
 }
 
 function mcm_draw_template( $array,$template ) {
