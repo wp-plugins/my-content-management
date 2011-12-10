@@ -126,12 +126,12 @@ global $templates;
 		case 'full':
 			$wrapper = ( isset($templates[$type]['wrapper']['item']['full']) )?$templates[$type]['wrapper']['item']['full']:'div';
 		
-			if ( $wrapper != '' ) { $wrapper = "<$wrapper class='$postclass $column'>"; $unwrapper = "</$wrapper>"; } else { $wrapper = $unwrapper = '';}
+			if ( $wrapper != '' ) { $pre = "<$wrapper class='$postclass $column'>"; $post = "</$wrapper>"; } else { $pre = $post = '';}
 			
 			if ( isset($templates[$type]['full']) && trim( $templates[$type]['full'] ) != '' ) {
-				$return .= "$wrapper
+				$return .= "$pre
 				".mcm_draw_template($post,$templates[$type]['full'])."
-				$unwrapper";
+				$post";
 			} else {
 				$return .= "
 					<h2>$post[title]</h2>
@@ -142,12 +142,12 @@ global $templates;
 		case 'excerpt':
 			$wrapper = ( isset($templates[$type]['wrapper']['item']['excerpt']) )?$templates[$type]['wrapper']['item']['excerpt']:'div';
 			
-			if ( $wrapper != '' ) { $wrapper = "<$wrapper class='$postclass $column'>"; $unwrapper = "</$wrapper>"; } else { $wrapper = $unwrapper = '';}
+			if ( $wrapper != '' ) { $pre = "<$wrapper class='$postclass $column'>"; $post = "</$wrapper>"; } else { $pre = $post = '';}
 
 			if ( isset($templates[$type]['excerpt']) && trim( $templates[$type]['excerpt'] ) != '' ) {
-				$return .= "$wrapper
+				$return .= "$pre
 				".mcm_draw_template($post,$templates[$type]['excerpt'])."
-				$unwrapper";
+				$post";
 			} else {		
 				$return .= "
 					<h3>$post[title]</h3>
@@ -158,12 +158,12 @@ global $templates;
 		case 'list':
 			$wrapper = ( isset($templates[$type]['wrapper']['item']['list']) )?$templates[$type]['wrapper']['item']['list']:'li';
 			
-			if ( $wrapper != '' ) { $wrapper = "<$wrapper class='$postclass $column'>"; $unwrapper = "</$wrapper>"; } else { $wrapper = $unwrapper = '';}
+			if ( $wrapper != '' ) { $pre = "<$wrapper class='$postclass $column'>"; $post = "</$wrapper>"; } else { $pre = $post = '';}
 			
 			if ( isset($templates[$type]['list']) && trim( $templates[$type]['list'] ) != '' ) {
-				$return .= "$wrapper
+				$return .= "$pre
 				".mcm_draw_template($post,$templates[$type]['list'])."
-				$unwrapper";
+				$post";
 			} else {		
 				$return .= "$post[link_title]\n";
 			}

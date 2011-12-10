@@ -35,6 +35,10 @@ Translations are always welcome! The translation files are included in the downl
 
 == Changelog ==
 
+= 1.0.5 =
+
+* Variable naming error in 1.0.4 caused problem in list wrapper output.
+
 = 1.0.4 =
 
 * Would you believe that I left out the ability to change the sort direction? Ridiculous.
