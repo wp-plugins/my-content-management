@@ -35,6 +35,10 @@ Translations are always welcome! The translation files are included in the downl
 
 == Changelog ==
 
+= 1.0.6 =
+
+* Whoops! All apologies for 1.0.5. I made it worse. Too much of a hurry.
+
 = 1.0.5 =
 
 * Variable naming error in 1.0.4 caused problem in list wrapper output.
@@ -86,4 +90,4 @@ Hey. This was just launched. Got one to ask?
 
 == Upgrade Notice ==
 
-* Couple minor bug fixes, fixing PHP warnings
+* Fixes big mistake in 1.0.5. Sorry!
