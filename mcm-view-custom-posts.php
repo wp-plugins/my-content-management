@@ -126,7 +126,7 @@ global $templates;
 		case 'full':
 			$wrapper = ( isset($templates[$type]['wrapper']['item']['full']) )?$templates[$type]['wrapper']['item']['full']:'div';
 		
-			if ( $wrapper != '' ) { $pre = "<$wrapper class='$postclass $column'>"; $post = "</$wrapper>"; } else { $pre = $posttag = '';}
+			if ( $wrapper != '' ) { $pre = "<$wrapper class='$postclass $column'>"; $posttag = "</$wrapper>"; } else { $pre = $posttag = '';}
 			
 			if ( isset($templates[$type]['full']) && trim( $templates[$type]['full'] ) != '' ) {
 				$return .= "$pre
@@ -142,7 +142,7 @@ global $templates;
 		case 'excerpt':
 			$wrapper = ( isset($templates[$type]['wrapper']['item']['excerpt']) )?$templates[$type]['wrapper']['item']['excerpt']:'div';
 			
-			if ( $wrapper != '' ) { $pre = "<$wrapper class='$postclass $column'>"; $post = "</$wrapper>"; } else { $pre = $posttag = '';}
+			if ( $wrapper != '' ) { $pre = "<$wrapper class='$postclass $column'>"; $posttag = "</$wrapper>"; } else { $pre = $posttag = '';}
 
 			if ( isset($templates[$type]['excerpt']) && trim( $templates[$type]['excerpt'] ) != '' ) {
 				$return .= "$pre
@@ -158,7 +158,7 @@ global $templates;
 		case 'list':
 			$wrapper = ( isset($templates[$type]['wrapper']['item']['list']) )?$templates[$type]['wrapper']['item']['list']:'li';
 			
-			if ( $wrapper != '' ) { $pre = "<$wrapper class='$postclass $column'>"; $post = "</$wrapper>"; } else { $pre = $posttag = '';}
+			if ( $wrapper != '' ) { $pre = "<$wrapper class='$postclass $column'>"; $posttag = "</$wrapper>"; } else { $pre = $posttag = '';}
 			
 			if ( isset($templates[$type]['list']) && trim( $templates[$type]['list'] ) != '' ) {
 				$return .= "$pre
