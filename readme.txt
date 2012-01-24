@@ -112,4 +112,4 @@ Hey. This was just launched. Got one to ask?
 
 == Upgrade Notice ==
 
-* Fixes big mistake in 1.0.5. Sorry!
+ * 1.1.0 Adds the first supplemental plug-in, some new shortcode attributes, fixes bugs.
