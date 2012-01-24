@@ -4,4 +4,4 @@
 .wrappers { width: 16em; float: left; padding-top: 1em; }
 .wrappers label { display: block; float: left; width: 7em; padding: 5px 0 0;}
 .mcm-template-guide{ width: 230px; float: right;}
-.extra_fields{ float: right; padding: 10px;
+.extra_fields{ float: right; padding: 10px; width: 200px; }

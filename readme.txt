@@ -20,20 +20,42 @@ There's no default styling outside of whatever your theme offers for the element
 
 All content can be displayed using the shortcode [my_content type='custom_post_type']. Other supported attributes include:
 
-* display (full, excerpt, or list)
+* display (custom, full, excerpt, or list)
 * taxonomy (name of associated taxonomy: required to get list of terms associated with post; include a term to limit by term)
 * term (term within named taxonomy)
 * count (number of items to display - default shows all)
 * order (order to show items in - default order is "menu_order" )
 * direction (whether sort is ascending, "ASC", or descending, "DESC" (default))
 * meta_key ( custom field to sort by if 'order' is "meta_value" or "meta_value_num" )
+* template ( set to a post type to use a template set by that post type. If "display" equals "custom", write a custom template. )
+* offset (integer: skip a number of posts before display.)
 * id ( comma separated list of IDs to show a set of posts; single ID to show a single post.)
 
 A search form for any custom post type is accessible using the shortcode [custom_search type='custom_post_type']
 
+You can create a site map for a specific post type and taxonomy using the [my_archive type='custom_post_type' taxonomy='taxonomy'] shortcode. Other supported attributes include all those above, plus:
+
+* exclude (list of comma-separated taxonomy terms to exclude from the site map)
+
+The "id" attribute is not supported in the [my_archive] shortcode. Because that would be silly.
+
 Translations are always welcome! The translation files are included in the download.
 
 == Changelog ==
+
+= 1.1.0 =
+
+* Added supplemental plug-in to provide a glossary filter for content and an alphabet anchor list for glossaries.
+* Glossary post type has option to include headings to correspond to alphabet anchor list.
+* Added shortcode to display archive of entire custom taxonomy organized by term. 
+* Added option to use My Content Management shortcodes with any post type, not just those created by My Content Management
+* Added generic additional post type called 'Resources'
+* Added ability to use a custom template with a given shortcode. 
+* Bug fix: Template manager didn't appear immediately when enabling first custom post type
+* Bug fix: Errors if disabling all custom post types
+* Bug fix: Template manager sometimes showed custom fields not related to the current custom post type.
+* Bug fix: Upgrade routine could delete customized templates.
+* Bug fix: Support/donate/plug-in links weren't clickable.
 
 = 1.0.6 =
 

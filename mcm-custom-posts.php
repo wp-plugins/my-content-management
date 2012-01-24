@@ -13,6 +13,7 @@ $templates = $options['templates'];
 		'mcm_quotes'=>array(__('quote','my-content-management'),__('quotes','my-content-management'),__('Quote','my-content-management'),__('Quotes','my-content-management')),
 		'mcm_glossary'=>array(__('glossary term','my-content-management'),__('glossary terms','my-content-management'),__('Glossary Term','my-content-management'),__('Glossary Terms','my-content-management')),
 		'mcm_portfolio'=>array(__('portfolio item','my-content-management'),__('portfolio items','my-content-management'),__('Portfolio Item','my-content-management'),__('Portfolio Items','my-content-management')),
+		'mcm_resources'=>array(__('resource','my-content-management'),__('resources','my-content-management'),__('Resource','my-content-management'),__('Resources','my-content-management'))
 	);
 	
 // @fields multidimensional array: array( 'Box set'=> array( array( '_name','label','type') ) )
@@ -61,7 +62,13 @@ $fields =
 			array( '_depth',__('Depth','my-content-management'),'','mcm_text_field'),
 			array( '_price',__('Price','my-content-management'),'','mcm_text_field'),
 			array( '_year',__('Year','my-content-management'),'','mcm_text_field')
-		)
+		),
+		__('Resource Info','my-content-management') =>
+		array (
+			array( '_authors',__('Additional Authors','my-content-management'),'','mcm_text_field'),
+			array( '_licensing',__('License Terms','my-content-management'),'','mcm_text_area'),
+			array( '_show',__('Show on','my-content-management'),'This is a label for advanced use in themes','mcm_text_field')
+		)		
 	);
 
 $extras = 
@@ -70,7 +77,8 @@ $extras =
 		__('Location Info','my-content-management') => array( 'mcm_locations','side' ),
 		__('Testimonial Info','my-content-management') =>	array( 'mcm_testimonials','side' ),
 		__('Quotation Info','my-content-management') =>	array( 'mcm_quotes', 'side' ),
-		__('Portfolio Info','my-content-management') => array( 'mcm_portfolio', 'side' )
+		__('Portfolio Info','my-content-management') => array( 'mcm_portfolio', 'side' ),
+		__('Resource Info','my-content-management') => array( 'mcm_resources', 'side' )		
 	);
 		
 	

@@ -1,13 +1,13 @@
 <?php
 /*
 Plugin Name: My Content Management
-Plugin URI: http://www.joedolson.com/
+Plugin URI: http://www.joedolson.com/articles/my-content-management/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.0.6
+Version: 1.1.0
 */
-/*  Copyright 2011  Joe Dolson (email : joe@joedolson.com)
+/*  Copyright 2011-2012  Joe Dolson (email : joe@joedolson.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ Version: 1.0.6
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-$mcm_version = '1.0.6';
+$mcm_version = '1.1.0';
 // Enable internationalisation
 load_plugin_textdomain( 'my-content-management',false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
@@ -31,7 +31,8 @@ include(dirname(__FILE__).'/mcm-custom-posts.php' );
 include(dirname(__FILE__).'/mcm-view-custom-posts.php' );
 include(dirname(__FILE__).'/mcm-widgets.php' );
 
-if ( !get_option('mcm_version') ) {  mcm_install_plugin(); }
+if ( !get_option( 'mcm_version' ) ) {  mcm_install_plugin(); }
+if ( version_compare( get_option('mcm_version'), $mcm_version, '<' ) ) { mcm_upgrade_plugin(); }
 
 //Shortcode
 function mcm_show_posts($atts) {
@@ -44,10 +45,45 @@ function mcm_show_posts($atts) {
 				'order' => 'menu_order',
 				'direction' => 'DESC',
 				'meta_key' => '',
+				'template' => '',
+				'offset'=> false,
 				'id' => false
 			), $atts));
-	return mcm_get_show_posts( $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $id );
+	return mcm_get_show_posts( $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $offset, $id );
 }
+
+function mcm_show_archive($atts) {
+	extract(shortcode_atts(array(
+				'type' => false,
+				'display' => '',
+				'taxonomy' => false,
+				'count' => -1,
+				'order' => 'menu_order',
+				'direction' => 'DESC',
+				'meta_key' => '',
+				'exclude' => '',
+				'template' => '',
+				'offset' => '',
+			), $atts));
+			if ( !$type || !$taxonomy ) return;
+		$terms = get_terms( $taxonomy );
+		$output = '';
+		$exclude = explode(',',$exclude);
+		if ( is_array($terms) ) {
+			foreach ( $terms as $term ) {
+				$tax = $term->name;
+				$tax_class = sanitize_title($tax);
+				if ( !in_array( $tax, $exclude ) ) {
+					$output .= "\n<div class='archive-group'>";
+					$output .= "<h2 class='$tax_class'>$tax</h2>";
+					$output .= mcm_get_show_posts( $type, $display, $taxonomy, $tax, $count, $menu_order, $direction, $meta_key, $template, $offset, false );
+					$output .= "</div>\n";
+				}
+			}
+		}
+	return $output;
+}
+
 function mcm_search_custom($atts) {
 	extract(shortcode_atts(array(
 				'type' => 'page'
@@ -57,8 +93,9 @@ function mcm_search_custom($atts) {
 // Shortcodes 
 add_shortcode('my_content','mcm_show_posts');
 add_shortcode('custom_search','mcm_search_custom');
-
+add_shortcode('my_archive','mcm_show_archive'); 
 // Filters
+//add_filter('the_content', 'mcm_pre_process_shortcode', 7);
 add_filter('pre_get_posts','mcm_searchfilter');
 add_filter( 'post_updated_messages', 'mcm_posttypes_messages');
 
@@ -85,8 +122,7 @@ global $types;
 			$templates[$key]['wrapper']['item']['list'] = 'li';
 			$templates[$key]['wrapper']['list']['full'] = 'div';
 			$templates[$key]['wrapper']['list']['excerpt'] = 'div';
-			$templates[$key]['wrapper']['list']['list'] = 'ul';		
-			
+			$templates[$key]['wrapper']['list']['list'] = 'ul';	
 		}
 	} else {
 		echo "Why not?"; die;
@@ -96,6 +132,38 @@ global $types;
 		'templates' => $templates
 	);
 	add_option( 'mcm_options', $options );
+}
+
+function mcm_upgrade_plugin() {
+// don't need to do anything with versions yet.
+	global $mcm_version, $types;
+	$from = get_option('mcm_version');
+	if ( $mcm_version == $from ) return; 
+	
+	$newtypes = array('mcm_resources');
+	
+	$options = get_option('mcm_options');
+	$templates = $options['templates'];
+	foreach ( $types as $key => $value ) {
+		if ( in_array( $key, $newtypes ) ) {
+			$templates[$key]['full'] = '<h2>{title}</h2>
+{content}
+<p>{link_title}</p>';
+			$templates[$key]['excerpt'] = '<h3>{title}</h3>
+{excerpt}
+<p>{link_title}</p>';
+			$templates[$key]['list'] = '{link_title}';
+			$templates[$key]['wrapper']['item']['full'] = 'div';
+			$templates[$key]['wrapper']['item']['excerpt'] = 'div';
+			$templates[$key]['wrapper']['item']['list'] = 'li';
+			$templates[$key]['wrapper']['list']['full'] = 'div';
+			$templates[$key]['wrapper']['list']['excerpt'] = 'div';
+			$templates[$key]['wrapper']['list']['list'] = 'ul';	
+		}			
+	}
+	$options['templates'] = $templates;
+	update_option( 'mcm_options', $options );
+	update_option( 'mcm_version', $mcm_version );
 }
 
 add_action( 'in_plugin_update_message-my-content-management/my-content-management.php', 'mcm_plugin_update_message' );
@@ -203,7 +271,7 @@ $plugins_string
 		<div><input type='hidden' name='_wpnonce' value='".wp_create_nonce('my-content-management-nonce')."' /></div>
 		<div>
 		<p>".
-		__('Please note: I do keep records of those who have donated, but if your donation came from somebody other than your account at this web site, please note this in your message.',$textdomain )
+		__('Please note: I do keep records of donations, but if your donation came from somebody other than your account at this web site, please note this in your message.',$textdomain )
 		."</p>
 		<p>
 		<code>".__('From:','my-content-management')." \"$current_user->display_name\" &lt;$current_user->user_email&gt;</code>
@@ -239,6 +307,7 @@ function mcm_add_scripts() {
 
 function mcm_settings_page() {
 global $enabled;
+$enabled = (isset($_POST['mcm_enabler']))?$_POST['mcm_posttypes']:$enabled;
 ?>
 <div class="wrap">
 <div id="icon-index" class="icon32"><br /></div>
@@ -306,8 +375,9 @@ global $enabled;
 	<div class="mcm-settings meta-box-sortables" id="poststuff">
 		<div class="postbox" id="mcm-settings">
 		<h3><?php _e('Enable Custom Post Types','my-content-management'); ?></h3>
-			<?php mcm_show_support_box(); ?>			
 			<div class="inside">
+			<?php mcm_show_support_box(); ?>			
+
 			<form method='post' action='<?php echo admin_url('options-general.php?page=my-content-management/my-content-management.php'); ?>'>
 				<div><input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('my-content-management-nonce'); ?>' /></div>
 				<div>
@@ -343,15 +413,17 @@ function mcm_enabler() {
 	$option = get_option('mcm_options');
 	$enabled = $option['enabled'];
 	global $types;
-	
+	$checked = '';
 	$return = '';
 	if ( is_array($types) ) {
 		foreach ( $types as $key=>$value ) {
-			if ( in_array( $key, $enabled ) ) { $checked = ' checked="checked"'; } else { $checked = ''; }
+			if ( is_array($enabled) ) {
+				if ( in_array( $key, $enabled ) ) { $checked = ' checked="checked"'; } else { $checked = ''; }
+			}
 			$return .= "<li><input type='checkbox' value='$key' name='mcm_posttypes[]' id='mcm_$key'$checked /> <label for='mcm_$key'>$value[3]</label></li>\n";
 		}
 	}
-	echo "<ul>".$return."</ul>";
+	echo "<ul class='mcm_posttypes'>".$return."</ul>";
 }
 
 function mcm_template_setter() {
@@ -371,26 +443,42 @@ function mcm_template_setter() {
 	$item = array('div','li','article');
 	if ( is_array($enabled) ) {
 		foreach ( $enabled as $value ) {
+			$pointer = '';
 			$display_value = str_replace('mcm_','',$value);
 			$template = $templates[$value];
 			$label = $types[$value];
 			foreach ( $extras as $k=>$v ) {
 				if ( $v[0] == $value ) {
 					$extra_fields = $fields[$k];
+					$pointer = $value;
 				}
 			}
+			if ( $pointer != $value ) { $extra_fields = false; }
 			$show_fields = '';
 			if ( is_array( $extra_fields ) ) {
 				foreach ( $extra_fields as $k=>$v ) {
 					$show_fields .= "<p><code>&#123;$v[0]&#125;</code>: $v[1]</p>";
 				}
+			} else {
+				$show_fields = '';
 			}
-			$show_fields = ($show_fields != '')?"<div class='extra_fields'><h4>Added custom fields:</h4>$show_fields</div>":'';
+			$extension = '';
+			if ( $value == 'mcm_glossary' && function_exists('mcm_set_glossary') ) { $extension = "<h4>Glossary Extension</h4>
+			<p>".__('The glossary extension to My Content Management is enabled.','my-content-management')."</p>
+			<ul>
+			<li><code>[alphabet]</code>: ".__('displays list of linked first characters represented in your Glossary. (Roman alphabet only.)','my-content-management')."</li>
+			<li><code>[term id='' term='']</code>: ".__('displays value of term attribute linked to glossary term with ID attribute.','my-content-management')."</li>
+			<li><strong>".__('Feature','my-content-management').":</strong> ".__('Adds links throughout content for each term in your glossary.','my-content-management')."</li>
+			<li><strong>".__('Feature','my-content-management').":</strong> ".__('Adds character headings to each section of your glossary list.','my-content-management')."</li>
+			</ul>"; }
+			$show_fields = ($show_fields != '')?"<div class='extra_fields'><h4>".__('Added custom fields:','my-content-management')."</h4>$show_fields</div>":'';
+			$extension = ($extension != '')?"<div class='extra_fields'>$extension</div>":'';
 			$return .= "
 	<div class='postbox' id='mcm-settings-$value'>
 	<div class='handlediv' title='Click to toggle'><br /></div><h3 class='hndle'><span>$label[2] ".__('Template Manager','my-content-management')."</span></h3>
 		<div class='inside'>
 		$show_fields
+		$extension
 		<form method='post' action='".admin_url('options-general.php?page=my-content-management/my-content-management.php')."'>
 			<div><input type='hidden' name='_wpnonce' value='".wp_create_nonce('my-content-management-nonce')."' /></div>
 			<div><input type='hidden' name='mcm_post_type' value='$value' /></div>
@@ -460,7 +548,8 @@ function mcm_show_support_box() {
 	<div id="support">
 		<div class="resources">
 		<ul>
-			<li><strong><a href="#get-support" rel="external"><?php _e("Get Support",'my-content-management'); ?></a></strong></li>
+		<li><strong><a href="#get-support" rel="external"><?php _e("Get Support",'my-content-management'); ?></a></strong></li>
+		<li><a href="http://www.joedolson.com/articles/bugs/"><?php _e("Report a bug",'my-calendar'); ?></a></li>	
 		<li><strong><a href="http://www.joedolson.com/donate.php" rel="external"><?php _e("Make a Donation",'my-content-management'); ?></a></strong></li>
 			<li><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 			<div>

@@ -1,32 +1,50 @@
 <?php
 /*
 @type = string = post_type 
-@display = string: full, excerpt, list
+@display = string: custom, full, excerpt, list
 @taxonomy = string = taxonomy
 @term = string = term slug
 @count = integer = number of posts to display
 @order = string = orderby options: none,ID,author,title,date,modified,parent,rand,comment_count,menu_order,meta_value,meta_value_num
+@direction = string = ASC/DESC
+@meta_key = Custom key if order by menu_order
+@template = template name or template if $display = 'custom'
+@id = specific post ID
 */
-function mcm_get_show_posts(  $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $id ) {
-global $templates;
-
-	// allow mcm post types to be abbreviated
-	if ( strpos($type,'mcm_')===0 ) { $type = $type; } else { $type = 'mcm_'.$type; }
+function mcm_get_show_posts(  $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $offset, $id ) {
+global $templates, $types;
+	$keys = array_keys($types);
+	$mcm = true;
+	// check if this post type is coming from MCM
+	if ( !in_array($type,$keys) && !in_array('mcm_'.$type,$keys ) ) {
+		$wrapper = ( $template != '' )?$template:'mcm_people';
+		$mcm = false;		
+	} else {
+		if ( strpos($type,'mcm_')===0 ) { $type = $type; } else { $type = 'mcm_'.$type; }
+		if ($taxonomy != 'all') {
+			if (strpos($taxonomy,'mcm_')===0) {} else { $taxonomy = 'mcm_'.$taxonomy; }
+		}
+		$wrapper = ( $template != '' )?$template:$type;
+	}
 	// get wrapper element
-	$elem = ( isset($templates[$type]['wrapper']['list'][$display]) )?$templates[$type]['wrapper']['list'][$display]:'div';
-		
-	// allow mcm taxonomies to be abbreviated, but don't interfere if taxonomy='all'
-	if ($taxonomy != 'all') {
-		if (strpos($taxonomy,'mcm_')===0) {} else { $taxonomy = 'mcm_'.$taxonomy; }
+	if ( $display == 'custom' ) {
+		$elem = '';
+		$wrapper = $template;
+	} else {
+		$elem = ( isset($templates[$wrapper]['wrapper']['list'][$display]) )?$templates[$wrapper]['wrapper']['list'][$display]:'div';	
 	}
 	if ( $id == false ) {
 		// set up arguments for loop
+		wp_reset_query();
+
 		$args = array( 'post_type' => $type, 'posts_per_page'=>$count, 'orderby'=>$order, 'order'=>$direction );
+		if ( $offset != false ) { $args['offset']= (int) $offset; }
 		if ($taxonomy != 'all' && $term !='') { $args['tax_query'] = array( array( 'taxonomy' => $taxonomy, 'field' => 'slug', 'terms' => $term ) ); }
 		if ( $order == 'meta_value' || $order == 'meta_value_num' ) { $args['meta_key'] = $meta_key; }
 		$loop = new WP_Query( $args );
-		
 		$column = 'odd';
+		$last_letter = '0';
+		$first = true;
 		while ( $loop->have_posts() ) : $loop->the_post();
 			$post['id'] = get_the_ID();
 			$post['excerpt'] = wpautop( get_the_excerpt() );
@@ -57,7 +75,13 @@ global $templates;
 					}
 				}
 			if ( isset($post['_email']) ) { $post['_email'] = mcm_munge($post['_email']); }
-			$return .= mcm_run_template( $post, $display, $column, $type );
+			// use this filter to insert any additional custom template tags required			
+			$post = apply_filters('mcm_extend_posts', $post, $post );
+			// This filter is used to insert alphabetical headings. You can probably find another use for it.
+			$return = apply_filters('mcm_filter_posts',$return, $post, $last_letter, $elem, $type, $first );
+			$first = false;
+			$last_letter = strtolower( substr( get_the_title( $post->ID ), 0, 1 ) );
+			$return .= mcm_run_template( $post, $display, $column, $wrapper );
 			switch ($column) {
 				case 'odd':	$column = 'even';	break;
 				case 'even': $column = 'odd';	break;
@@ -100,7 +124,7 @@ global $templates;
 						}
 					}
 				if ( isset($post['_email']) ) { $post['_email'] = mcm_munge($post['_email']); }	
-				$return .= mcm_run_template( $post, $display, $column, $type );
+				$return .= mcm_run_template( $post, $display, $column, $wrapper );
 				switch ($column) {
 					case 'odd':	$column = 'even';	break;
 					case 'even': $column = 'odd';	break;
@@ -109,20 +133,28 @@ global $templates;
 		}
 	}
 	if ( $elem != '' ) { $front = "<$elem>"; $back = "</$elem>"; } else { $elem = $unelem = '';}
+	
+	if ( $display != 'custom' ) {
 	$return = "
-	<div class='mcm_posts $type $display'>
-	$front
-		$return
-	$back
-	</div>";
-	return $return;
+		<div class='mcm_posts $type $display'>
+		$front
+			$return
+		$back
+		</div>";
+	}
+	return str_replace("\r\n",'',$return);
 }
 
 function mcm_run_template( $post, $display, $column, $type ) {
 global $templates;
 	$postclass = implode(' ',$post['postclass']);
-
+	$return = '';
+	$post['column'] = $column;
 	switch ( $display ) {
+		case 'custom':
+			$template = $type;
+			return mcm_draw_template($post,$template);
+		break;
 		case 'full':
 			$wrapper = ( isset($templates[$type]['wrapper']['item']['full']) )?$templates[$type]['wrapper']['item']['full']:'div';
 		
@@ -159,7 +191,6 @@ global $templates;
 			$wrapper = ( isset($templates[$type]['wrapper']['item']['list']) )?$templates[$type]['wrapper']['item']['list']:'li';
 			
 			if ( $wrapper != '' ) { $pre = "<$wrapper class='$postclass $column'>"; $posttag = "</$wrapper>"; } else { $pre = $posttag = '';}
-			
 			if ( isset($templates[$type]['list']) && trim( $templates[$type]['list'] ) != '' ) {
 				$return .= "$pre
 				".mcm_draw_template($post,$templates[$type]['list'])."
@@ -176,7 +207,7 @@ global $templates;
 					<p>$post[link_title]</p>";			
 		break;
 	}
-	return "$return";
+	return $return;
 }
 
 function mcm_draw_template( $array,$template ) {
@@ -186,7 +217,7 @@ function mcm_draw_template( $array,$template ) {
 	    $search = "{".$key."}";
 		$template = stripcslashes(str_replace($search,$value,$template));
 	}
-	return $template;
+	return trim($template);
 }
 
 function mcm_search_form( $post_type ) {
