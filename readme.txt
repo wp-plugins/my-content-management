@@ -43,6 +43,10 @@ Translations are always welcome! The translation files are included in the downl
 
 == Changelog ==
 
+= 1.1.1 =
+
+* Fixes a bug where the glossary filter always triggered an admin notice, due to file inclusion order.
+
 = 1.1.0 =
 
 * Added supplemental plug-in to provide a glossary filter for content and an alphabet anchor list for glossaries.

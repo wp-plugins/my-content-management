@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: MCM Glossary Filter
-Version: 1.1.0
+Version: 1.1.1
 Plugin URI: http://www.joedolson.com/articles/my-content-management/
 Description: Adds custom glossary features: filters content for links to terms, etc. Companion plug-in to My Content Management.
 Author: Joseph C. Dolson
