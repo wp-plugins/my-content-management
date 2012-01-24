@@ -1,0 +1,7 @@
+#support { background:#fff; padding: 15px 15px 5px; margin: 10px; border-radius: 10px; float: right; border: 1px solid #bbb; box-shadow: 1px 1px 6px #aaa; text-align: center }
+.mcm-settings { margin-right: 250px; }
+.mcm-settings legend { font-weight: 700; font-size: 1.1em;}
+.wrappers { width: 16em; float: left; padding-top: 1em; }
+.wrappers label { display: block; float: left; width: 7em; padding: 5px 0 0;}
+.mcm-template-guide{ width: 230px; float: right;}
+.extra_fields{ float: right; padding: 10px;
