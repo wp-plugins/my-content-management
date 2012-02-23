@@ -43,6 +43,17 @@ Translations are always welcome! The translation files are included in the downl
 
 == Changelog ==
 
+= 1.1.2 =
+
+* Made arguments for mcm_content_filter more generic for broader use.
+* Fixed bug where Glossary Filters threw error if Glossary extension was enabled without the Glossary post type.
+* Fixed missing arguments in Custom Post List widget
+* Added display type (list, excerpt, full) selection to Custom Post List widget
+* Added number to display option to Custom Post List widget
+* Added ordering selector to Custom Post List widget
+* Added order direction selector to Custom Post List widget
+* Fixed bug where sidebar widget picked up title value for currently active Post object.
+
 = 1.1.1 =
 
 * Fixes a bug where the glossary filter always triggered an admin notice, due to file inclusion order.
@@ -116,4 +127,4 @@ Hey. This was just launched. Got one to ask?
 
 == Upgrade Notice ==
 
- * 1.1.0 Adds the first supplemental plug-in, some new shortcode attributes, fixes bugs.
+ * 1.1.2 Fixes variety of bugs with widget lists; adds options to custom post lists widget

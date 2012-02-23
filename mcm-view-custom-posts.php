@@ -33,55 +33,71 @@ global $templates, $types;
 	} else {
 		$elem = ( isset($templates[$wrapper]['wrapper']['list'][$display]) )?$templates[$wrapper]['wrapper']['list'][$display]:'div';	
 	}
+	$wrapper = trim($wrapper);
 	if ( $id == false ) {
 		// set up arguments for loop
 		wp_reset_query();
-
 		$args = array( 'post_type' => $type, 'posts_per_page'=>$count, 'orderby'=>$order, 'order'=>$direction );
 		if ( $offset != false ) { $args['offset']= (int) $offset; }
-		if ($taxonomy != 'all' && $term !='') { $args['tax_query'] = array( array( 'taxonomy' => $taxonomy, 'field' => 'slug', 'terms' => $term ) ); }
+		if ($taxonomy != 'all' && $term !='' && strpos( $taxonomy, ',') === false ) { $args['tax_query'] = array( array( 'taxonomy' => $taxonomy, 'field' => 'slug', 'terms' => $term ) ); }
+		if ( strpos( $taxonomy, ',' ) !== false && strpos($term, ',' ) !== false ) {
+			$taxonomies = explode( ',', $taxonomy );
+			$terms = explode( ',', $term );
+			$i = 0;
+			$tax_query = array();
+			foreach ( $taxonomies as $t ) {
+				$array = array( 'taxonomy' => $t, 'field' => 'slug', 'terms' => $terms[$i] );
+				$tax_query[] = $array;
+				$i++;
+			}
+			$tax_query['relation']='AND';
+			$args['tax_query'] = $tax_query; 
+		}
+		
 		if ( $order == 'meta_value' || $order == 'meta_value_num' ) { $args['meta_key'] = $meta_key; }
 		$loop = new WP_Query( $args );
 		$column = 'odd';
-		$last_letter = '0';
+		$last_term = false;
 		$first = true;
 		while ( $loop->have_posts() ) : $loop->the_post();
-			$post['id'] = get_the_ID();
-			$post['excerpt'] = wpautop( get_the_excerpt() );
-			$post['excerpt_raw'] = get_the_excerpt();
-			$post['content'] = do_shortcode( wpautop( get_the_content() ) );
-			$post['content_raw'] = get_the_content();
-			$post['thumbnail'] = get_the_post_thumbnail( get_the_ID(), 'thumbnail', array( 'class'=>'mcm_thumbnail', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
-			$post['medium'] = get_the_post_thumbnail( get_the_ID(), 'medium', array( 'class'=>'mcm_medium', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
-			$post['large'] = get_the_post_thumbnail( get_the_ID(), 'large', array( 'class'=>'mcm_large', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
-			$post['full'] = get_the_post_thumbnail( get_the_ID(), 'full', array( 'class'=>'mcm_large', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );			
-			$post['permalink'] = get_permalink();
-			$post['link_title'] = "<a href='".get_permalink()."'>".get_the_title()."</a>";			
-			$post['title'] = get_the_title();
-			$post['shortlink'] = wp_get_shortlink();
-			$post['modified'] = get_the_modified_date();
-			$post['date'] = get_the_date();
-			$post['author'] = get_the_author();
-			$post['postclass'] = get_post_class();
-			$post['terms'] = ($taxonomy != 'all')?get_the_term_list( get_the_ID(), $taxonomy,'',', ','' ):'';
+			$p = array();
+			$id = get_the_ID();
+			$p['id'] = $id;
+			$p['excerpt'] = wpautop( get_the_excerpt() );
+			$p['excerpt_raw'] = get_the_excerpt();
+			$p['content'] = do_shortcode( wpautop( get_the_content() ) );
+			$p['content_raw'] = get_the_content();
+			$p['thumbnail'] = get_the_post_thumbnail( $id, 'thumbnail', array( 'class'=>'mcm_thumbnail', 'alt'=>trim( strip_tags( get_the_title( $id ) ) ), 'title'=>'' ) );
+			$p['medium'] = get_the_post_thumbnail( $id, 'medium', array( 'class'=>'mcm_medium', 'alt'=>trim( strip_tags( get_the_title( $id ) ) ), 'title'=>'' ) );
+			$p['large'] = get_the_post_thumbnail( $id, 'large', array( 'class'=>'mcm_large', 'alt'=>trim( strip_tags( get_the_title( $id ) ) ), 'title'=>'' ) );
+			$p['full'] = get_the_post_thumbnail( $id, 'full', array( 'class'=>'mcm_large', 'alt'=>trim( strip_tags( get_the_title( $id ) ) ), 'title'=>'' ) );
+			$p['permalink'] = get_permalink();
+			$p['link_title'] = "<a href='".get_permalink()."'>".get_the_title()."</a>";			
+			$p['title'] = get_the_title();
+			$p['shortlink'] = wp_get_shortlink();
+			$p['modified'] = get_the_modified_date();
+			$p['date'] = get_the_date();
+			$p['author'] = get_the_author();
+			$p['postclass'] = get_post_class();
+			$p['terms'] = ($taxonomy != 'all')?get_the_term_list( $id, $taxonomy,'',', ','' ):'';
 			$custom_fields = get_post_custom();
 				foreach ( $custom_fields as $key=>$value ) {
 					if ( is_array( $value ) ) {
 						if ( is_array( $value[0] ) ) {
-							$post[$key] = explode( ", ", $value[0] );
+							$p[$key] = explode( ", ", $value[0] );
 						} else {
-							$post[$key] = $value[0];
+							$p[$key] = $value[0];
 						}
 					}
 				}
-			if ( isset($post['_email']) ) { $post['_email'] = mcm_munge($post['_email']); }
-			// use this filter to insert any additional custom template tags required			
-			$post = apply_filters('mcm_extend_posts', $post, $post );
+			if ( isset($p['_email']) ) { $p['_email'] = mcm_munge($p['_email']); }
+			// use this filter to insert any additional custom template tags required		
+			$p = apply_filters('mcm_extend_posts', $p, $p );
 			// This filter is used to insert alphabetical headings. You can probably find another use for it.
-			$return = apply_filters('mcm_filter_posts',$return, $post, $last_letter, $elem, $type, $first );
+			$return = apply_filters('mcm_filter_posts',$return, $p, $last_term, $elem, $type, $first );
 			$first = false;
-			$last_letter = strtolower( substr( get_the_title( $post->ID ), 0, 1 ) );
-			$return .= mcm_run_template( $post, $display, $column, $wrapper );
+			$last_term = get_the_title();
+			$return .= mcm_run_template( $p, $display, $column, $wrapper );
 			switch ($column) {
 				case 'odd':	$column = 'even';	break;
 				case 'even': $column = 'odd';	break;
@@ -125,6 +141,7 @@ global $templates, $types;
 					}
 				if ( isset($post['_email']) ) { $post['_email'] = mcm_munge($post['_email']); }	
 				$return .= mcm_run_template( $post, $display, $column, $wrapper );
+				$return .= $wrapper;
 				switch ($column) {
 					case 'odd':	$column = 'even';	break;
 					case 'even': $column = 'odd';	break;
@@ -213,9 +230,12 @@ global $templates;
 function mcm_draw_template( $array,$template ) {
 	//1st argument: array of details
 	//2nd argument: template to print details into
-	foreach ($array as $key=>$value) {	
-	    $search = "{".$key."}";
-		$template = stripcslashes(str_replace($search,$value,$template));
+	foreach ($array as $key=>$value) {
+		if ( !is_object($value) ) {
+			$search = "{".$key."}";
+			$template = stripcslashes(str_replace($search,$value,$template));
+		} else {
+		}
 	}
 	return trim($template);
 }
@@ -241,9 +261,9 @@ function mcm_search_form( $post_type ) {
 function mcm_searchfilter($query) {
 	if ( isset($_GET['customsearch']) ) {
 		if ($query->is_search) {
-		// Insert the specific post type you want to search
-		$post_type = esc_attr( $_GET['customsearch'] );
-		$query->set( 'post_type', $post_type );
+			// Insert the specific post type you want to search
+			$post_type = esc_attr( $_GET['customsearch'] );
+			$query->set( 'post_type', $post_type );
 		}
 		return $query;
 	}
