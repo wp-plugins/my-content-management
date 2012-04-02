@@ -9,22 +9,41 @@
 @direction = string = ASC/DESC
 @meta_key = Custom key if order by menu_order
 @template = template name or template if $display = 'custom'
+@offset = number of items to skip
 @id = specific post ID
 */
-function mcm_get_show_posts(  $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $offset, $id ) {
-global $templates, $types;
+function mcm_get_show_posts(  $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id ) {
+global $mcm_templates, $mcm_types;
+$templates = $mcm_templates; $types = $mcm_types;
+	$the_cache == false;
+	if ( $cache != false ) {
+		$cache_key = md5( $type . $display . $taxonomy . $term . $count . $order . $direction . $meta_key . $template . $offset . $id );
+		$the_cache = get_transient( "mcm_$cache_key" );
+	}
+	if ( $the_cache ) { 
+		return $the_cache; 
+	} else {
 	$keys = array_keys($types);
 	$mcm = true;
 	// check if this post type is coming from MCM
-	if ( !in_array($type,$keys) && !in_array('mcm_'.$type,$keys ) ) {
-		$wrapper = ( $template != '' )?$template:'mcm_people';
-		$mcm = false;		
-	} else {
-		if ( strpos($type,'mcm_')===0 ) { $type = $type; } else { $type = 'mcm_'.$type; }
-		if ($taxonomy != 'all') {
-			if (strpos($taxonomy,'mcm_')===0) {} else { $taxonomy = 'mcm_'.$taxonomy; }
+	$post_types = explode( ',', $type );
+	$types = array();
+	foreach ( $post_types as $t ) {
+		if ( !in_array($t,$keys) && in_array('mcm_'.$t,$keys ) ) { // second argument negative in tot
+			$types[] = 'mcm_'.$t;
+		} else {
+			$types[] = $t;
 		}
-		$wrapper = ( $template != '' )?$template:$type;
+	}
+	$primary = $types[0];
+		if ( !in_array($primary,$keys) && !in_array('mcm_'.$primary,$keys ) ) {
+			$wrapper = ( $template != '' )?$template:'mcm_people';
+			$mcm = false;		
+		} else {
+			$wrapper = ( $template != '' )?$template:$primary;
+		}
+	if ($taxonomy != 'all') { // I have a feeling that this is a problem. 
+		//if (strpos($taxonomy,'mcm_')===0) {} else { $taxonomy = 'mcm_'.$taxonomy; }
 	}
 	// get wrapper element
 	if ( $display == 'custom' ) {
@@ -37,7 +56,7 @@ global $templates, $types;
 	if ( $id == false ) {
 		// set up arguments for loop
 		wp_reset_query();
-		$args = array( 'post_type' => $type, 'posts_per_page'=>$count, 'orderby'=>$order, 'order'=>$direction );
+		$args = array( 'post_type' => $types, 'posts_per_page'=>$count, 'orderby'=>$order, 'order'=>$direction );
 		if ( $offset != false ) { $args['offset']= (int) $offset; }
 		if ($taxonomy != 'all' && $term !='' && strpos( $taxonomy, ',') === false ) { $args['tax_query'] = array( array( 'taxonomy' => $taxonomy, 'field' => 'slug', 'terms' => $term ) ); }
 		if ( strpos( $taxonomy, ',' ) !== false && strpos($term, ',' ) !== false ) {
@@ -78,7 +97,8 @@ global $templates, $types;
 			$p['modified'] = get_the_modified_date();
 			$p['date'] = get_the_date();
 			$p['author'] = get_the_author();
-			$p['postclass'] = get_post_class();
+				$postclass = implode( ' ',get_post_class() );
+			$p['postclass'] = $postclass;
 			$p['terms'] = ($taxonomy != 'all')?get_the_term_list( $id, $taxonomy,'',', ','' ):'';
 			$custom_fields = get_post_custom();
 				foreach ( $custom_fields as $key=>$value ) {
@@ -90,7 +110,7 @@ global $templates, $types;
 						}
 					}
 				}
-			if ( isset($p['_email']) ) { $p['_email'] = mcm_munge($p['_email']); }
+			if ( isset($p['_email']) ) { $p['_email'] = apply_filters('mcm_munge',$p['_email'], $p['_email'] ); }
 			// use this filter to insert any additional custom template tags required		
 			$p = apply_filters('mcm_extend_posts', $p, $p );
 			// This filter is used to insert alphabetical headings. You can probably find another use for it.
@@ -105,66 +125,93 @@ global $templates, $types;
 		endwhile;
 		wp_reset_postdata();
 	} else {
-		if ( is_int($id) ) {
-			$post = get_post($id);
-		} else {
-			$ids = explode(",",$id);
-			foreach ( $ids as $v ) {
-				$the_post = get_post( $v );
-				$post['id'] = $the_post->ID;
-				$post['excerpt'] = wpautop( $the_post->post_excerpt );
-				$post['excerpt_raw'] = $the_post->post_excerpt;
-				$post['content'] = do_shortcode( wpautop( $the_post->post_content ) );
-				$post['content_raw'] = $the_post->post_content;
-				$post['thumbnail'] = get_the_post_thumbnail( $the_post->ID, 'thumbnail', array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
-				$post['medium'] = get_the_post_thumbnail( $the_post->ID, 'medium', array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
-				$post['large'] = get_the_post_thumbnail( $the_post->ID, 'large', array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
-				$post['full'] = get_the_post_thumbnail( $the_post->ID, 'full', array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
-				$post['permalink'] = get_permalink( $the_post->ID );
-				$post['link_title'] = "<a href='".get_permalink( $the_post->ID )."'>".$the_post->post_title."</a>";				
-				$post['title'] = $the_post->post_title;
-				$post['shortlink'] = wp_get_shortlink( $the_post->ID );
-				$post['modified'] = date( get_option('date_format'), strtotime( $the_post->post_modified ) );
-				$post['date'] = date( get_option('date_format'), strtotime( $the_post->post_date ) );
-				$post['author'] = get_the_author_meta( 'display_name', $the_post->post_author );
-				$post['postclass'] = get_post_class( '',$the_post->ID );
-				$post['terms'] = ($taxonomy != 'all')?get_the_term_list( $the_post->ID, $taxonomy,'',', ','' ):'';
-				$custom_fields = get_post_custom( $the_post->ID );
-					foreach ( $custom_fields as $key=>$value ) {
-						if ( is_array( $value ) ) {
-							if ( is_array( $value[0] ) ) {
-								$post[$key] = explode( ", ", $value[0] );
-							} else {
-								$post[$key] = $value[0];
-							}
+		$ids = explode(",",$id);
+		foreach ( $ids as $v ) {
+			$the_post = get_post( $v );
+			$p['id'] = $the_post->ID;
+			$p['excerpt'] = wpautop( $the_post->post_excerpt );
+			$p['excerpt_raw'] = $the_post->post_excerpt;
+			$p['content'] = do_shortcode( wpautop( $the_post->post_content ) );
+			$p['content_raw'] = $the_post->post_content;
+			$p['thumbnail'] = get_the_post_thumbnail( $the_post->ID, 'thumbnail', array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
+			$p['medium'] = get_the_post_thumbnail( $the_post->ID, 'medium', array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
+			$p['large'] = get_the_post_thumbnail( $the_post->ID, 'large', array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
+			$p['full'] = get_the_post_thumbnail( $the_post->ID, 'full', array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
+			$p['permalink'] = get_permalink( $the_post->ID );
+			$p['link_title'] = "<a href='".get_permalink( $the_post->ID )."'>".$the_post->post_title."</a>";				
+			$p['title'] = $the_post->post_title;
+			$p['shortlink'] = wp_get_shortlink( $the_post->ID );
+			$p['modified'] = date( get_option('date_format'), strtotime( $the_post->post_modified ) );
+			$p['date'] = date( get_option('date_format'), strtotime( $the_post->post_date ) );
+			$p['author'] = get_the_author_meta( 'display_name', $the_post->post_author );
+				$postclass = implode( ' ',get_post_class( '',$the_post->ID ) );
+			$p['postclass'] = $postclass;				
+			$p['terms'] = ($taxonomy != 'all')?get_the_term_list( $the_post->ID, $taxonomy,'',', ','' ):'';
+			$custom_fields = get_post_custom( $the_post->ID );
+				foreach ( $custom_fields as $key=>$value ) {
+					if ( is_array( $value ) ) {
+						if ( is_array( $value[0] ) ) {
+							$p[$key] = explode( ", ", $value[0] );
+						} else {
+							$p[$key] = $value[0];
 						}
 					}
-				if ( isset($post['_email']) ) { $post['_email'] = mcm_munge($post['_email']); }	
-				$return .= mcm_run_template( $post, $display, $column, $wrapper );
-				$return .= $wrapper;
-				switch ($column) {
-					case 'odd':	$column = 'even';	break;
-					case 'even': $column = 'odd';	break;
 				}
+			if ( isset($p['_email']) ) { $p['_email'] = apply_filters('mcm_munge',$p['_email'], $p['_email'] ); }
+			$p = apply_filters('mcm_extend_posts', $p, $p );
+			$return .= mcm_run_template( $p, $display, $column, $wrapper );
+			$return .= $wrapper;
+			switch ($column) {
+				case 'odd':	$column = 'even';	break;
+				case 'even': $column = 'odd';	break;
 			}
 		}
 	}
-	if ( $elem != '' ) { $front = "<$elem>"; $back = "</$elem>"; } else { $elem = $unelem = '';}
+	if ( $elem != '' ) { $front = "<$elem class='list-wrapper'>"; $back = "</$elem>"; } else { $elem = $unelem = '';}
 	
 	if ( $display != 'custom' ) {
 	$return = "
-		<div class='mcm_posts $type $display'>
+		<div class='mcm_posts $primary $display'>
 		$front
 			$return
 		$back
 		</div>";
+	} else {
+		$return = "<div class='mcm_posts $primary $display'>$return</div>";
 	}
-	return str_replace("\r\n",'',$return);
+	$return = str_replace("\r\n",'',$return);		
+		if ( $cache != false ) { 
+			$time = (is_numeric($cache))?$cache:24;
+			set_transient( "mcm_$cache_key", $return, 60*60*$time );
+		} 
+	}
+	return $return;
+}
+
+// A simple function to get data stored in a custom field
+if ( !function_exists('mcm_custom_field') ) {
+	function mcm_get_custom_field($field,$id='') {
+		global $post;
+		$id = ($id != '')?$id:$post->ID;
+		$custom_field = get_post_meta($id, $field, true);
+		return $custom_field;
+	}
+}
+function mcm_custom_field( $field,$before,$after,$id='' ) {
+	$value = mcm_get_custom_field($field, $id);
+	if ( $value ) {
+		if ( is_array( $value ) ) {
+			foreach ( $value as $v ) {
+				echo $before.$v.$after;
+			}
+		} else {
+			echo $before.$value.$after;
+		}
+	}
 }
 
 function mcm_run_template( $post, $display, $column, $type ) {
-global $templates;
-	$postclass = implode(' ',$post['postclass']);
+global $mcm_templates; $templates = $mcm_templates;
 	$return = '';
 	$post['column'] = $column;
 	switch ( $display ) {
@@ -226,7 +273,7 @@ global $templates;
 	}
 	return $return;
 }
-
+/*
 function mcm_draw_template( $array,$template ) {
 	//1st argument: array of details
 	//2nd argument: template to print details into
@@ -238,6 +285,23 @@ function mcm_draw_template( $array,$template ) {
 		}
 	}
 	return trim($template);
+}
+*/
+function mcm_draw_template( $array='',$template='' ) {
+	//1st argument: array of details
+	//2nd argument: template to print details into
+	foreach ($array as $key=>$value) {
+		if ( !is_object($value) ) {
+			preg_match_all('/{'.$key.'\b(?>\s+(?:before="([^"]*)"|after="([^"]*)")|[^\s]+|\s+){0,2}}/', $template, $matches );
+			if ( $matches ) {
+				$before = $matches[1][0];
+				$after = $matches[2][0];
+				$value = ( $value == '' )?'':$before.$value.$after;
+				$template = str_replace( $matches[0][0], $value, $template );
+			}
+		} 
+	}
+	return stripslashes(trim($template));
 }
 
 function mcm_search_form( $post_type ) {

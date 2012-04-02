@@ -9,17 +9,27 @@ class mcm_search_widget extends WP_Widget {
 
 	function widget($args, $instance) {
 		extract($args);
+		$the_title = apply_filters('widget_title',$instance['title']);
+		$widget_title = empty($the_title) ? '' : $the_title;
+		$widget_title = ($widget_title!='') ? $before_title . $widget_title . $after_title : '';		
 		$post_type = $instance['mcm_widget_post_type'];		
 		$search_form = mcm_search_form( $post_type );
 		echo $before_widget;
+		echo $widget_title;
 		echo $search_form;
 		echo $after_widget;
 	}
 
 	function form($instance) {
-		global $enabled;
+		global $mcm_enabled;
+		$enabled = $mcm_enabled;
 		$post_type = esc_attr($instance['mcm_widget_post_type']);
+		$title = esc_attr($instance['title']);
 	?>
+		<p>
+		<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title','my-content-management'); ?>:</label><br />
+		<input class="widefat" type="text" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo $title; ?>"/>
+		</p>	
 		<p>
 		<label for="<?php echo $this->get_field_id('mcm_widget_post_type'); ?>"><?php _e('Post type to search','my-content-management'); ?></label> <select<?php echo $disabled; ?> id="<?php echo $this->get_field_id('mcm_widget_post_type'); ?>" name="<?php echo $this->get_field_name('mcm_widget_post_type'); ?>">
 	<?php
@@ -37,6 +47,7 @@ class mcm_search_widget extends WP_Widget {
 	function update($new_instance,$old_instance) {
 		$instance = $old_instance;
 		$instance['mcm_widget_post_type'] = strip_tags($new_instance['mcm_widget_post_type']);
+		$instance['title'] = strip_tags($new_instance['title']);
 		return $instance;		
 	}	
 }
@@ -51,6 +62,9 @@ class mcm_posts_widget extends WP_Widget {
 
 	function widget($args, $instance) {
 		extract($args);
+		$the_title = apply_filters('widget_title',$instance['title']);
+		$widget_title = empty($the_title) ? '' : $the_title;
+		$widget_title = ($widget_title!='') ? $before_title . $widget_title . $after_title : '';		
 		$post_type = $instance['mcm_posts_widget_post_type'];	
 		$display = ( $instance['display'] == '' )?'list':$instance['display'];
 		$count = ( $instance['count'] == '' )?-1:(int) $instance['count'];
@@ -59,18 +73,25 @@ class mcm_posts_widget extends WP_Widget {
 		//  				$type, $display, $tax, $term, $count, $order, $direction, $meta_key, $template, $offset, $id
 		$custom = mcm_get_show_posts( $post_type, $display, 'all', '', $count, $order, $direction, '', '', false, false );
 		echo $before_widget;
+		echo $widget_title;
 		echo $custom;
 		echo $after_widget;
 	}
 
 	function form($instance) {
-		global $enabled;
+		global $mcm_enabled;
+		$enabled = $mcm_enabled;
 		$post_type = esc_attr($instance['mcm_posts_widget_post_type']);
 		$display = esc_attr($instance['display']);
 		$count = (int) $instance['count'];
 		$direction = esc_attr($instance['direction']);		
 		$order = esc_attr($instance['order']);
+		$title = esc_attr($instance['title']);
 	?>
+		<p>
+		<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title','my-content-management'); ?>:</label><br />
+		<input class="widefat" type="text" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo $title; ?>"/>
+		</p>	
 		<p>
 		<label for="<?php echo $this->get_field_id('mcm_posts_widget_post_type'); ?>"><?php _e('Post type to list','my-content-management'); ?></label> <select id="<?php echo $this->get_field_id('mcm_posts_widget_post_type'); ?>" name="<?php echo $this->get_field_name('mcm_posts_widget_post_type'); ?>">
 	<?php
@@ -121,6 +142,7 @@ class mcm_posts_widget extends WP_Widget {
 		$instance['order'] = strip_tags($new_instance['order']);
 		$instance['direction'] = strip_tags($new_instance['direction']);
 		$instance['count'] = ( $new_instance['count']== '' )?-1:(int) $new_instance['count'];
+		$instance['title'] = strip_tags($new_instance['title']);
 		return $instance;		
 	}
 }

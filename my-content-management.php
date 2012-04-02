@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/articles/my-content-management/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.1.2
+Version: 1.2.0
 */
 /*  Copyright 2011-2012  Joe Dolson (email : joe@joedolson.com)
 
@@ -23,7 +23,7 @@ Version: 1.1.2
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-$mcm_version = '1.1.2';
+$mcm_version = '1.2.0';
 // Enable internationalisation
 load_plugin_textdomain( 'my-content-management',false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
@@ -34,11 +34,19 @@ include(dirname(__FILE__).'/mcm-widgets.php' );
 if ( !get_option( 'mcm_version' ) ) {  mcm_install_plugin(); }
 if ( version_compare( get_option('mcm_version'), $mcm_version, '<' ) ) { mcm_upgrade_plugin(); }
 
+// eventually, options. For now, not.
+$mcm_options = get_option('mcm_options');
+$mcm_enabled = $mcm_options['enabled'];
+$mcm_templates = $mcm_options['templates'];
+$mcm_types = $mcm_options['types'];
+$mcm_fields = $mcm_options['fields'];
+$mcm_extras = $mcm_options['extras'];
+
 //Shortcode
 function mcm_show_posts($atts) {
 	extract(shortcode_atts(array(
 				'type' => 'page',
-				'display' => 'short',
+				'display' => 'excerpt',
 				'taxonomy' => 'all',
 				'term' => '',
 				'count' => -1,
@@ -46,16 +54,17 @@ function mcm_show_posts($atts) {
 				'direction' => 'DESC',
 				'meta_key' => '',
 				'template' => '',
+				'cache'=> false,
 				'offset'=> false,
 				'id' => false
 			), $atts));
-	return mcm_get_show_posts( $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $offset, $id );
+	return mcm_get_show_posts( $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id );
 }
 
 function mcm_show_archive($atts) {
 	extract(shortcode_atts(array(
 				'type' => false,
-				'display' => '',
+				'display' => 'list',
 				'taxonomy' => false,
 				'count' => -1,
 				'order' => 'menu_order',
@@ -64,6 +73,7 @@ function mcm_show_archive($atts) {
 				'exclude' => '',
 				'template' => '',
 				'offset' => '',
+				'cache' => false
 			), $atts));
 			if ( !$type || !$taxonomy ) return;
 		$terms = get_terms( $taxonomy );
@@ -71,12 +81,13 @@ function mcm_show_archive($atts) {
 		$exclude = explode(',',$exclude);
 		if ( is_array($terms) ) {
 			foreach ( $terms as $term ) {
-				$tax = $term->name;
+				$taxo = $term->name;
+				$tax = $term->slug;
 				$tax_class = sanitize_title($tax);
 				if ( !in_array( $tax, $exclude ) ) {
 					$output .= "\n<div class='archive-group'>";
-					$output .= "<h2 class='$tax_class'>$tax</h2>";
-					$output .= mcm_get_show_posts( $type, $display, $taxonomy, $tax, $count, $menu_order, $direction, $meta_key, $template, $offset, false );
+					$output .= "<h2 class='$tax_class' id='$tax_class'>$taxo</h2>";
+					$output .= mcm_get_show_posts( $type, $display, $taxonomy, $tax, $count, $order, $direction, $meta_key, $template, $cache, $offset, false );
 					$output .= "</div>\n";
 				}
 			}
@@ -106,7 +117,8 @@ add_action( 'admin_menu', 'mcm_add_custom_boxes' );
 
 
 function mcm_install_plugin() {
-global $types;
+global $default_mcm_types, $default_mcm_fields, $default_mcm_extras;
+$types = $default_mcm_types;
 	$templates = array();
 	if ( is_array( $types ) ) {
 		foreach ( $types as $key=>$value ) {
@@ -129,39 +141,23 @@ global $types;
 	}
 	$options = array(
 		'enabled'=> array(),
-		'templates' => $templates
+		'templates' => $templates,
+		'types' => $default_mcm_types,
+		'fields' => $default_mcm_fields,
+		'extras' => $default_mcm_extras
 	);
 	add_option( 'mcm_options', $options );
 }
 
 function mcm_upgrade_plugin() {
-// don't need to do anything with versions yet.
-	global $mcm_version, $types;
+//  no upgrade routine for 1.2.0
+	global $mcm_version,$default_mcm_types, $default_mcm_fields, $default_mcm_extras;;
 	$from = get_option('mcm_version');
 	if ( $mcm_version == $from ) return; 
-	
-	$newtypes = array('mcm_resources');
-	
 	$options = get_option('mcm_options');
-	$templates = $options['templates'];
-	foreach ( $types as $key => $value ) {
-		if ( in_array( $key, $newtypes ) ) {
-			$templates[$key]['full'] = '<h2>{title}</h2>
-{content}
-<p>{link_title}</p>';
-			$templates[$key]['excerpt'] = '<h3>{title}</h3>
-{excerpt}
-<p>{link_title}</p>';
-			$templates[$key]['list'] = '{link_title}';
-			$templates[$key]['wrapper']['item']['full'] = 'div';
-			$templates[$key]['wrapper']['item']['excerpt'] = 'div';
-			$templates[$key]['wrapper']['item']['list'] = 'li';
-			$templates[$key]['wrapper']['list']['full'] = 'div';
-			$templates[$key]['wrapper']['list']['excerpt'] = 'div';
-			$templates[$key]['wrapper']['list']['list'] = 'ul';	
-		}			
-	}
-	$options['templates'] = $templates;
+	$options['types']=$default_mcm_types;
+	$options['fields']=$default_mcm_fields;
+	$options['extras']=$default_mcm_extras;
 	update_option( 'mcm_options', $options );
 	update_option( 'mcm_version', $mcm_version );
 }
@@ -248,8 +244,9 @@ $plugins_string
 		if (! wp_verify_nonce($nonce,'my-content-management-nonce') ) die("Security check failed");	
 		$request = stripslashes($_POST['support_request']);
 		$has_donated = ( $_POST['has_donated'] == 'on')?"Donor":"No donation";
+		$has_purchased = ( $_POST['has_purchased'] == 'on')?"Purchaser":"No purchase";		
 		$has_read_faq = ( $_POST['has_read_faq'] == 'on')?"Read FAQ":true; // has no faq, for now.
-		$subject = "My Content Management support request. $has_donated";
+		$subject = "My Content Management support request. $has_donated $has_purchased";
 		$message = $request ."\n\n". $data;
 		$from = "From: \"$current_user->display_name\" <$current_user->user_email>\r\n";
 
@@ -283,6 +280,9 @@ $plugins_string
 		<input type='checkbox' name='has_donated' id='has_donated' value='on' /> <label for='has_donated'>".__('I have <a href="http://www.joedolson.com/donate.php">made a donation to help support this plug-in</a>.',$textdomain )."</label>
 		</p>
 		<p>
+		<input type='checkbox' name='has_purchased' id='has_purchased' value='on' /> <label for='has_purchased'>".__('I have <a href="http://www.joedolson.com/articles/my-content-management/guide/">purchased the User\'s Guide</a>, but could not find an answer to this question.','my-content-management')."</label>
+		</p>		
+		<p>
 		<label for='support_request'>Support Request:</label><br /><textarea name='support_request' id='support_request' cols='80' rows='10'>".stripslashes($request)."</textarea>
 		</p>
 		<p>
@@ -306,7 +306,8 @@ function mcm_add_scripts() {
 }
 
 function mcm_settings_page() {
-global $enabled;
+global $mcm_enabled;
+$enabled = $mcm_enabled;
 $enabled = (isset($_POST['mcm_enabler']))?$_POST['mcm_posttypes']:$enabled;
 ?>
 <div class="wrap">
@@ -376,8 +377,8 @@ $enabled = (isset($_POST['mcm_enabler']))?$_POST['mcm_posttypes']:$enabled;
 		<div class="postbox" id="mcm-settings">
 		<h3><?php _e('Enable Custom Post Types','my-content-management'); ?></h3>
 			<div class="inside">
-			<?php mcm_show_support_box(); ?>			
-
+			<?php mcm_show_support_box(); ?>		
+			<?php mcm_updater(); ?>
 			<form method='post' action='<?php echo admin_url('options-general.php?page=my-content-management/my-content-management.php'); ?>'>
 				<div><input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('my-content-management-nonce'); ?>' /></div>
 				<div>
@@ -405,14 +406,17 @@ $enabled = (isset($_POST['mcm_enabler']))?$_POST['mcm_posttypes']:$enabled;
 }
 function mcm_enabler() {
 	if ( isset($_POST['mcm_enabler']) ) {
+		$nonce=$_REQUEST['_wpnonce'];
+		if (! wp_verify_nonce($nonce,'my-content-management-nonce') ) die("Security check failed");		
 		$enable = $_POST['mcm_posttypes'];
 		$option = get_option('mcm_options');
 		$option['enabled'] = $enable;
 		update_option('mcm_options',$option);
+		echo "<div class='updated fade'><p>".__('Enabled post types updated','my-content-management')."</p></div>";
 	}
 	$option = get_option('mcm_options');
 	$enabled = $option['enabled'];
-	global $types;
+	$types = $option['types'];
 	$checked = '';
 	$return = '';
 	if ( is_array($types) ) {
@@ -420,24 +424,148 @@ function mcm_enabler() {
 			if ( is_array($enabled) ) {
 				if ( in_array( $key, $enabled ) ) { $checked = ' checked="checked"'; } else { $checked = ''; }
 			}
-			$return .= "<li><input type='checkbox' value='$key' name='mcm_posttypes[]' id='mcm_$key'$checked /> <label for='mcm_$key'>$value[3]</label></li>\n";
+			$return .= "<li><input type='checkbox' value='$key' name='mcm_posttypes[]' id='mcm_$key'$checked /> <label for='mcm_$key'>$value[3] <small><a href='".admin_url("options-general.php?page=my-content-management/my-content-management.php&mcm_edit=$key")."'>".__('Edit post type:','my-content-management')." $value[3]</a></small></label></li>\n";
 		}
 	}
 	echo "<ul class='mcm_posttypes'>".$return."</ul>";
 }
 
+function mcm_updater() {
+	if ( isset($_POST['mcm_updater']) ) {
+		$nonce=$_REQUEST['_wpnonce'];
+		if (! wp_verify_nonce($nonce,'my-content-management-nonce') ) die("Security check failed");	
+		if ( !isset($_POST['mcm_new'] ) ) {
+			$type = $_POST['mcm_type'];
+			$option = get_option('mcm_options');
+			$ns = $_POST[$type];
+			$new = array( $ns['pt1'],$ns['pt2'],$ns['pt3'],$ns['pt4'],array( 'public' => ($ns['public']==1)?true:false,
+					'publicly_queryable' => ($ns['publicly_queryable']==1)?true:false,
+					'exclude_from_search'=> ($ns['exclude_from_search']==1)?true:false,
+					'show_ui' => ($ns['show_ui']==1)?true:false,
+					'show_in_menu' => ($ns['show_in_menu']==1)?true:false,
+					'show_ui' => ($ns['show_ui']==1)?true:false, 
+					'menu_icon' => ($ns['menu_icon']=='')?null:$ns['menu_icon'],
+					'supports' => $ns['supports'] ) );
+			$option['types'][$type] = $new;
+			update_option('mcm_options',$option);
+			echo "<div class='updated fade'><p>".__('Post type settings modified.','my-content-management')."</p></div>";
+		} else {
+			$option = get_option('mcm_options');
+			$ns = $_POST['new'];
+			$type = 'mcm_'.sanitize_title($ns['pt1']);			
+			$new = array( $ns['pt1'],$ns['pt2'],$ns['pt3'],$ns['pt4'],array( 'public' => ($ns['public']==1)?true:false,
+					'publicly_queryable' => ($ns['publicly_queryable']==1)?true:false,
+					'exclude_from_search'=> ($ns['exclude_from_search']==1)?true:false,
+					'show_ui' => ($ns['show_ui']==1)?true:false,
+					'show_in_menu' => ($ns['show_in_menu']==1)?true:false,
+					'show_ui' => ($ns['show_ui']==1)?true:false, 
+					'menu_icon' => $ns['menu_icon'],
+					'supports' => $ns['supports'] ) );
+			$option['types'][$type] = $new;
+			update_option('mcm_options',$option);
+			echo "<div class='updated fade'><p>".__('Added new custom post type.','my-content-management')."</p></div>";
+		
+		}
+	}
+	global $mcm_types;
+	$types = $mcm_types;
+	$checked = '';
+	if ( isset($_GET['mcm_edit']) ) { $type = $_GET['mcm_edit']; } else { $type = 'new'; }	
+	$before ="<div class='mcm_edit_post_type'><form method='post' action='".admin_url('options-general.php?page=my-content-management/my-content-management.php')."'>
+				<div><input type='hidden' name='_wpnonce' value='".wp_create_nonce('my-content-management-nonce')."' /></div>			
+				<div>";
+	$post_typing = "<div><input type='hidden' name='mcm_type' value='$type' /></div>";
+	$after = "<p>
+					<input type='submit' value='".__('Edit Custom Post Type','my-content-manager')."' name='mcm_updater' class='button-primary' />
+				</p>
+				</div>
+			</form><a href='".admin_url('options-general.php?page=my-content-management/my-content-management.php&mcm_edit=new')."'>".__('Add new','my-content-management')."</a></div>";
+	$return = '';
+	if ( is_array($types) ) {
+		$data = $types[$type];
+		if ( $data ) {
+			$return = $before;
+			$return .= $post_typing;
+			$return .= "
+			<p><label for='pt1'>".__('Singular Name, lower','my-content-management')."</label><br /><input type='text' name='${type}[pt1]' id='pt1' value='$data[0]' /></p>
+			<p><label for='pt2'>".__('Plural Name, lower','my-content-management')."</label><br /><input type='text' name='${type}[pt2]' id='pt2' value='$data[1]' /></p>
+			<p><label for='pt3'>".__('Singular Name, upper','my-content-management')."</label><br /><input type='text' name='${type}[pt3]' id='pt3' value='$data[2]' /></p>
+			<p><label for='pt4'>".__('Plural Name, upper','my-content-management')."</label><br /><input type='text' name='${type}[pt4]' id='pt4' value='$data[3]' /></p>
+			";
+			foreach ( $data[4] as $key=>$value ) {
+				if ( is_bool( $value ) ) {
+					$checked = ($value == true)?' checked="checked"':'';
+					$return .= "<p><input type='checkbox' name='${type}[$key]' value='1' id='$key'$checked /> <label for='$key'>".ucwords(str_replace('_',' ',$key))."</label></p>";				
+				} else 
+				if ( is_array( $value ) ) {
+					$return .= "<p><label for='$key'>".ucwords(str_replace('_',' ',$key))."</label><br /><select multiple='multiple' name='${type}[${key}][]' id='$key'>";
+					$supports = array( 'title','editor','author','thumbnail','excerpt','trackbacks','custom-fields','comments','revisions','page-attributes','post-formats' );
+					foreach ( $supports as $s ) {
+						$selected = ( in_array( $s, $value ) )?' selected="selected"':'';
+						$return .= "<option value='$s'$selected>$s</option>";
+					}
+					$return .= "</select></p>";
+				} else {
+					$defaults = array( 'mcm_faqs','mcm_people','mcm_testimonials','mcm_locations','mcm_quotes','mcm_glossary','mcm_portfolio','mcm_resources');
+					if ( !$value && in_array( $type, $defaults ) ) { $value = plugins_url( 'images',__FILE__ )."/$type.png"; }
+					$return .= "<p><label for='$key'>".ucwords(str_replace('_',' ',$key))."</label><br /><input type='text' name='${type}[$key]' size='32' value='$value' /></p>";				
+				}
+			}
+			$return .= $after;
+		}
+	}
+	if ( $type == 'new' ) {
+		global $d_mcm_args;
+			$return = $before;
+			$return .= "
+			<p><label for='pt1'>".__('Singular Name, lower','my-content-management')."</label><br /><input type='text' name='new[pt1]' id='pt1' value='' /></p>
+			<p><label for='pt2'>".__('Plural Name, lower','my-content-management')."</label><br /><input type='text' name='new[pt2]' id='pt2' value='' /></p>
+			<p><label for='pt3'>".__('Singular Name, upper','my-content-management')."</label><br /><input type='text' name='new[pt3]' id='pt3' value='' /></p>
+			<p><label for='pt4'>".__('Plural Name, upper','my-content-management')."</label><br /><input type='text' name='new[pt4]' id='pt4' value='' /></p>
+			";
+			foreach ( $d_mcm_args as $key=>$value ) {
+				if ( is_bool( $value ) ) {
+					$checked = ($value == true)?' checked="checked"':'';
+					$return .= "<p><input type='checkbox' name='new[$key]' value='1' id='$key'$checked /> <label for='$key'>".ucwords(str_replace('_',' ',$key))."</label></p>";				
+				} else 
+				if ( is_array( $value ) ) {
+					$return .= "<p><label for='$key'>".ucwords(str_replace('_',' ',$key))."</label><br /><select multiple='multiple' name='new[${key}][]' id='$key'>";
+					$supports = array( 'title','editor','author','thumbnail','excerpt','trackbacks','custom-fields','comments','revisions','page-attributes','post-formats' );
+					foreach ( $supports as $s ) {
+						$selected = ( in_array( $s, $value ) )?' selected="selected"':'';
+						$return .= "<option value='$s'$selected>$s</option>";
+					}
+					$return .= "</select></p>";
+				} else {
+					$return .= "<p><label for='$key'>".ucwords(str_replace('_',' ',$key))."</label><br /><input type='text' name='new[$key]' value='$value' /></p>";				
+				}
+			}
+			$return .= "<p>
+					<input type='hidden' name='mcm_new' value='new' />
+					<input type='submit' value='".__('Add New Custom Post Type','my-content-manager')."' name='mcm_updater' class='button-primary' />
+				</p>
+				</div>
+			</form></div>";
+	}
+	echo "$return";
+}
+
 function mcm_template_setter() {
 	if ( isset($_POST['mcm_save_templates']) ) {
+		$nonce=$_REQUEST['_wpnonce'];
+		if (! wp_verify_nonce($nonce,'my-content-management-nonce') ) die("Security check failed");		
 		$type = $_POST['mcm_post_type'];
 		$option = get_option('mcm_options');
 		$new = $_POST['templates'];
 		$option['templates'][$type] = $new[$type];
 		update_option('mcm_options',$option);
+		echo "<div class='updated fade'><p>".__('Post Type templates updated','my-content-management')."</p></div>";
+		
 	}
 	$option = get_option('mcm_options');
 	$templates = $option['templates'];
 	$enabled = $option['enabled'];
-	global $types, $fields, $extras;
+	$types = $option['types']; $fields = $option['fields']; $extras = $option['extras'];
 	$return = '';
 	$list = array('div','ul','ol','dl','section');
 	$item = array('div','li','article');
@@ -546,11 +674,13 @@ function mcm_option_list( $array, $current ) {
 function mcm_show_support_box() {
 ?>
 	<div id="support">
+		<div class="buy">
+		<a href="http://www.joedolson.com/articles/my-content-management/guide/" rel="external"><?php _e("Buy the User's Guide",'my-content-management'); ?></a>
+		</div>	
 		<div class="resources">
 		<ul>
 		<li><strong><a href="#get-support" rel="external"><?php _e("Get Support",'my-content-management'); ?></a></strong></li>
-		<li><a href="http://www.joedolson.com/articles/bugs/"><?php _e("Report a bug",'my-calendar'); ?></a></li>	
-		<li><strong><a href="http://www.joedolson.com/donate.php" rel="external"><?php _e("Make a Donation",'my-content-management'); ?></a></strong></li>
+		<li><a href="http://www.joedolson.com/articles/bugs/"><?php _e("Report a bug",'my-content-management'); ?></a></li>	
 			<li><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 			<div>
 			<input type="hidden" name="cmd" value="_s-xclick" />
@@ -597,11 +727,28 @@ add_action( 'admin_menu', 'mcm_add_support_page' );
 
 function mcm_plugin_action($links, $file) {
 	if ($file == plugin_basename(dirname(__FILE__).'/my-content-management.php')) {
-		$links[] = "<a href='options-general.php?page=my-content-management/my-content-management.php'>" . __('Get Support', 'my-content-management', 'my-content-management') . "</a>";
+		$links[] = "<a href='options-general.php?page=my-content-management/my-content-management.php'>" . __('Settings', 'my-content-management', 'my-content-management') . "</a>";
 		$links[] = "<a href='http://www.joedolson.com/donate.php'>" . __('Donate', 'my-content-management', 'my-content-management') . "</a>";
 	}
 	return $links;
 }
 //Add Plugin Actions to WordPress
+
+function mcm_add_styles() {
+	if ( file_exists( get_stylesheet_directory() . '/my-content-management.css' ) ) {
+		$stylesheet = get_stylesheet_directory_uri() . '/my-content-management.css';
+		echo "<link rel=\"stylesheet\" href=\"$stylesheet\" type=\"text/css\" media=\"all\" />";
+	} 
+}
+
+function mcm_add_js() {
+	if ( file_exists( get_stylesheet_directory() . '/my-content-management.js' ) ) {
+		$scripts = get_stylesheet_directory_uri() . '/my-content-management.js';
+		echo "<script type='text/javascript' src=\"$scripts\"></script>";
+	} 
+}
+
+add_action( 'wp_footer','mcm_add_js' );
+add_action( 'wp_head','mcm_add_styles' );
 
 add_filter('plugin_action_links', 'mcm_plugin_action', -10, 2);

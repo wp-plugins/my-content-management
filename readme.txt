@@ -1,7 +1,7 @@
 === My Content Management ===
 Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
-Tags: custom post types, faq, testimonials, staff, glossary, sidebars, content management
+Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebars, content management
 Requires at least: 3.2.1
 Tested up to: 3.3.1
 Stable tag: trunk
@@ -18,10 +18,13 @@ I wrote this plug-in so that I have all of these features available to me in a s
 
 There's no default styling outside of whatever your theme offers for the elements used. There is default HTML, but it can be 100% replaced through the included templating system, or by creating your own theme template documents to display these specific content types. 
 
+There's a [User's Guide available for purchase](http://www.joedolson.com/articles/my-content-management/guide/) offering 20 pages of detailed information on how to set up, use, and customize My Content Management.
+
 All content can be displayed using the shortcode [my_content type='custom_post_type']. Other supported attributes include:
 
+* type (single or comma-separated list of types)
 * display (custom, full, excerpt, or list)
-* taxonomy (name of associated taxonomy: required to get list of terms associated with post; include a term to limit by term)
+* taxonomy (slug for associated taxonomy: required to get list of terms associated with post; include a term to limit by term)
 * term (term within named taxonomy)
 * count (number of items to display - default shows all)
 * order (order to show items in - default order is "menu_order" )
@@ -30,6 +33,7 @@ All content can be displayed using the shortcode [my_content type='custom_post_t
 * template ( set to a post type to use a template set by that post type. If "display" equals "custom", write a custom template. )
 * offset (integer: skip a number of posts before display.)
 * id ( comma separated list of IDs to show a set of posts; single ID to show a single post.)
+* cache (integer: number of hours to cache the results of this shortcode)
 
 A search form for any custom post type is accessible using the shortcode [custom_search type='custom_post_type']
 
@@ -41,10 +45,27 @@ The "id" attribute is not supported in the [my_archive] shortcode. Because that 
 
 Translations are always welcome! The translation files are included in the download.
 
+* Spanish (Tom Cloud) [1.1.2]
+
 == Changelog ==
+
+= 1.2.0 =
+
+* Released 4/2/2012
+* Added title as an option for widgets.
+* Added 'cache' attribute to shortcodes. 
+* Added support for showing lists incorporating multiple post types.
+* Added editor for post type settings.
+* Added ability to add new custom post type.
+* Added save notices.
+* Added support for two custom attributes in template tags: "before" and "after".
+* Added Spanish translation.
+* Bug fix: issue with archive shortcode using term name instead of slug.
+* Bug fix: default value for My Content display mode was an invalid value.
 
 = 1.1.2 =
 
+* Released 2/23/2012
 * Made arguments for mcm_content_filter more generic for broader use.
 * Fixed bug where Glossary Filters threw error if Glossary extension was enabled without the Glossary post type.
 * Fixed missing arguments in Custom Post List widget
@@ -121,10 +142,14 @@ Translations are always welcome! The translation files are included in the downl
 
 Hey. This was just launched. Got one to ask?
 
+= I don't really get how to use this plug-in. =
+
+Well, there really isn't one way to use this plug-in. There are many, many different ways to use it. I'd recommend buying the [User's Guide](http://www.joedolson.com/articles/my-content-management/guide/), which will walk you through many of the ways you can use this plug-in. Also, your purchase will help support me! Bonus!
+
 == Screenshots ==
 
 1. Settings Page
 
 == Upgrade Notice ==
 
- * 1.1.2 Fixes variety of bugs with widget lists; adds options to custom post lists widget
+ * 1.2.0 Adds numerous new features. 

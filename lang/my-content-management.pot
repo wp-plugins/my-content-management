@@ -2,35 +2,15 @@
 # This file is distributed under the same license as the My Content Management package.
 msgid ""
 msgstr ""
-"Project-Id-Version: My Content Management 1.1.0\n"
+"Project-Id-Version: My Content Management 1.1.2\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/my-content-management\n"
-"POT-Creation-Date: 2012-01-24 20:26:51+00:00\n"
+"POT-Creation-Date: 2012-03-06 23:37:27+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "PO-Revision-Date: 2012-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-
-#: mcm-widgets.php:7
-msgid "Custom Post Search"
-msgstr ""
-
-#: mcm-widgets.php:24
-msgid "Post type to search"
-msgstr ""
-
-#: mcm-widgets.php:43
-msgid "Custom Post List"
-msgstr ""
-
-#: mcm-widgets.php:60
-msgid "Post type to list"
-msgstr ""
-
-#: mcm-glossary-filter.php:76
-msgid "Back to Top"
-msgstr ""
 
 #: mcm-custom-posts.php:9
 msgid "faq"
@@ -330,10 +310,102 @@ msgid ""
 "%1$s draft updated. <a target=\"_blank\" href=\"%s\">Preview %3$s listing</a>"
 msgstr ""
 
+#: mcm-widgets.php:7
+msgid "Custom Post Search"
+msgstr ""
+
+#: mcm-widgets.php:24
+msgid "Post type to search"
+msgstr ""
+
+#: mcm-widgets.php:49
+msgid "Custom Post List"
+msgstr ""
+
+#: mcm-widgets.php:75
+msgid "Post type to list"
+msgstr ""
+
+#: mcm-widgets.php:86
+msgid "Template"
+msgstr ""
+
+#: mcm-widgets.php:87
+msgid "List"
+msgstr ""
+
+#: mcm-widgets.php:88
+msgid "Excerpt"
+msgstr ""
+
+#: mcm-widgets.php:89
+msgid "Full"
+msgstr ""
+
+#: mcm-widgets.php:93
+msgid "Display order"
+msgstr ""
+
+#: mcm-widgets.php:94
+msgid "Menu Order"
+msgstr ""
+
+#: mcm-widgets.php:95
+msgid "None"
+msgstr ""
+
+#: mcm-widgets.php:96 my-content-management.php:319
+msgid "Post ID"
+msgstr ""
+
+#: mcm-widgets.php:97
+msgid "Author"
+msgstr ""
+
+#: mcm-widgets.php:98
+msgid "Post Title"
+msgstr ""
+
+#: mcm-widgets.php:99
+msgid "Post Date"
+msgstr ""
+
+#: mcm-widgets.php:100
+msgid "Post Modified Date"
+msgstr ""
+
+#: mcm-widgets.php:101
+msgid "Random"
+msgstr ""
+
+#: mcm-widgets.php:102
+msgid "Number of comments"
+msgstr ""
+
+#: mcm-widgets.php:106
+msgid "Number to display"
+msgstr ""
+
+#: mcm-widgets.php:106
+msgid "-1 to display all posts"
+msgstr ""
+
+#: mcm-widgets.php:109
+msgid "Order direction"
+msgstr ""
+
+#: mcm-widgets.php:110
+msgid "Ascending (A-Z)"
+msgstr ""
+
+#: mcm-widgets.php:111
+msgid "Descending (Z-A)"
+msgstr ""
+
 #: my-content-management.php:179
 msgid ""
-"<br /><strong>Note:</strong> Please review the <a class=\"thickbox\" href=\"%"
-"1$s\">changelog</a> before upgrading."
+"<br /><strong>Note:</strong> Please review the <a class=\"thickbox\" href="
+"\"%1$s\">changelog</a> before upgrading."
 msgstr ""
 
 #: my-content-management.php:257
@@ -385,7 +457,7 @@ msgid ""
 "The following additional information will be sent with your support request:"
 msgstr ""
 
-#. #-#-#-#-#  plugin.pot (My Content Management 1.1.0)  #-#-#-#-#
+#. #-#-#-#-#  plugin.pot (My Content Management 1.1.2)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: my-content-management.php:314
 msgid "My Content Management"
@@ -393,10 +465,6 @@ msgstr ""
 
 #: my-content-management.php:316
 msgid "Basic Template Tags"
-msgstr ""
-
-#: my-content-management.php:319
-msgid "Post ID"
 msgstr ""
 
 #: my-content-management.php:322
@@ -584,6 +652,10 @@ msgstr ""
 
 #: my-content-management.php:601
 msgid "Donate"
+msgstr ""
+
+#: my-glossary-filter.php:78
+msgid "Back to Top"
 msgstr ""
 
 #. Plugin URI of the plugin/theme
