@@ -49,6 +49,12 @@ Translations are always welcome! The translation files are included in the downl
 
 == Changelog ==
 
+= 1.2.1 =
+
+* Released 4/7/2012
+* Bug fix: missing argument in widget view function.
+* Bug fix: Didn't actually add the Spanish translation.
+
 = 1.2.0 =
 
 * Released 4/2/2012
