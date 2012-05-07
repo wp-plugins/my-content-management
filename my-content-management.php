@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/articles/my-content-management/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.2.1
+Version: 1.2.2
 */
 /*  Copyright 2011-2012  Joe Dolson (email : joe@joedolson.com)
 
@@ -23,7 +23,7 @@ Version: 1.2.1
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-$mcm_version = '1.2.1';
+$mcm_version = '1.2.2';
 // Enable internationalisation
 load_plugin_textdomain( 'my-content-management',false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
@@ -56,9 +56,11 @@ function mcm_show_posts($atts) {
 				'template' => '',
 				'cache'=> false,
 				'offset'=> false,
-				'id' => false
+				'id' => false,
+				'custom_wrapper'=>'div',
+				'custom' => false
 			), $atts));
-	return mcm_get_show_posts( $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id );
+	return mcm_get_show_posts( $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id, $custom_wrapper, $custom );
 }
 
 function mcm_show_archive($atts) {
@@ -73,11 +75,15 @@ function mcm_show_archive($atts) {
 				'exclude' => '',
 				'template' => '',
 				'offset' => '',
-				'cache' => false
+				'cache' => false,
+				'show_links' => false,
+				'custom_wrapper' => 'div',
+				'custom' => false
 			), $atts));
 			if ( !$type || !$taxonomy ) return;
 		$terms = get_terms( $taxonomy );
 		$output = '';
+		$linker = "<ul class='archive-links'>";
 		$exclude = explode(',',$exclude);
 		if ( is_array($terms) ) {
 			foreach ( $terms as $term ) {
@@ -85,14 +91,17 @@ function mcm_show_archive($atts) {
 				$tax = $term->slug;
 				$tax_class = sanitize_title($tax);
 				if ( !in_array( $tax, $exclude ) ) {
+					$linker .= "<li><a href='#$tax_class'>$taxo</a></li>";
 					$output .= "\n<div class='archive-group'>";
 					$output .= "<h2 class='$tax_class' id='$tax_class'>$taxo</h2>";
-					$output .= mcm_get_show_posts( $type, $display, $taxonomy, $tax, $count, $order, $direction, $meta_key, $template, $cache, $offset, false );
+					$output .= mcm_get_show_posts( $type, $display, $taxonomy, $tax, $count, $order, $direction, $meta_key, $template, $cache, $offset, false, $custom_wrapper, $custom );
 					$output .= "</div>\n";
 				}
 			}
+		$linker .= "</ul>";
 		}
-	return $output;
+		if ( $show_links == false ) { $linker = ''; } else { $linker = $linker; }
+	return $linker . $output;
 }
 
 function mcm_search_custom($atts) {
@@ -111,10 +120,15 @@ add_filter('pre_get_posts','mcm_searchfilter');
 add_filter( 'post_updated_messages', 'mcm_posttypes_messages');
 
 // Actions
-add_action('init', 'mcm_taxonomies', 0);
+add_action( 'init', 'mcm_taxonomies', 0);
 add_action( 'init', 'mcm_posttypes' );
 add_action( 'admin_menu', 'mcm_add_custom_boxes' );
 
+//Theme support -- not having post thumbnails enabled can cause fatal errors when thumbnail is requested by info query.
+function mcm_grant_support() {
+	add_theme_support( 'post-thumbnails' );
+}
+add_action('after_setup_theme','mcm_grant_support');
 
 function mcm_install_plugin() {
 global $default_mcm_types, $default_mcm_fields, $default_mcm_extras;
@@ -146,19 +160,28 @@ $types = $default_mcm_types;
 		'fields' => $default_mcm_fields,
 		'extras' => $default_mcm_extras
 	);
-	add_option( 'mcm_options', $options );
+	if ( get_option( 'mcm_options' ) != '' ) { // this should protect against deleting changes.
+		add_option( 'mcm_options', $options );
+	}
 }
 
 function mcm_upgrade_plugin() {
 //  no upgrade routine for 1.2.0
 	global $mcm_version,$default_mcm_types, $default_mcm_fields, $default_mcm_extras;;
 	$from = get_option('mcm_version');
-	if ( $mcm_version == $from ) return; 
+	if ( $mcm_version == $from ) { return; }
+	switch ( $from ) {
+		case '1.2.1':
+		break;
+		case '1.2.0':
+		default:
 	$options = get_option('mcm_options');
-	$options['types']=$default_mcm_types;
+	$options['types'][]=$default_mcm_types;
 	$options['fields']=$default_mcm_fields;
 	$options['extras']=$default_mcm_extras;
 	update_option( 'mcm_options', $options );
+		break;
+	}
 	update_option( 'mcm_version', $mcm_version );
 }
 
@@ -547,7 +570,7 @@ function mcm_updater() {
 				</div>
 			</form></div>";
 	}
-	echo "$return";
+	echo $return;
 }
 
 function mcm_template_setter() {
@@ -700,7 +723,7 @@ function mcm_show_support_box() {
 
 // Add the administrative settings to the "Settings" menu.
 function mcm_add_support_page() {
-    if ( function_exists( 'add_submenu_page' ) ) {
+    if ( function_exists( 'add_options_page' ) ) {
 		 $plugin_page = add_options_page( 'My Content Management', 'My Content Management', 'manage_options', __FILE__, 'mcm_settings_page' );
 		 add_action( 'admin_head-'. $plugin_page, 'mcm_styles' );
     }

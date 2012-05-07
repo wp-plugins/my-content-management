@@ -174,9 +174,10 @@ function mcm_save_postdata($post_id, $post) {
 
 	// verify this came from the our screen and with proper authorization,
 	// because save_post can be triggered at other times
-	if ( ! wp_verify_nonce( $_POST['mcm_nonce_name'], plugin_basename(__FILE__) ) ) {
-		return $post->ID;
-	}
+	if ( isset( $_POST['mcm_nonce_name'] ) ) {
+		if ( ! wp_verify_nonce( $_POST['mcm_nonce_name'], plugin_basename(__FILE__) ) ) {
+			return $post->ID;
+		}
 	// Is the user allowed to edit the post or page?
 	if ( 'page' == $_POST['post_type'] ) {
 		if ( ! current_user_can( 'edit_page', $post->ID )) {
@@ -210,10 +211,11 @@ function mcm_save_postdata($post_id, $post) {
 			} else {
 				// Custom field does not have a value.
 				add_post_meta($post->ID, $key, $value);
-		}
-		if (!$value) {
-			// delete blanks
-			delete_post_meta($post->ID, $key);
+			}
+			if (!$value) {
+				// delete blanks
+				delete_post_meta($post->ID, $key);
+			}
 		}
 	}
 }
@@ -246,6 +248,7 @@ $d_mcm_args = array(
 				'show_in_menu' => true,
 				'show_ui' => true, 
 				'menu_icon' => null,
+				'hierarchical'=>true,
 				'supports' => array('title','editor','author','thumbnail','excerpt','custom-fields')
 			);
 

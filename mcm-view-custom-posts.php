@@ -11,8 +11,9 @@
 @template = template name or template if $display = 'custom'
 @offset = number of items to skip
 @id = specific post ID
+@custom = custom variable; can be anything
 */
-function mcm_get_show_posts(  $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id ) {
+function mcm_get_show_posts(  $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id, $custom_wrapper, $custom ) {
 global $mcm_templates, $mcm_types;
 $templates = $mcm_templates; $types = $mcm_types;
 	$the_cache == false;
@@ -42,8 +43,9 @@ $templates = $mcm_templates; $types = $mcm_types;
 		} else {
 			$wrapper = ( $template != '' )?$template:$primary;
 		}
-	if ($taxonomy != 'all') { // I have a feeling that this is a problem. 
-		//if (strpos($taxonomy,'mcm_')===0) {} else { $taxonomy = 'mcm_'.$taxonomy; }
+	if ($taxonomy != 'all') {
+		$tax_root = str_replace( 'category_','',$taxonomy );
+		if ( strpos( $taxonomy,'mcm_' )===0 && !in_array( $tax_root, $keys ) ) {} else { $taxonomy = 'mcm_'.$taxonomy; }
 	}
 	// get wrapper element
 	if ( $display == 'custom' ) {
@@ -110,14 +112,16 @@ $templates = $mcm_templates; $types = $mcm_types;
 						}
 					}
 				}
-			if ( isset($p['_email']) ) { $p['_email'] = apply_filters('mcm_munge',$p['_email'], $p['_email'] ); }
+			if ( isset($p['_email']) ) { $p['_email'] = apply_filters('mcm_munge',$p['_email'], $p['_email'], $custom ); }
 			// use this filter to insert any additional custom template tags required		
-			$p = apply_filters('mcm_extend_posts', $p, $p );
+			$p = apply_filters('mcm_extend_posts', $p, $p, $custom );
 			// This filter is used to insert alphabetical headings. You can probably find another use for it.
-			$return = apply_filters('mcm_filter_posts',$return, $p, $last_term, $elem, $type, $first );
+			$return = apply_filters('mcm_filter_posts',$return, $p, $last_term, $elem, $type, $first, $last_post, $custom );
 			$first = false;
 			$last_term = get_the_title();
-			$return .= mcm_run_template( $p, $display, $column, $wrapper );
+			$last_post = $p;
+			$this_post = mcm_run_template( $p, $display, $column, $wrapper );
+			$return .= apply_filters('mcm_filter_post',$this_post, $p, $custom );
 			switch ($column) {
 				case 'odd':	$column = 'even';	break;
 				case 'even': $column = 'odd';	break;
@@ -157,10 +161,10 @@ $templates = $mcm_templates; $types = $mcm_types;
 						}
 					}
 				}
-			if ( isset($p['_email']) ) { $p['_email'] = apply_filters('mcm_munge',$p['_email'], $p['_email'] ); }
-			$p = apply_filters('mcm_extend_posts', $p, $p );
-			$return .= mcm_run_template( $p, $display, $column, $wrapper );
-			$return .= $wrapper;
+			if ( isset($p['_email']) ) { $p['_email'] = apply_filters('mcm_munge',$p['_email'], $p['_email'], $custom ); }
+			$p = apply_filters('mcm_extend_posts', $p, $p, $custom );
+			$this_post = mcm_run_template( $p, $display, $column, $wrapper );
+			$return .= apply_filters('mcm_filter_post',$this_post, $p, $custom );
 			switch ($column) {
 				case 'odd':	$column = 'even';	break;
 				case 'even': $column = 'odd';	break;
@@ -177,7 +181,11 @@ $templates = $mcm_templates; $types = $mcm_types;
 		$back
 		</div>";
 	} else {
-		$return = "<div class='mcm_posts $primary $display'>$return</div>";
+		if ( $custom_wrapper != '' ) {
+			$return = "<$custom_wrapper class='mcm_posts $primary $display'>$return</$custom_wrapper>";
+		} else {
+			$return = $return;
+		}
 	}
 	$return = str_replace("\r\n",'',$return);		
 		if ( $cache != false ) { 
@@ -290,9 +298,10 @@ function mcm_draw_template( $array,$template ) {
 function mcm_draw_template( $array='',$template='' ) {
 	//1st argument: array of details
 	//2nd argument: template to print details into
+	$template = stripcslashes($template);
 	foreach ($array as $key=>$value) {
 		if ( !is_object($value) ) {
-			preg_match_all('/{'.$key.'\b(?>\s+(?:before="([^"]*)"|after="([^"]*)")|[^\s]+|\s+){0,2}}/', $template, $matches );
+			preg_match_all('/{'.$key.'\b(?>\s+(?:before="([^"]*)"|after="([^"]*)")|[^\s]+|\s+){0,2}}/', $template, $matches, PREG_PATTERN_ORDER );
 			if ( $matches ) {
 				$before = $matches[1][0];
 				$after = $matches[2][0];

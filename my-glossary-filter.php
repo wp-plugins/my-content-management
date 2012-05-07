@@ -70,8 +70,8 @@ function mcm_set_glossary() {
 
 add_action( 'publish_mcm_glossary', 'mcm_set_glossary', 20 );		
 
-function mcm_filter_glossary_list( $return, $post, $last_term, $elem, $type, $first ) {
-	if ( $type != 'mcm_glossary' ) return $return;
+function mcm_filter_glossary_list( $return, $post, $last_term, $elem, $type, $first, $last_post, $custom ) {
+	if ( $type != 'mcm_glossary' && $type != 'glossary' ) return $return;
 	$this_letter = strtolower( substr( get_the_title( $post->ID ), 0, 1 ) );
 	$last_letter = strtolower( substr( $last_term, 0, 1 ) );
 	
@@ -82,33 +82,35 @@ function mcm_filter_glossary_list( $return, $post, $last_term, $elem, $type, $fi
 	return $return;
 }
 
-add_filter( 'mcm_filter_posts','mcm_filter_glossary_list', 10, 6 );
+add_filter( 'mcm_filter_posts','mcm_filter_glossary_list', 10, 8 );
 
 function mcm_glossary_filter($content) {
-	$words = get_option( 'mcm_glossary' );
-	if ( !is_array( $words ) ) {
-		$words = mcm_set_glossary();
-	}
-	if ( !is_singular( 'mcm_glossary' ) ) {
-		$content = " $content ";
-		if ( is_array($words) ) {
-			foreach( $words as $key=>$value ) {
-				$term = $key;
-				$link = $value;
-				$content = preg_replace("|(?!<[^<>]*?)(?<![?./&])\b$term\b(?!:)(?![^<>]*?>)|msU","<a href=\"$link\">$term</a>" , $content);
-			}
+	$post_types = get_post_types();
+	if ( in_array( 'mcm_glossary',$post_types ) ) {
+		$words = get_option( 'mcm_glossary' );
+		if ( !is_array( $words ) ) {
+			$words = mcm_set_glossary();
 		}
-		return trim( $content );
-	} else {
-		return $content;
+		if ( !is_singular( 'mcm_glossary' ) ) {
+			$content = " $content ";
+			if ( is_array($words) ) {
+				foreach( $words as $key=>$value ) {
+					$term = $key;
+					$link = $value;
+					$content = preg_replace("|(?!<[^<>]*?)(?<![?./&])\b$term\b(?!:)(?![^<>]*?>)|msU","<a href=\"$link\">$term</a>" , $content);
+				}
+			}
+			return trim( $content );
+		} else {
+			return $content;
+		}
 	}
 }
-$post_types = get_post_types();
-if ( in_array( 'mcm_glossary',$post_types ) ) {
-	add_filter('the_content', 'mcm_glossary_filter', 18);
-	add_filter('comment_text', 'mcm_glossary_filter', 18);
-	add_shortcode('term','mcm_glossary_link');
-}
+
+add_filter('the_content', 'mcm_glossary_filter', 10);
+add_filter('comment_text', 'mcm_glossary_filter', 10);
+add_shortcode('term','mcm_glossary_link');
+
 function mcm_glossary_link($atts) {
 	extract(shortcode_atts(array(
 				'id' => '',
