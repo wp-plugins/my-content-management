@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: My Content Management - Glossary Filter
-Version: 1.2.2
+Version: 1.2.3
 Plugin URI: http://www.joedolson.com/articles/my-content-management/
 Description: Adds custom glossary features: filters content for links to terms, etc. Companion plug-in to My Content Management.
 Author: Joseph C. Dolson
@@ -97,7 +97,7 @@ function mcm_glossary_filter($content) {
 				foreach( $words as $key=>$value ) {
 					$term = $key;
 					$link = $value;
-					$content = preg_replace("|(?!<[^<>]*?)(?<![?./&])\b$term\b(?!:)(?![^<>]*?>)|msU","<a href=\"$link\">$term</a>" , $content);
+					$content = preg_replace( "|(?!<[^<>]*?)(?<![?./&])\b$term\b(?!:)(?![^<>]*?>)|msU","<a href=\"$link\">$term</a>" , $content, 2 );
 				}
 			}
 			return trim( $content );
@@ -105,6 +105,7 @@ function mcm_glossary_filter($content) {
 			return $content;
 		}
 	}
+	return $content;
 }
 
 add_filter('the_content', 'mcm_glossary_filter', 10);

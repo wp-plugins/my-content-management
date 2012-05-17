@@ -12,8 +12,9 @@
 @offset = number of items to skip
 @id = specific post ID
 @custom = custom variable; can be anything
+@operator = IN, NOT IN, or AND
 */
-function mcm_get_show_posts(  $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id, $custom_wrapper, $custom ) {
+function mcm_get_show_posts(  $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id, $custom_wrapper, $custom, $operator ) {
 global $mcm_templates, $mcm_types;
 $templates = $mcm_templates; $types = $mcm_types;
 	$the_cache == false;
@@ -30,22 +31,35 @@ $templates = $mcm_templates; $types = $mcm_types;
 	$post_types = explode( ',', $type );
 	$types = array();
 	foreach ( $post_types as $t ) {
-		if ( !in_array($t,$keys) && in_array('mcm_'.$t,$keys ) ) { // second argument negative in tot
+		if ( !in_array($t,$keys,true) && in_array('mcm_'.$t,$keys,true ) ) { // second argument negative in tot
 			$types[] = 'mcm_'.$t;
 		} else {
 			$types[] = $t;
 		}
 	}
 	$primary = $types[0];
-		if ( !in_array($primary,$keys) && !in_array('mcm_'.$primary,$keys ) ) {
+		if ( !in_array($primary,$keys,true) && !in_array('mcm_'.$primary,$keys,true ) ) {
 			$wrapper = ( $template != '' )?$template:'mcm_people';
 			$mcm = false;		
 		} else {
 			$wrapper = ( $template != '' )?$template:$primary;
 		}
 	if ($taxonomy != 'all') {
-		$tax_root = str_replace( 'category_','',$taxonomy );
-		if ( strpos( $taxonomy,'mcm_' )===0 && !in_array( $tax_root, $keys ) ) {} else { $taxonomy = 'mcm_'.$taxonomy; }
+		$taxonomies = explode( ',', $taxonomy );
+		$taxes = array();
+		foreach ( $taxonomies as $tax ) {
+			$search = array( 'category_' );
+			$tax_root = str_replace( $search,'',$taxonomy );
+			if ( in_array( $tax_root, $keys, true ) ) { 
+				$taxes[] = $tax; 
+			} else { 
+				if ( in_array( 'mcm_'.$tax,$keys,true ) ) {
+					$taxes[] = 'mcm_'.$tax;
+				} else {
+					$taxes[] = $tax;
+				}
+			}
+		}
 	}
 	// get wrapper element
 	if ( $display == 'custom' ) {
@@ -60,22 +74,39 @@ $templates = $mcm_templates; $types = $mcm_types;
 		wp_reset_query();
 		$args = array( 'post_type' => $types, 'posts_per_page'=>$count, 'orderby'=>$order, 'order'=>$direction );
 		if ( $offset != false ) { $args['offset']= (int) $offset; }
-		if ($taxonomy != 'all' && $term !='' && strpos( $taxonomy, ',') === false ) { $args['tax_query'] = array( array( 'taxonomy' => $taxonomy, 'field' => 'slug', 'terms' => $term ) ); }
+		// if there is a taxonomy, and there's a term, but just one taxonomy
+		if ($taxonomy != 'all' && strpos( $taxonomy, ',') === false ) {
+			if ( $term == '' ) {
+				// don't include the query if no terms
+			} else {
+				if ( strpos($term, ',' ) !== false ) {
+					$term = explode( ',',$term );
+				}
+				$args['tax_query'] = array( array( 'taxonomy' => $taxes[0], 'field' => 'slug', 'terms' => $term, 'operator'=>$operator ) ); 
+			}
+		}
+		// if there are multiple taxonomies and multiple terms
 		if ( strpos( $taxonomy, ',' ) !== false && strpos($term, ',' ) !== false ) {
-			$taxonomies = explode( ',', $taxonomy );
 			$terms = explode( ',', $term );
 			$i = 0;
 			$tax_query = array();
-			foreach ( $taxonomies as $t ) {
-				$array = array( 'taxonomy' => $t, 'field' => 'slug', 'terms' => $terms[$i] );
+			foreach ( $taxes as $t ) {
+				$array = array( 'taxonomy' => $t, 'field' => 'slug', 'terms' => $terms[$i], 'operator'=>$operator );
 				$tax_query[] = $array;
 				$i++;
 			}
 			$tax_query['relation']='AND';
 			$args['tax_query'] = $tax_query; 
 		}
-		
+
 		if ( $order == 'meta_value' || $order == 'meta_value_num' ) { $args['meta_key'] = $meta_key; }
+		
+		$debug = false;
+		if ( $debug ) {
+		echo "<pre>";
+		print_r($args);
+		echo "</pre>";
+		}
 		$loop = new WP_Query( $args );
 		$column = 'odd';
 		$last_term = false;
@@ -97,7 +128,8 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$p['title'] = get_the_title();
 			$p['shortlink'] = wp_get_shortlink();
 			$p['modified'] = get_the_modified_date();
-			$p['date'] = get_the_date();
+			$p['date'] = get_the_time( get_option('date_format') );
+			$p['fulldate'] = get_the_time( 'F j, Y' );
 			$p['author'] = get_the_author();
 				$postclass = implode( ' ',get_post_class() );
 			$p['postclass'] = $postclass;
@@ -147,6 +179,7 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$p['shortlink'] = wp_get_shortlink( $the_post->ID );
 			$p['modified'] = date( get_option('date_format'), strtotime( $the_post->post_modified ) );
 			$p['date'] = date( get_option('date_format'), strtotime( $the_post->post_date ) );
+			$p['fulldate'] = date( 'F j, Y', strtotime( $the_post->post_date ) );		
 			$p['author'] = get_the_author_meta( 'display_name', $the_post->post_author );
 				$postclass = implode( ' ',get_post_class( '',$the_post->ID ) );
 			$p['postclass'] = $postclass;				

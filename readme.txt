@@ -3,7 +3,7 @@ Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebars, content management
 Requires at least: 3.2.1
-Tested up to: 3.3.2
+Tested up to: 3.4-beta4
 Stable tag: trunk
 
 Creates a set of common custom post types for advanced content management: FAQ, Testimonials, people (staff, contributors, etc.), and others!
@@ -26,6 +26,7 @@ All content can be displayed using the shortcode [my_content type='custom_post_t
 * display (custom, full, excerpt, or list)
 * taxonomy (slug for associated taxonomy: required to get list of terms associated with post; include a term to limit by term)
 * term (term within named taxonomy)
+* operator (IN, NOT IN, or AND) == how to treat the selected terms. Choose posts with that term, without that term, or using all terms supplied.
 * count (number of items to display - default shows all)
 * order (order to show items in - default order is "menu_order" )
 * direction (whether sort is ascending, "ASC", or descending, "DESC" (default))
@@ -41,6 +42,7 @@ A search form for any custom post type is accessible using the shortcode [custom
 You can create a site map for a specific post type and taxonomy using the [my_archive type='custom_post_type' taxonomy='taxonomy'] shortcode. Other supported attributes include all those above, plus:
 
 * exclude (list of comma-separated taxonomy terms to exclude from the site map)
+* include (list of comma-separated taxonomy terms to show on the site map)
 
 The "id" attribute is not supported in the [my_archive] shortcode. (Because that would be silly.) The [my_archive] shortcode does support a "show_links" attribute which will turn on a navigation list to navigate to each displayed category.
 
@@ -49,6 +51,17 @@ Translations are always welcome! The translation files are included in the downl
 * Spanish (Tom Cloud) [1.1.2]
 
 == Changelog ==
+
+= 1.2.3 =
+
+* Released 5/17/2012
+* Adjusted glossary filter to only link the first two instances of a glossary term on a given page.
+* Added 'include' filter for My Archive shortcode.
+* Added 'operator' option for Terms (values: in term, not in term, in all terms)
+* Adjusted taxonomy and post-type checks to more easily handle types/taxonomies not created by MCM
+* Bug fix: shortcut taxonomy post types not recognized.
+* Fixed installation error which did not create default custom post types.
+* Fixed bug in glosssary plug-in which filtered out content if Glossary post type not enabled.
 
 = 1.2.2 =
 

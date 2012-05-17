@@ -71,7 +71,7 @@ class mcm_posts_widget extends WP_Widget {
 		$order = ( $instance['order'] == '' )?'menu_order':$instance['order'];
 		$direction = ( $instance['direction'] == '' )?'asc':$instance['direction'];
 		//  $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id. $custom_wrapper, $custom
-		$custom = mcm_get_show_posts( $post_type, $display, 'all', '', $count, $order, $direction, '', '', false, false, false, 'div', '' );
+		$custom = mcm_get_show_posts( $post_type, $display, 'all', '', $count, $order, $direction, '', '', false, false, false, 'div', '','IN' );
 		echo $before_widget;
 		echo $widget_title;
 		echo $custom;
