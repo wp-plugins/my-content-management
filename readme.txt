@@ -52,6 +52,11 @@ Translations are always welcome! The translation files are included in the downl
 
 == Changelog ==
 
+= 1.2.4 =
+
+* Resolved bug with empty custom fields not resulting in replaced template tags.
+* Added missing email address filter
+
 = 1.2.3 =
 
 * Released 5/17/2012

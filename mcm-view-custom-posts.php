@@ -343,7 +343,19 @@ function mcm_draw_template( $array='',$template='' ) {
 			}
 		} 
 	}
-	return stripslashes(trim($template));
+	return stripslashes( trim( mc_clean_template($template) ) );
+}
+// function cleans unreplaced template tags out of the template. 
+// Necessary for custom fields, which do not exist in array if empty.
+function mc_clean_template( $template ) {
+	preg_match_all('/{[\w]*\b(?>\s+(?:before="([^"]*)"|after="([^"]*)")|[^\s]+|\s+){0,2}}/', $template, $matches, PREG_PATTERN_ORDER );
+
+	if ( $matches ) {
+		foreach ( $matches[0] as $match ) {
+		$template = str_replace( $match, '', $template );
+		}
+	}
+	return $template;
 }
 
 function mcm_search_form( $post_type ) {
@@ -374,7 +386,7 @@ function mcm_searchfilter($query) {
 		return $query;
 	}
 }
-
+add_filter( 'mcm_munge','mcm_munge', 10, 3 );
 function mcm_munge($address) {
     $address = strtolower($address);
     $coded = "";
