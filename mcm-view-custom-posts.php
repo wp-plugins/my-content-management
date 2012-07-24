@@ -14,12 +14,17 @@
 @custom = custom variable; can be anything
 @operator = IN, NOT IN, or AND
 */
-function mcm_get_show_posts(  $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id, $custom_wrapper, $custom, $operator ) {
+
+function mcm_get_single_post( $type, $id ) {
+	return mcm_get_show_posts( $type, 'full', 'all','','','','','','','','',$id,'','','','','','','' );
+}
+
+function mcm_get_show_posts(  $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id, $custom_wrapper, $custom, $operator, $year='', $month='', $week='', $day='' ) {
 global $mcm_templates, $mcm_types;
 $templates = $mcm_templates; $types = $mcm_types;
-	$the_cache == false;
+	$the_cache = false;
 	if ( $cache != false ) {
-		$cache_key = md5( $type . $display . $taxonomy . $term . $count . $order . $direction . $meta_key . $template . $offset . $id );
+		$cache_key = md5( $type . $display . $taxonomy . $term . $count . $order . $direction . $meta_key . $template . $offset . $id . $year . $month . $week . $day);
 		$the_cache = get_transient( "mcm_$cache_key" );
 	}
 	if ( $the_cache ) { 
@@ -53,7 +58,7 @@ $templates = $mcm_templates; $types = $mcm_types;
 			if ( in_array( $tax_root, $keys, true ) ) { 
 				$taxes[] = $tax; 
 			} else { 
-				if ( in_array( 'mcm_'.$tax,$keys,true ) ) {
+				if ( in_array( 'mcm_'.$tax_root,$keys,true ) ) {
 					$taxes[] = 'mcm_'.$tax;
 				} else {
 					$taxes[] = $tax;
@@ -69,10 +74,17 @@ $templates = $mcm_templates; $types = $mcm_types;
 		$elem = ( isset($templates[$wrapper]['wrapper']['list'][$display]) )?$templates[$wrapper]['wrapper']['list'][$display]:'div';	
 	}
 	$wrapper = trim($wrapper);
+	$column = 'odd';
+	$return = '';
+	
 	if ( $id == false ) {
 		// set up arguments for loop
 		wp_reset_query();
 		$args = array( 'post_type' => $types, 'posts_per_page'=>$count, 'orderby'=>$order, 'order'=>$direction );
+		if ( $year != '' ) { $args['year'] = (int) $year; }
+		if ( $month != '' ) { $args['monthnum'] = (int) $month; }
+		if ( $day != '' ) { $args['day'] = (int) $day; }
+		if ( $week != '' ) { $args['w'] = (int) $week; }
 		if ( $offset != false ) { $args['offset']= (int) $offset; }
 		// if there is a taxonomy, and there's a term, but just one taxonomy
 		if ($taxonomy != 'all' && strpos( $taxonomy, ',') === false ) {
@@ -108,13 +120,16 @@ $templates = $mcm_templates; $types = $mcm_types;
 		echo "</pre>";
 		}
 		$loop = new WP_Query( $args );
-		$column = 'odd';
 		$last_term = false;
+		$last_post = false;
 		$first = true;
 		while ( $loop->have_posts() ) : $loop->the_post();
 			$p = array();
 			$id = get_the_ID();
 			$p['id'] = $id;
+			$p['permalink'] = get_permalink();
+			$p['link_title'] = "<a href='".get_permalink()."'>".get_the_title()."</a>";			
+			$p['title'] = get_the_title();			
 			$p['excerpt'] = wpautop( get_the_excerpt() );
 			$p['excerpt_raw'] = get_the_excerpt();
 			$p['content'] = do_shortcode( wpautop( get_the_content() ) );
@@ -123,9 +138,6 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$p['medium'] = get_the_post_thumbnail( $id, 'medium', array( 'class'=>'mcm_medium', 'alt'=>trim( strip_tags( get_the_title( $id ) ) ), 'title'=>'' ) );
 			$p['large'] = get_the_post_thumbnail( $id, 'large', array( 'class'=>'mcm_large', 'alt'=>trim( strip_tags( get_the_title( $id ) ) ), 'title'=>'' ) );
 			$p['full'] = get_the_post_thumbnail( $id, 'full', array( 'class'=>'mcm_large', 'alt'=>trim( strip_tags( get_the_title( $id ) ) ), 'title'=>'' ) );
-			$p['permalink'] = get_permalink();
-			$p['link_title'] = "<a href='".get_permalink()."'>".get_the_title()."</a>";			
-			$p['title'] = get_the_title();
 			$p['shortlink'] = wp_get_shortlink();
 			$p['modified'] = get_the_modified_date();
 			$p['date'] = get_the_time( get_option('date_format') );
@@ -255,6 +267,7 @@ function mcm_run_template( $post, $display, $column, $type ) {
 global $mcm_templates; $templates = $mcm_templates;
 	$return = '';
 	$post['column'] = $column;
+	$postclass = $post['postclass'];
 	switch ( $display ) {
 		case 'custom':
 			$template = $type;
@@ -336,10 +349,11 @@ function mcm_draw_template( $array='',$template='' ) {
 		if ( !is_object($value) ) {
 			preg_match_all('/{'.$key.'\b(?>\s+(?:before="([^"]*)"|after="([^"]*)")|[^\s]+|\s+){0,2}}/', $template, $matches, PREG_PATTERN_ORDER );
 			if ( $matches ) {
-				$before = $matches[1][0];
-				$after = $matches[2][0];
+				$before = ( isset( $matches[1][0] ) )?$matches[1][0]:'';
+				$after = ( isset( $matches[2][0] ) )?$matches[2][0]:'';
 				$value = ( $value == '' )?'':$before.$value.$after;
-				$template = str_replace( $matches[0][0], $value, $template );
+				$whole_thang = ( isset( $matches[0][0] ) )?$matches[0][0]:'';
+				$template = str_replace( $whole_thang, $value, $template );
 			}
 		} 
 	}

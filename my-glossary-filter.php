@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: My Content Management - Glossary Filter
-Version: 1.2.4
+Version: 1.2.4\5
 Plugin URI: http://www.joedolson.com/articles/my-content-management/
 Description: Adds custom glossary features: filters content for links to terms, etc. Companion plug-in to My Content Management.
 Author: Joseph C. Dolson
@@ -86,12 +86,15 @@ add_filter( 'mcm_filter_posts','mcm_filter_glossary_list', 10, 8 );
 
 function mcm_glossary_filter($content) {
 	$post_types = get_post_types();
+        global $post;
+		$id = $post->ID;
+		$ng = get_post_custom_values( '_nogloss',$id );	// Set a custom field called '_nogloss' to 'no' on any post to deactivate glossary filtering.
 	if ( in_array( 'mcm_glossary',$post_types ) ) {
 		$words = get_option( 'mcm_glossary' );
 		if ( !is_array( $words ) ) {
 			$words = mcm_set_glossary();
 		}
-		if ( !is_singular( 'mcm_glossary' ) ) {
+		if ( !is_singular( 'mcm_glossary' ) && $ng[0] != 'No' ) {
 			$content = " $content ";
 			if ( is_array($words) ) {
 				foreach( $words as $key=>$value ) {

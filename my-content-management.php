@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/articles/my-content-management/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.2.4
+Version: 1.2.5
 */
 /*  Copyright 2011-2012  Joe Dolson (email : joe@joedolson.com)
 
@@ -23,7 +23,7 @@ Version: 1.2.4
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-$mcm_version = '1.2.4';
+$mcm_version = '1.2.5';
 // Enable internationalisation
 load_plugin_textdomain( 'my-content-management',false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
@@ -55,13 +55,17 @@ function mcm_show_posts($atts) {
 				'direction' => 'DESC',
 				'meta_key' => '',
 				'template' => '',
+				'year' => '',
+				'month' => '',
+				'week' => '',
+				'day' => '',
 				'cache'=> false,
 				'offset'=> false,
 				'id' => false,
 				'custom_wrapper'=>'div',
 				'custom' => false
 			), $atts));
-	return mcm_get_show_posts( $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id, $custom_wrapper, $custom, $operator );
+	return mcm_get_show_posts( $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id, $custom_wrapper, $custom, $operator, $year, $month, $week, $day );
 }
 
 function mcm_show_archive($atts) {
@@ -80,7 +84,11 @@ function mcm_show_archive($atts) {
 				'cache' => false,
 				'show_links' => false,
 				'custom_wrapper' => 'div',
-				'custom' => false
+				'custom' => false,
+				'year' => '',
+				'month' => '',
+				'week' => '',
+				'day' => ''
 			), $atts));
 			if ( !$type || !$taxonomy ) return;
 		$terms = get_terms( $taxonomy );
@@ -99,7 +107,7 @@ function mcm_show_archive($atts) {
 					$linker .= "<li><a href='#$tax_class'>$taxo</a></li>";
 					$output .= "\n<div class='archive-group'>";
 					$output .= "<h2 class='$tax_class' id='$tax_class'>$taxo</h2>";
-					$output .= mcm_get_show_posts( $type, $display, $taxonomy, $tax, $count, $order, $direction, $meta_key, $template, $cache, $offset, false, $custom_wrapper, $custom, 'IN' );
+					$output .= mcm_get_show_posts( $type, $display, $taxonomy, $tax, $count, $order, $direction, $meta_key, $template, $cache, $offset, false, $custom_wrapper, $custom, 'IN', $year, $month, $week, $day );
 					$output .= "</div>\n";
 				}
 			}
@@ -110,17 +118,20 @@ function mcm_show_archive($atts) {
 }
 
 // filter to auto replace content with full template
-add_filter('the_content','mcm_replace_content', 10, 2);
+add_filter( 'the_content','mcm_replace_content', 10, 2 );
 function mcm_replace_content( $content ) {
-	if ( is_single() && ( is_singular( 'post' ) || is_singular( 'page' ) ) ) { 
-		return $content; 
+	global $template;
+	$post_type = get_post_type();
+	$mcm_options = get_option('mcm_options');
+	if ( strpos( $template, $post_type ) !== false ) { return $content; }
+	$enabled = $mcm_options['enabled'];
+	if ( is_singular( $enabled ) ) {
+		$id = get_the_ID();
+		$template = mcm_get_single_post( $post_type, $id );
+		return $template;
 	} else {
-		$template = "";
-			// get_mcm_post_info($id);
-			// draw_templates($array);
-			// return $content;
+		return $content;
 	}
-	return $content;
 }
 
 function mcm_search_custom($atts) {
@@ -235,12 +246,20 @@ get_currentuserinfo();
 	$php_version = phpversion();
 
 	// theme data
-	$theme_path = get_stylesheet_directory().'/style.css';
+	if ( function_exists( 'wp_get_theme' ) ) {
+	$theme = wp_get_theme();
+		$theme_name = $theme->Name;
+		$theme_uri = $theme->ThemeURI;
+		$theme_parent = $theme->Template;
+		$theme_version = $theme->Version;	
+	} else {
+	$theme_path = get_stylesheet_directory().'/style.css';	
 	$theme = get_theme_data($theme_path);
 		$theme_name = $theme['Name'];
 		$theme_uri = $theme['URI'];
 		$theme_parent = $theme['Template'];
 		$theme_version = $theme['Version'];
+	}
 	// plugin data
 
 	$plugins = get_plugins();
@@ -281,6 +300,7 @@ Version: $theme_version
 ==Active Plugins:==
 $plugins_string
 ";
+	$request = '';
 	if ( isset($_POST['mc_support']) ) {
 		$nonce=$_REQUEST['_wpnonce'];
 		if (! wp_verify_nonce($nonce,'my-content-management-nonce') ) die("Security check failed");	
@@ -313,7 +333,7 @@ $plugins_string
 		__('Please note: I do keep records of donations, but if your donation came from somebody other than your account at this web site, please note this in your message.',$textdomain )
 		."</p>
 		<p>
-		<code>".__('From:','my-content-management')." \"$current_user->display_name\" &lt;$current_user->user_email&gt;</code>
+		<code>".__('From:','my-content-management')." \"$current_user->display_name\" &lt;$current_user->user_email&gt;</code> &larr; ".__('Can\'t get email at this address? Provide a different one below.','my-content-management')."
 		</p>
 		<!--<p>
 		<input type='checkbox' name='has_read_faq' id='has_read_faq' value='on' /> <label for='has_read_faq'>".__('I have read <a href="http://www.joedolson.com/articles/my-content-management/">the FAQ for this plug-in</a>.',$textdomain )." <span>(required)</span></label>
@@ -463,10 +483,12 @@ function mcm_enabler() {
 	$return = '';
 	if ( is_array($types) ) {
 		foreach ( $types as $key=>$value ) {
-			if ( is_array($enabled) ) {
-				if ( in_array( $key, $enabled ) ) { $checked = ' checked="checked"'; } else { $checked = ''; }
+			if ( $key && !is_int($key) ) {
+				if ( is_array($enabled) ) {
+					if ( in_array( $key, $enabled ) ) { $checked = ' checked="checked"'; } else { $checked = ''; }
+				}
+				$return .= "<li><input type='checkbox' value='$key' name='mcm_posttypes[]' id='mcm_$key'$checked /> <label for='mcm_$key'>$value[3] <small><a href='".admin_url("options-general.php?page=my-content-management/my-content-management.php&mcm_edit=$key")."'>".__('Edit post type:','my-content-management')." $value[3]</a></small></label></li>\n";
 			}
-			$return .= "<li><input type='checkbox' value='$key' name='mcm_posttypes[]' id='mcm_$key'$checked /> <label for='mcm_$key'>$value[3] <small><a href='".admin_url("options-general.php?page=my-content-management/my-content-management.php&mcm_edit=$key")."'>".__('Edit post type:','my-content-management')." $value[3]</a></small></label></li>\n";
 		}
 	}
 	echo "<ul class='mcm_posttypes'>".$return."</ul>";
@@ -480,31 +502,33 @@ function mcm_updater() {
 			$type = $_POST['mcm_type'];
 			$option = get_option('mcm_options');
 			$ns = $_POST[$type];
-			$new = array( $ns['pt1'],$ns['pt2'],$ns['pt3'],$ns['pt4'],array( 'public' => ($ns['public']==1)?true:false,
-					'publicly_queryable' => ($ns['publicly_queryable']==1)?true:false,
-					'exclude_from_search'=> ($ns['exclude_from_search']==1)?true:false,
-					'show_ui' => ($ns['show_ui']==1)?true:false,
-					'show_in_menu' => ($ns['show_in_menu']==1)?true:false,
-					'show_ui' => ($ns['show_ui']==1)?true:false, 
+			$new = array( $ns['pt1'],$ns['pt2'],$ns['pt3'],$ns['pt4'],array( 'public' => ( isset($ns['public']) && $ns['public'] == 1 )?true:false,
+					'publicly_queryable' => ( isset($ns['publicly_queryable']) && $ns['hierarchical'] == 1 )?true:false,
+					'exclude_from_search'=> ( isset($ns['exclude_from_search']) && $ns['exclude_from_search']==1)?true:false,
+					'show_in_menu' => ( isset($ns['show_in_menu']) && $ns['show_in_menu'] == 1 )?true:false,
+					'show_ui' => ( isset($ns['show_ui']) && $ns['show_ui'] == 1 )?true:false, 
+					'hierarchical' => ( isset($ns['hierarchical']) && $ns['hierarchical'] == 1 )?true:false,
 					'menu_icon' => ($ns['menu_icon']=='')?null:$ns['menu_icon'],
-					'supports' => $ns['supports'] ) );
+					'supports' => $ns['supports'],
+					'slug' => $ns['slug'] ) );
 			$option['types'][$type] = $new;
-			update_option('mcm_options',$option);
+			update_option('mcm_options',$option);			
 			echo "<div class='updated fade'><p>".__('Post type settings modified.','my-content-management')."</p></div>";
 		} else {
 			$option = get_option('mcm_options');
 			$ns = $_POST['new'];
 			$type = 'mcm_'.sanitize_title($ns['pt1']);			
-			$new = array( $ns['pt1'],$ns['pt2'],$ns['pt3'],$ns['pt4'],array( 'public' => ($ns['public']==1)?true:false,
-					'publicly_queryable' => ($ns['publicly_queryable']==1)?true:false,
-					'exclude_from_search'=> ($ns['exclude_from_search']==1)?true:false,
-					'show_ui' => ($ns['show_ui']==1)?true:false,
-					'show_in_menu' => ($ns['show_in_menu']==1)?true:false,
-					'show_ui' => ($ns['show_ui']==1)?true:false, 
+			$new = array( $ns['pt1'],$ns['pt2'],$ns['pt3'],$ns['pt4'],array( 'public' => ( isset($ns['public']) && $ns['public'] == 1 )?true:false,
+					'publicly_queryable' => ( isset($ns['publicly_queryable']) && $ns['hierarchical'] == 1 )?true:false,
+					'exclude_from_search'=> ( isset($ns['exclude_from_search']) && $ns['exclude_from_search']==1)?true:false,
+					'show_in_menu' => ( isset($ns['show_in_menu']) && $ns['show_in_menu'] == 1 )?true:false,
+					'show_ui' => ( isset($ns['show_ui']) && $ns['show_ui'] == 1 )?true:false,
+					'hierarchical' => ( isset($ns['hierarchical']) && $ns['hierarchical'] == 1 )?true:false,					
 					'menu_icon' => $ns['menu_icon'],
-					'supports' => $ns['supports'] ) );
+					'supports' => $ns['supports'],
+					'slug' => $ns['slug'] ) );
 			$option['types'][$type] = $new;
-			update_option('mcm_options',$option);
+			update_option('mcm_options',$option);		
 			echo "<div class='updated fade'><p>".__('Added new custom post type.','my-content-management')."</p></div>";
 		
 		}
@@ -524,15 +548,20 @@ function mcm_updater() {
 			</form><a href='".admin_url('options-general.php?page=my-content-management/my-content-management.php&mcm_edit=new')."'>".__('Add new','my-content-management')."</a></div>";
 	$return = '';
 	if ( is_array($types) ) {
-		$data = $types[$type];
+		if ( $type != 'new' ) {
+			$data = $types[$type];
+		} else {
+			$data = false;
+		}
 		if ( $data ) {
+			if ( !isset($data[4]['slug']) ) { $data[4]['slug'] = $type; }
 			$return = $before;
 			$return .= $post_typing;
 			$return .= "
 			<p><label for='pt1'>".__('Singular Name, lower','my-content-management')."</label><br /><input type='text' name='${type}[pt1]' id='pt1' value='$data[0]' /></p>
 			<p><label for='pt2'>".__('Plural Name, lower','my-content-management')."</label><br /><input type='text' name='${type}[pt2]' id='pt2' value='$data[1]' /></p>
 			<p><label for='pt3'>".__('Singular Name, upper','my-content-management')."</label><br /><input type='text' name='${type}[pt3]' id='pt3' value='$data[2]' /></p>
-			<p><label for='pt4'>".__('Plural Name, upper','my-content-management')."</label><br /><input type='text' name='${type}[pt4]' id='pt4' value='$data[3]' /></p>
+			<p><label for='pt4'>".__('Plural Name, upper','my-content-management')."</label><br /><input type='text' name='${type}[pt4]' id='pt4' value='$data[3]' /></p>			
 			";
 			foreach ( $data[4] as $key=>$value ) {
 				if ( is_bool( $value ) ) {
@@ -549,8 +578,8 @@ function mcm_updater() {
 					$return .= "</select></p>";
 				} else {
 					$defaults = array( 'mcm_faqs','mcm_people','mcm_testimonials','mcm_locations','mcm_quotes','mcm_glossary','mcm_portfolio','mcm_resources');
-					if ( !$value && in_array( $type, $defaults ) ) { $value = plugins_url( 'images',__FILE__ )."/$type.png"; }
-					$return .= "<p><label for='$key'>".ucwords(str_replace('_',' ',$key))."</label><br /><input type='text' name='${type}[$key]' size='32' value='$value' /></p>";				
+					if ( !$value && in_array( $type, $defaults ) && $key=='menu_icon' ) { $value = plugins_url( 'images',__FILE__ )."/$type.png"; }
+					$return .= "<p><label for='$key'>".ucwords(str_replace('_',' ',$key))."</label> <input type='text' name='${type}[$key]' size='32' value='$value' /></p>";				
 				}
 			}
 			$return .= $after;
@@ -579,7 +608,7 @@ function mcm_updater() {
 					}
 					$return .= "</select></p>";
 				} else {
-					$return .= "<p><label for='$key'>".ucwords(str_replace('_',' ',$key))."</label><br /><input type='text' name='new[$key]' value='$value' /></p>";				
+					$return .= "<p><label for='$key'>".ucwords(str_replace('_',' ',$key))."</label> <input type='text' name='new[$key]' value='$value' /></p>";				
 				}
 			}
 			$return .= "<p>
@@ -655,7 +684,7 @@ function mcm_template_setter() {
 			<div>
 			<fieldset>
 			<legend>Full</legend>
-			<p>Sample shortcode: <code>[my_content type='$display_value' display='full' taxonomy='category_$display_value' order='menu_order']</code></p>
+			<p>Sample shortcode: <code>[my_content type='$display_value' display='full' taxonomy='mcm_category_$display_value' order='menu_order']</code></p>
 			<p class='wrappers'>
 			<label for='mcm_full_list_wrapper_$value'>".__('List Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][list][full]' id='mcm_full_list_wrapper_$value'>".mcm_option_list( $list, $template['wrapper']['list']['full'] )."</select><br />
 			<label for='mcm_full_item_wrapper_$value'>".__('Item Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][item][full]' id='mcm_full_itemwrapper_$value'>".mcm_option_list( $item, $template['wrapper']['item']['full'] )."</select>
@@ -718,7 +747,7 @@ function mcm_show_support_box() {
 	<div id="support">
 		<div class="buy">
 		<a href="http://www.joedolson.com/articles/my-content-management/guide/" rel="external"><?php _e("Buy the User's Guide",'my-content-management'); ?></a>
-		</div>	
+		</div>
 		<div class="resources">
 		<ul>
 		<li><strong><a href="#get-support" rel="external"><?php _e("Get Support",'my-content-management'); ?></a></strong></li>
@@ -727,7 +756,7 @@ function mcm_show_support_box() {
 			<div>
 			<input type="hidden" name="cmd" value="_s-xclick" />
 			<input type="hidden" name="hosted_button_id" value="YP36SWZTDQAUL" />
-			<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" name="submit" alt="Make a gift to support My Content Management!" />
+			<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" name="submit" alt="Make a gift to support My Content Management!" />
 			<img alt="" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1" />
 			</div>
 			</form>

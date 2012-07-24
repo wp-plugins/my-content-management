@@ -3,7 +3,8 @@ Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebars, content management
 Requires at least: 3.2.1
-Tested up to: 3.4-beta4
+Tested up to: 3.4
+License: GPLv2 or later
 Stable tag: trunk
 
 Creates a set of common custom post types for advanced content management: FAQ, Testimonials, people (staff, contributors, etc.), and others!
@@ -36,6 +37,10 @@ All content can be displayed using the shortcode [my_content type='custom_post_t
 * offset (integer: skip a number of posts before display.)
 * id ( comma separated list of IDs to show a set of posts; single ID to show a single post.)
 * cache (integer: number of hours to cache the results of this shortcode)
+* year (integer)
+* month (integer, 1-12)
+* week (integer, 0-53)
+* day (integer, 1-31)
 
 A search form for any custom post type is accessible using the shortcode [custom_search type='custom_post_type']
 
@@ -46,11 +51,19 @@ You can create a site map for a specific post type and taxonomy using the [my_ar
 
 The "id" attribute is not supported in the [my_archive] shortcode. (Because that would be silly.) The [my_archive] shortcode does support a "show_links" attribute which will turn on a navigation list to navigate to each displayed category.
 
-Translations are always welcome! The translation files are included in the download.
+Translating my plug-ins is always appreciated. Visit <a href="http://translate.joedolson.com">my translations site</a> to start getting your language into shape!
 
 * Spanish (Tom Cloud) [1.1.2]
 
 == Changelog ==
+
+= 1.2.5 =
+
+* Added options for limiting by year, month, week, and day to shortcode.
+* Added ability to edit the URL slug used by each custom post type.
+* Added limiting by category to widget.
+* Added automatic filtering of custom post types single-post view to use Full template as defined in back-end. 
+* Fixed a variety of minor bugs. 
 
 = 1.2.4 =
 
@@ -187,4 +200,4 @@ Well, there really isn't one way to use this plug-in. There are many, many diffe
 
 == Upgrade Notice ==
 
- * 1.2.0 Adds numerous new features. 
+ * 1.2.5 A few new features, a couple of bug fixes.

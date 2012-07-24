@@ -70,8 +70,11 @@ class mcm_posts_widget extends WP_Widget {
 		$count = ( $instance['count'] == '' )?-1:(int) $instance['count'];
 		$order = ( $instance['order'] == '' )?'menu_order':$instance['order'];
 		$direction = ( $instance['direction'] == '' )?'asc':$instance['direction'];
+		$term = ( isset( $instance['term'] ) )?'':$instance['term'];
+		
 		//  $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id. $custom_wrapper, $custom
-		$custom = mcm_get_show_posts( $post_type, $display, 'all', '', $count, $order, $direction, '', '', false, false, false, 'div', '','IN' );
+		$taxonomy = str_replace( 'mcm_','mcm_category_',$post_type );
+		$custom = mcm_get_show_posts( $post_type, $display, $taxonomy, $term, $count, $order, $direction, '', '', false, false, false, 'div', '','IN' );
 		echo $before_widget;
 		echo $widget_title;
 		echo $custom;
@@ -87,6 +90,7 @@ class mcm_posts_widget extends WP_Widget {
 		$direction = esc_attr($instance['direction']);		
 		$order = esc_attr($instance['order']);
 		$title = esc_attr($instance['title']);
+		$term = ( isset($instance['term']) )?esc_attr($instance['term']):'';		
 	?>
 		<p>
 		<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title','my-content-management'); ?>:</label><br />
@@ -131,6 +135,10 @@ class mcm_posts_widget extends WP_Widget {
 		<option value='modified'<?php echo ($direction == 'asc')?' selected="selected"':''; ?>><?php _e('Ascending (A-Z)','my-content-management'); ?></option>
 		<option value='rand'<?php echo ($direction == 'desc')?' selected="selected"':''; ?>><?php _e('Descending (Z-A)','my-content-management'); ?></option>
 		</select>
+		</p>
+		<p>
+		<label for="<?php echo $this->get_field_id('term'); ?>"><?php _e('Category (single term or comma-separated list)','my-content-management'); ?>:</label><br />
+		<input class="widefat" type="text" id="<?php echo $this->get_field_id('term'); ?>" name="<?php echo $this->get_field_name('term'); ?>" value="<?php echo $term; ?>"/>
 		</p>		
 	<?php
 	}
@@ -143,6 +151,7 @@ class mcm_posts_widget extends WP_Widget {
 		$instance['direction'] = strip_tags($new_instance['direction']);
 		$instance['count'] = ( $new_instance['count']== '' )?-1:(int) $new_instance['count'];
 		$instance['title'] = strip_tags($new_instance['title']);
+		$instance['term'] = strip_tags($new_instance['term']);		
 		return $instance;		
 	}
 }

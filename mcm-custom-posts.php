@@ -23,6 +23,7 @@ function mcm_posttypes() {
 				'parent_item_colon' => ''
 			);
 			$raw = $value[4];
+			$slug = ( !isset($raw['slug']) || $raw['slug'] == '' )?$key:$raw['slug'];
 			$args = array(
 				'labels' => $labels,
 				'public' => $raw['public'],
@@ -33,7 +34,7 @@ function mcm_posttypes() {
 				'show_ui' => $raw['show_ui'], 
 				'menu_icon' => ($raw['menu_icon']==null)?plugins_url('images',__FILE__)."/$key.png":$raw['menu_icon'],
 				'query_var' => true,
-				'rewrite' => array('with_front'=>false),
+				'rewrite' => array('slug'=>$slug,'with_front'=>false),
 				'hierarchical' => $raw['hierarchical'],
 				'menu_position' => 20,
 				'supports' => $raw['supports']
@@ -249,7 +250,8 @@ $d_mcm_args = array(
 				'show_ui' => true, 
 				'menu_icon' => null,
 				'hierarchical'=>true,
-				'supports' => array('title','editor','author','thumbnail','excerpt','custom-fields')
+				'supports' => array('title','editor','author','thumbnail','excerpt','custom-fields'),
+				'slug' => ''
 			);
 
 $default_mcm_types = array( 
