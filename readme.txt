@@ -3,7 +3,7 @@ Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebars, content management
 Requires at least: 3.2.1
-Tested up to: 3.4
+Tested up to: 3.4.2
 License: GPLv2 or later
 Stable tag: trunk
 
@@ -56,6 +56,16 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 * Spanish (Tom Cloud) [1.1.2]
 
 == Changelog ==
+
+= 1.2.6 =
+
+* Bug fix: could not enable 'hierarchical' without disabling 'publicly_queryable'
+* Bug fix: New post types display default templates instead of blank.
+* Change: Edit button indicates what is being edited
+* Change: add new form only visible on demand
+* Added: support for has_archive in post type.
+* Added option to delete custom post types.
+* Performance improvement in template interpreter
 
 = 1.2.5 =
 

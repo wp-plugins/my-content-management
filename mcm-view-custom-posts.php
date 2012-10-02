@@ -347,13 +347,15 @@ function mcm_draw_template( $array='',$template='' ) {
 	$template = stripcslashes($template);
 	foreach ($array as $key=>$value) {
 		if ( !is_object($value) ) {
-			preg_match_all('/{'.$key.'\b(?>\s+(?:before="([^"]*)"|after="([^"]*)")|[^\s]+|\s+){0,2}}/', $template, $matches, PREG_PATTERN_ORDER );
-			if ( $matches ) {
-				$before = ( isset( $matches[1][0] ) )?$matches[1][0]:'';
-				$after = ( isset( $matches[2][0] ) )?$matches[2][0]:'';
-				$value = ( $value == '' )?'':$before.$value.$after;
-				$whole_thang = ( isset( $matches[0][0] ) )?$matches[0][0]:'';
-				$template = str_replace( $whole_thang, $value, $template );
+			if ( strpos( $template, "{".$key ) !== false ) { // only check for tag parts that exist
+				preg_match_all('/{'.$key.'\b(?>\s+(?:before="([^"]*)"|after="([^"]*)")|[^\s]+|\s+){0,2}}/', $template, $matches, PREG_PATTERN_ORDER );
+				if ( $matches ) {
+					$before = ( isset( $matches[1][0] ) )?$matches[1][0]:'';
+					$after = ( isset( $matches[2][0] ) )?$matches[2][0]:'';
+					$value = ( $value == '' )?'':$before.$value.$after;
+					$whole_thang = ( isset( $matches[0][0] ) )?$matches[0][0]:'';
+					$template = str_replace( $whole_thang, $value, $template );
+				}
 			}
 		} 
 	}

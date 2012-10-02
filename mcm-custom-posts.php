@@ -37,6 +37,7 @@ function mcm_posttypes() {
 				'rewrite' => array('slug'=>$slug,'with_front'=>false),
 				'hierarchical' => $raw['hierarchical'],
 				'menu_position' => 20,
+				'has_archive' => true,
 				'supports' => $raw['supports']
 			); 
 			register_post_type($key,$args);
