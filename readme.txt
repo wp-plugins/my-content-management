@@ -57,6 +57,11 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Changelog ==
 
+= 1.2.7 =
+
+* Bug fix: Widget category limits did not work.
+* Bug fix: Widget saving of template type did not work. 
+
 = 1.2.6 =
 
 * Bug fix: could not enable 'hierarchical' without disabling 'publicly_queryable'

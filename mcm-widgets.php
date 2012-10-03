@@ -70,8 +70,7 @@ class mcm_posts_widget extends WP_Widget {
 		$count = ( $instance['count'] == '' )?-1:(int) $instance['count'];
 		$order = ( $instance['order'] == '' )?'menu_order':$instance['order'];
 		$direction = ( $instance['direction'] == '' )?'asc':$instance['direction'];
-		$term = ( isset( $instance['term'] ) )?'':$instance['term'];
-		
+		$term = ( !isset( $instance['term'] ) )?'':$instance['term'];
 		//  $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id. $custom_wrapper, $custom
 		$taxonomy = str_replace( 'mcm_','mcm_category_',$post_type );
 		$custom = mcm_get_show_posts( $post_type, $display, $taxonomy, $term, $count, $order, $direction, '', '', false, false, false, 'div', '','IN' );
@@ -100,9 +99,9 @@ class mcm_posts_widget extends WP_Widget {
 		<label for="<?php echo $this->get_field_id('mcm_posts_widget_post_type'); ?>"><?php _e('Post type to list','my-content-management'); ?></label> <select id="<?php echo $this->get_field_id('mcm_posts_widget_post_type'); ?>" name="<?php echo $this->get_field_name('mcm_posts_widget_post_type'); ?>">
 	<?php
 		foreach( $enabled as $v ) {
-			$display = ucfirst( str_replace( 'mcm_','',$v ) );
+			$dis = ucfirst( str_replace( 'mcm_','',$v ) );
 			$selected = ($post_type == $v)?' selected="selected"':'';
-			echo "<option value='$v'$selected>$display</option>";
+			echo "<option value='$v'$selected>$dis</option>";
 		}
 	?>
 		</select>
