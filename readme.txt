@@ -57,6 +57,11 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Changelog ==
 
+= 1.2.8 =
+
+* Bug fix: if no custom post types were enabled, 'full' template was rendered on all singular posts/pages.
+* Bug fix: embed filter did not run in custom post type templates
+
 = 1.2.7 =
 
 * Bug fix: Widget category limits did not work.

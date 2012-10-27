@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/articles/my-content-management/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.2.7
+Version: 1.2.8
 */
 /*  Copyright 2011-2012  Joe Dolson (email : joe@joedolson.com)
 
@@ -23,7 +23,7 @@ Version: 1.2.7
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-$mcm_version = '1.2.7';
+$mcm_version = '1.2.8';
 // Enable internationalisation
 load_plugin_textdomain( 'my-content-management',false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
@@ -125,7 +125,7 @@ function mcm_replace_content( $content ) {
 	$mcm_options = get_option('mcm_options');
 	if ( strpos( $template, $post_type ) !== false ) { return $content; }
 	$enabled = $mcm_options['enabled'];
-	if ( is_singular( $enabled ) ) {
+	if ( $enabled && is_singular( $enabled ) ) {
 		$id = get_the_ID();
 		$template = mcm_get_single_post( $post_type, $id );
 		return $template;
@@ -801,6 +801,7 @@ function mcm_show_support_box() {
 			</li>
 			<li><a href="http://profiles.wordpress.org/users/joedolson/"><?php _e('Check out my other plug-ins','my-content-management'); ?></a></li>
 			<li><a href="http://wordpress.org/extend/plugins/my-content-management/"><?php _e('Rate this plug-in','my-content-management'); ?></a></li>
+			<li><a href='http://translate.joedolson.com/projects/my-content-management'><?php _e('Help translate this plug-in','my-content-management'); ?></a></li>
 		</ul>
 		</div>
 	</div>

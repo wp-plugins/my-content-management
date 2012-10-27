@@ -53,18 +53,18 @@ function mcm_posttypes_messages( $messages ) {
 			$value = $types[$key];
 			$messages[$key] = array(
 				0 => '', // Unused. Messages start at index 1.
-				1 => sprintf( __('%1$s Listing updated. <a href="%2$s">View %1$s listing</a>'), $value[2], esc_url( get_permalink($post_ID) ) ),
-				2 => __('Custom field updated.'),
-				3 => __('Custom field deleted.'),
-				4 => sprintf( __('%s listing updated.'), $value[2] ),
+				1 => sprintf( __('%1$s Listing updated. <a href="%2$s">View %1$s listing</a>','my-content-management'), $value[2], esc_url( get_permalink($post_ID) ) ),
+				2 => __('Custom field updated.','my-content-management'),
+				3 => __('Custom field deleted.','my-content-management'),
+				4 => sprintf( __('%s listing updated.','my-content-management'), $value[2] ),
 				/* translators: %s: date and time of the revision */
-				5 => isset($_GET['revision']) ? sprintf( __('%1$s restored to revision from %2$ss'), $value[2], wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-				6 => sprintf( __('%1$s published. <a href="%2$s">View %3$s listing</a>'), $value[2], esc_url( get_permalink($post_ID) ), $value[0] ),
-				7 => sprintf( __('Product listing saved.'), $value[2] ),
-				8 => sprintf( __('%1$s listing submitted. <a target="_blank" href="%2$s">Preview %3$s listing</a>'), $value[2], esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ), $value[0] ),
-				9 => sprintf( __('%1$s listing scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview %3$s item</a>'),
+				5 => isset($_GET['revision']) ? sprintf( __('%1$s restored to revision from %2$ss','my-content-management'), $value[2], wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+				6 => sprintf( __('%1$s published. <a href="%2$s">View %3$s listing</a>','my-content-management'), $value[2], esc_url( get_permalink($post_ID) ), $value[0] ),
+				7 => sprintf( __('Product listing saved.','my-content-management'), $value[2] ),
+				8 => sprintf( __('%1$s listing submitted. <a target="_blank" href="%2$s">Preview %3$s listing</a>','my-content-management'), $value[2], esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ), $value[0] ),
+				9 => sprintf( __('%1$s listing scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview %3$s item</a>','my-content-management'),
 				  $value[2], date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ), esc_url( get_permalink($post_ID) ), $value[0] ),
-				10 => sprintf( __('%1$s draft updated. <a target="_blank" href="%s">Preview %3$s listing</a>'), $value[2], esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ), $value[0] ),
+				10 => sprintf( __('%1$s draft updated. <a target="_blank" href="%s">Preview %3$s listing</a>','my-content-management'), $value[2], esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ), $value[0] ),
 			);
 		}
 	}
