@@ -236,6 +236,8 @@ Well, there really isn't just one way to use this plug-in. There are many, many 
 == Screenshots ==
 
 1. Settings Page
+2. Custom fields management
+3. Assign custom fields to post types.
 
 == Upgrade Notice ==
 
