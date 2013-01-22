@@ -83,13 +83,13 @@ class mcm_posts_widget extends WP_Widget {
 	function form($instance) {
 		global $mcm_enabled;
 		$enabled = $mcm_enabled;
-		$post_type = esc_attr($instance['mcm_posts_widget_post_type']);
-		$display = esc_attr($instance['display']);
-		$count = (int) $instance['count'];
-		$direction = esc_attr($instance['direction']);		
-		$order = esc_attr($instance['order']);
-		$title = esc_attr($instance['title']);
-		$term = ( isset($instance['term']) )?esc_attr($instance['term']):'';		
+		$post_type = isset( $instance['mcm_posts_widget_post_type'] ) ? esc_attr($instance['mcm_posts_widget_post_type']) : '';
+		$display = isset( $instance['display'] ) ? esc_attr($instance['display']) : '';
+		$count = isset( $instance['count'] ) ? (int) $instance['count'] : -1;
+		$direction = isset( $instance['direction'] ) ? esc_attr($instance['direction']) : '';
+		$order = isset( $instance['order'] )? esc_attr($instance['order']) : '';
+		$title = isset( $instance['title'] ) ? esc_attr($instance['title']) : '';
+		$term = isset($instance['term']) ? esc_attr($instance['term']) : '';		
 	?>
 		<p>
 		<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title','my-content-management'); ?>:</label><br />

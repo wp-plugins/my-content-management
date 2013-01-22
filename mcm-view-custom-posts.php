@@ -133,7 +133,7 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$p['excerpt'] = wpautop( get_the_excerpt() );
 			$p['excerpt_raw'] = get_the_excerpt();
 			remove_filter('the_content','mcm_replace_content');
-			$p['content'] = apply_filters('the_content',get_the_content() );
+			$p['content'] = apply_filters('the_content',get_the_content(), get_the_ID() );
 			add_filter('the_content','mcm_replace_content');
 			$p['content_raw'] = get_the_content();
 			$p['thumbnail'] = get_the_post_thumbnail( $id, 'thumbnail', array( 'class'=>'mcm_thumbnail', 'alt'=>trim( strip_tags( get_the_title( $id ) ) ), 'title'=>'' ) );
@@ -145,20 +145,24 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$p['date'] = get_the_time( get_option('date_format') );
 			$p['fulldate'] = get_the_time( 'F j, Y' );
 			$p['author'] = get_the_author();
+			$p['edit_link'] = get_edit_post_link($id) ? "<a href='".get_edit_post_link($id)."'>".__( 'Edit', 'my-content-management' )."</a>" : "";	
 				$postclass = implode( ' ',get_post_class() );
 			$p['postclass'] = $postclass;
 			$p['terms'] = ($taxonomy != 'all')?get_the_term_list( $id, $taxonomy,'',', ','' ):'';
 			$custom_fields = get_post_custom();
 				foreach ( $custom_fields as $key=>$value ) {
+					$is_email = ( stripos( $key, 'email' ) !== false )?true:false;
 					if ( is_array( $value ) ) {
 						if ( is_array( $value[0] ) ) {
-							$p[$key] = explode( ", ", $value[0] );
+							foreach( $value[0] as $val ) {
+								$cfield[] = ( $is_email )?apply_filters('mcm_munge',$val,$val, $custom ):$val;
+							}
+							$p[$key] = explode( ", ", $cfield );
 						} else {
-							$p[$key] = $value[0];
+							$p[$key] = ( $is_email )?apply_filters('mcm_munge',$value[0],$value[0], $custom ):$value[0];
 						}
 					}
 				}
-			if ( isset($p['_email']) ) { $p['_email'] = apply_filters('mcm_munge',$p['_email'], $p['_email'], $custom ); }
 			// use this filter to insert any additional custom template tags required		
 			$p = apply_filters('mcm_extend_posts', $p, $p, $custom );
 			// This filter is used to insert alphabetical headings. You can probably find another use for it.
@@ -183,7 +187,7 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$p['excerpt_raw'] = $the_post->post_excerpt;
 			//$p['content'] = do_shortcode( wpautop( $the_post->post_content ) );
 			remove_filter('the_content','mcm_replace_content');
-			$p['content'] = apply_filters('the_content', $the_post->post_content );	
+			$p['content'] = apply_filters('the_content', $the_post->post_content, $the_post->ID );	
 			add_filter('the_content','mcm_replace_content');
 			$p['content_raw'] = $the_post->post_content;
 			$p['thumbnail'] = get_the_post_thumbnail( $the_post->ID, 'thumbnail', array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
@@ -198,20 +202,24 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$p['date'] = date( get_option('date_format'), strtotime( $the_post->post_date ) );
 			$p['fulldate'] = date( 'F j, Y', strtotime( $the_post->post_date ) );		
 			$p['author'] = get_the_author_meta( 'display_name', $the_post->post_author );
-				$postclass = implode( ' ',get_post_class( '',$the_post->ID ) );
+			$p['edit_link'] = get_edit_post_link($the_post->ID) ? "<a href='".get_edit_post_link($the_post->ID)."'>".__( 'Edit', 'my-content-management' )."</a>" : "";
+			$postclass = implode( ' ',get_post_class( '',$the_post->ID ) );
 			$p['postclass'] = $postclass;				
 			$p['terms'] = ($taxonomy != 'all')?get_the_term_list( $the_post->ID, $taxonomy,'',', ','' ):'';
 			$custom_fields = get_post_custom( $the_post->ID );
 				foreach ( $custom_fields as $key=>$value ) {
+					$is_email = ( stripos( $key, 'email' ) !== false )?true:false;
 					if ( is_array( $value ) ) {
 						if ( is_array( $value[0] ) ) {
-							$p[$key] = explode( ", ", $value[0] );
+							foreach( $value[0] as $val ) {
+								$cfield[] = ( $is_email )?apply_filters('mcm_munge',$val,$val,$custom ):$val;
+							}
+							$p[$key] =  explode( ", ", $cfield );
 						} else {
-							$p[$key] = $value[0];
+							$p[$key] =  ( $is_email )?apply_filters('mcm_munge',$value[0],$value[0], $custom ):$value[0];
 						}
 					}
 				}
-			if ( isset($p['_email']) ) { $p['_email'] = apply_filters('mcm_munge',$p['_email'], $p['_email'], $custom ); }
 			$p = apply_filters('mcm_extend_posts', $p, $p, $custom );
 			$this_post = mcm_run_template( $p, $display, $column, $wrapper );
 			$return .= apply_filters('mcm_filter_post',$this_post, $p, $custom );
@@ -221,7 +229,7 @@ $templates = $mcm_templates; $types = $mcm_types;
 			}
 		}
 	}
-	if ( $elem != '' ) { $front = "<$elem class='list-wrapper'>"; $back = "</$elem>"; } else { $elem = $unelem = '';}
+	if ( $elem != '' ) { $front = "<$elem class='list-wrapper'>"; $back = "</$elem>"; } else { $elem = $unelem = $front = $back = '';}
 	
 	if ( $display != 'custom' ) {
 	$return = "
@@ -458,7 +466,6 @@ shift+key.length) % key.length\n".
 	"document.write(\"<a href='mailto:\"+link+\"'>\"+link+\"</a>\")\n" .
 	"\n".
         "//-"."->\n" .
-        "<" . "/script><noscript>N/A" .
-	"<"."/noscript>";
+        "<" . "/script>";
     return $txt;
 }

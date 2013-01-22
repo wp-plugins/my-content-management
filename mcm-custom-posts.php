@@ -39,6 +39,8 @@ function mcm_posttypes() {
 				'menu_position' => 20,
 				'has_archive' => true,
 				'supports' => $raw['supports']
+				//'map_meta_cap'=>true,
+				//'capability_type'=>array( $value[4],$value[3] )
 			); 
 			register_post_type($key,$args);
 		}
@@ -98,7 +100,15 @@ global $mcm_fields, $mcm_extras;
 $fields = $mcm_fields; $extras = $mcm_extras;
 	if ( is_array($fields) ) {
 		foreach ( $fields as $key=>$value ) {
-			mcm_add_custom_box( array($key=>$value),$extras[$key][0],$extras[$key][1] );
+			if ( isset($extras[$key]) && is_array( $extras[$key][0] ) ) {
+				foreach ( $extras[$key][0] as $k ) {
+					mcm_add_custom_box( array($key=>$value),$k,$extras[$key][1] );
+				} 
+			} else {
+				if ( isset( $extras[$key] ) ) {
+					mcm_add_custom_box( array($key=>$value),$extras[$key][0],$extras[$key][1] );
+				}
+			}
 		}
 	}
 }
@@ -107,7 +117,8 @@ $fields = $mcm_fields; $extras = $mcm_extras;
 function mcm_add_custom_box( $fields,$post_type='post',$location='side' ) {
     if ( function_exists( 'add_meta_box' ) ) {
         foreach ( array_keys( $fields ) as $field ) {
-            add_meta_box( $field, __( $field, 'sp' ), 'mcm_build_custom_box', $post_type, $location, 'default', $fields );
+			//$id = sanitize_title($field);
+            add_meta_box( $field, $field, 'mcm_build_custom_box', $post_type, $location, 'default', $fields );
 			//echo "$field, $post_type, $location, $fields";
         }
     }
@@ -116,6 +127,7 @@ function mcm_add_custom_box( $fields,$post_type='post',$location='side' ) {
 function mcm_build_custom_box( $post, $fields ) {
 	static $nonce_flag = false;
 	// Run once
+	echo "<div class='mcm_post_fields'>";
 	if ( !$nonce_flag ) {
 		mcm_echo_nonce();
 		mcm_echo_hidden($fields['args'][$fields['id']]);
@@ -126,7 +138,8 @@ function mcm_build_custom_box( $post, $fields ) {
 	foreach ( $fields['args'][$fields['id']] as $field ) {
 		echo mcm_field_html( $field );
 		$i++;
-	}	
+	}
+	echo "<br class='clear' /></div>";
 }
 // this switch statement specifies different types of meta boxes
 // you can add more types if you add a case and a corresponding function
@@ -135,22 +148,52 @@ function mcm_field_html( $args ) {
 	switch ( $args[3] ) {
 		case 'textarea':
 			return mcm_text_area( $args );
+		case 'select':
+			return mcm_select( $args );		
 		default:
-			return mcm_text_field( $args );
+			return mcm_text_field( $args, $args[3] );
 	}
 }
+
+function mcm_create_options( $choices, $selected, $type='select' ) {
+	$return = '';
+	if (is_array($choices) ) {
+		foreach($choices as $value ) {
+			$v = esc_attr($value);
+			if ( $type == 'select' ) {
+				$chosen = ( $v == $selected )?' selected="selected"':'';
+				$return .= "<option value='$value'$chosen>$value</option>";
+			} 
+		}
+	}
+	return $return;
+}
+
 add_action( 'save_post', 'mcm_save_postdata', 1, 2 );
 // this is the default text field meta box
-function mcm_text_field( $args ) {
+function mcm_text_field( $args, $type='text' ) {
+	$types = array( 'color','date','number','tel','time','url' );
+	if ( $type == 'mcm_text_field' ) { $type = 'text'; } else { $type = ( in_array( $type, $types ) )?$type:'text'; }
 	global $post;
 	$description = $args[2];
 	// adjust data
 	$args[2] = get_post_meta($post->ID, $args[0], true);
 	$args[1] = __($args[1], 'sp' );
 	$label_format =
-		'<p><label for="%1$s"><strong>%2$s</strong></label></p>'.
-		'<p><input style="width: 80%%;" type="text" name="%1$s" value="%3$s" /></p>';
-		if ( $description != '' ) { $label_format .= '<p><em>'.$description.'</em></p>'; }
+		'<p class="mcm_text_field mcm_field"><label for="%1$s"><strong>%2$s</strong></label><br />'.
+		'<input style="width: 80%%;" type="text" name="%1$s" value="%3$s" id="%1$s" />';
+		if ( $description != '' ) { $label_format .= '<br /><em>'.$description.'</em></p>'; } else { $label_format .= '</p>'; }
+		return vsprintf( $label_format, $args );
+}
+
+function mcm_select( $args ) {
+		global $post;
+		$choices = $args[2];
+		$custom = get_post_meta( $post->ID, $args[0], true );
+		$label_format = '<p class="mcm_select mcm_field"><label for="%1$s"><strong>%2$s</strong></label><br />'.
+		'<select name="%1$s" id="%1$s">'.
+			mcm_create_options( $choices, $custom ).
+		'</select></p>';
 		return vsprintf( $label_format, $args );
 }
 
@@ -162,9 +205,9 @@ function mcm_text_area ( $args ) {
 	$args[2] = get_post_meta($post->ID, $args[0], true);
 	$args[1] = __($args[1], 'sp' );
 	$label_format =
-		'<p><label for="%1$s"><strong>%2$s</strong></label></p>'.
-		'<p><textarea style="width: 90%%;" name="%1$s">%3$s</textarea></p>';
-		if ( $description != '' ) { $label_format .= '<p><em>'.$description.'</em></p>'; }
+		'<p class="mcm_textarea mcm_field"><label for="%1$s"><strong>%2$s</strong></label><br />'.
+		'<textarea style="width: 90%%;" name="%1$s">%3$s</textarea>';
+		if ( $description != '' ) { $label_format .= '<br /><em>'.$description.'</em></p>'; } else { $label_format .= '</p>'; }
 	return vsprintf( $label_format, $args );
 }
 
@@ -275,10 +318,10 @@ $default_mcm_fields =
 		__('Personal Information','my-content-management') => 
 		array (
 			array( '_title', __('Title','my-content-management'), '','mcm_text_field'),
-			array( '_subtitle',__('Subtitle','my-content-management'),'','mcm_text_field'),
+			array( '_subtitle',__('Subtitle','my-content-management'), '','mcm_text_field'),
 			array( '_business',__('Business','my-content-management'),'','mcm_text_field' ),
-			array( '_phone', __('Phone Number','my-content-management'), '','mcm_text_field'),
-			array( '_email', __('E-mail','my-content-management'), '', 'mcm_text_field')
+			array( '_phone', __('Phone Number','my-content-management'), '','tel'),
+			array( '_email', __('E-mail','my-content-management'), '', 'email')
 		),
 		__('Location Info','my-content-management') =>
 		array (
@@ -288,20 +331,20 @@ $default_mcm_fields =
 			array( '_state',__('State','my-content-management'),'','mcm_text_field'),
 			array( '_country',__('Country','my-content-management'),'','mcm_text_field'),
 			array( '_postalcode',__('Postal Code','my-content-management'),'','mcm_text_field'),				
-			array( '_phone',__('Phone','my-content-management'),'','mcm_text_field'),
+			array( '_phone',__('Phone','my-content-management'),'','tel'),
 			array( '_fax',__('Fax','my-content-management'),'','mcm_text_field'),
 			array( '_business',__('Business Name','my-content-management'),'','mcm_text_field'),
-			array( '_email',__('Contact Email','my-content-management'),'','mcm_text_field')
+			array( '_email',__('Contact Email','my-content-management'),'','email')
 		),
 		__('Quotation Info','my-content-management') =>
 		array (
-			array( '_url',__('URL','my-content-management'),'','mcm_text_field'),
+			array( '_url',__('URL','my-content-management'),'','url'),
 			array( '_title',__('Title','my-content-management'),'','mcm_text_field'),
 			array( '_location',__('Location','my-content-management'),'','mcm_text_field')		
 		),
 		__('Testimonial Info','my-content-management') =>
 		array (
-			array( '_url',__('URL','my-content-management'),'','mcm_text_field'),
+			array( '_url',__('URL','my-content-management'),'','url'),
 			array( '_title',__('Title','my-content-management'),'','mcm_text_field'),
 			array( '_location',__('Location','my-content-management'),'','mcm_text_field')		
 		),

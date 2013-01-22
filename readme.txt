@@ -7,19 +7,21 @@ Tested up to: 3.4.2
 License: GPLv2 or later
 Stable tag: trunk
 
-Creates a set of common custom post types for advanced content management: FAQ, Testimonials, people (staff, contributors, etc.), and others!
+Creates common custom post types for advanced content management: FAQ, Testimonials, people (staff, contributors, etc.), and others!
  
 == Description ==
 
 My Content Management creates a suite of custom post types, each with an appropriate custom taxonomy and a set of commonly needed custom fields. The purpose of the plug-in is to provide a single common interface to create commonly needed extra content tools. 
+
+In addition to the default custom post types and custom field groups, you can create new custom post types, create new groups of custom fields, and edit the post types and custom field groups that are built in.
+
+There's a [User's Guide available for purchase](http://www.joedolson.com/articles/my-content-management/guide/) offering 25+ pages of detailed information on how to set up, use, and customize My Content Management.
 
 Almost every web site I work on requires some kind of special content: testimonials, frequently asked questions, lists of staff -- you name it. There are plug-ins available for almost all of these - but they're all different. Different interfaces, different ways to display information, different default styling for how they're shown on the page. 
 
 I wrote this plug-in so that I have all of these features available to me in a single installation: every one with the same interface, with common methods for displaying on a site. Each custom post type also includes a few commonly used custom fields available in templates. (e.g., a phone number field for listings of staff members.)
 
 There's no default styling outside of whatever your theme offers for the elements used. There is default HTML, but it can be 100% replaced through the included templating system, or by creating your own theme template documents to display these specific content types. 
-
-There's a [User's Guide available for purchase](http://www.joedolson.com/articles/my-content-management/guide/) offering 20 pages of detailed information on how to set up, use, and customize My Content Management.
 
 All content can be displayed using the shortcode [my_content type='custom_post_type']. Other supported attributes include:
 
@@ -51,11 +53,28 @@ You can create a site map for a specific post type and taxonomy using the [my_ar
 
 The "id" attribute is not supported in the [my_archive] shortcode. (Because that would be silly.) The [my_archive] shortcode does support a "show_links" attribute which will turn on a navigation list to navigate to each displayed category.
 
+Available languages (in order of completeness):
+Irish, Spanish
+
+Visit the [My Content Management translations site](http://translate.joedolson.com/projects/my-content-management/) to check how complete a translation is.
+
 Translating my plug-ins is always appreciated. Visit <a href="http://translate.joedolson.com">my translations site</a> to start getting your language into shape!
 
-* Spanish (Tom Cloud) [1.1.2]
+Translator Credits (in no particular order)*:
+
+[Ale Gonzalez](http://60rpm.tv/i), [Outshine Solutions](http://outshinesolutions.com), [Jakob Smith](http://www.omkalfatring.dk/),, [globus2008](http://wordpress.org/support/profile/globus2008), Frederic Escallier, Luud Heck, Wim Strijbos, [Daisuke Abe](http://www.alter-ego.jp/), [Alex](http://blog.sotvoril.ru/), Mehmet Ko&ccedil;ali, Uwe Jonas, Florian Edelmann, Efva Nyberg, [Sabir Musta](http://mustaphasabir.altervista.org), Massimo Sgobino, Leonardo Kfoury, Alexandre Carvalho, Amir Khalilnejad, [Aurelio De Rosa](http://www.audero.it/), Bayram Dede, Dani Locasati, Dario Nunez, Dirk Ginader, Evren Erten, Fl&aacute;vio Pereira, Francois-Xavier Benard, [Gianni Diurno](http://www.gidibao.net), Giksi, Heinz Ochsner,  Kazuyuki Kumai, Liam Boogar, Maks, Mano, Massimo Sgobino, Mohsen Aghaei, Oscar, [Rashid Niamat](http://niamatmediagroup.nl/), Stefan Wikstrom, Thomas Meyer, Vedar Ozdemir, [Vikas Arora](http://www.wiznicworld.com), [Miriam de Paula](http://wpmidia.com.br), [HostUCan](http://www.hostucan.com), [Alex Alexandrov](http://www.webhostingrating.com), [Alyona Lompar](http://www.webhostinggeeks.com), [David Gil P&eacute;rez](http://www.sohelet.com), [Burkov Boris](http://chernobog.ru), [Raivo Ratsep](http://raivoratsep.com), [Jibo](http://jibo.ro), [Rasmus Himmelstrup](http://seoanalyst.dk), [kndb](http://blog.layer8.sh/)
+
+* Translators may not have contributed to this plug-in; but have contributed to my [translation repository](http://translate.joedolson.com).
 
 == Changelog ==
+
+= 1.3.0 =
+
+* Added shortcode option to disable numbers in Glossary filters [Courtesy Bernhard Reiter]
+* Added edit post link template tag [Courtesy Bernhard Reiter]
+* Fixed a couple PHP notices
+* Major update: Added management for custom field groups (Create, Edit, Assign)
+* Languages: Added Irish translation.
 
 = 1.2.8 =
 
@@ -206,13 +225,13 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Frequently Asked Questions ==
 
-= Why don't you have any questions here? =
+= What's a custom post type? =
 
-Hey. This was just launched. Got one to ask?
+All of the  major WordPress features are types of posts: Posts are the main one, but Pages are just a different type of post. This plug-in gives you a whole bunch of other types of posts, so you can handle discrete types of content in different ways - but using a common interface. 
 
 = I don't really get how to use this plug-in. =
 
-Well, there really isn't one way to use this plug-in. There are many, many different ways to use it. I'd recommend buying the [User's Guide](http://www.joedolson.com/articles/my-content-management/guide/), which will walk you through many of the ways you can use this plug-in. Also, your purchase will help support me! Bonus!
+Well, there really isn't just one way to use this plug-in. There are many, many different ways to use it. I'd recommend buying the [User's Guide](http://www.joedolson.com/articles/my-content-management/guide/), which will walk you through many of the ways you can use this plug-in. Also, your purchase will help support me! Bonus!
 
 == Screenshots ==
 
@@ -220,4 +239,4 @@ Well, there really isn't one way to use this plug-in. There are many, many diffe
 
 == Upgrade Notice ==
 
- * 1.2.5 A few new features, a couple of bug fixes.
+ * 1.3.0 Adds support for customizing custom field groups.

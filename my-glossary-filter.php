@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: My Content Management - Glossary Filter
-Version: 1.2.8
+Version: 1.3.0
 Plugin URI: http://www.joedolson.com/articles/my-content-management/
 Description: Adds custom glossary features: filters content for links to terms, etc. Companion plug-in to My Content Management.
 Author: Joseph C. Dolson
@@ -28,24 +28,34 @@ if ( !function_exists('mcm_show_posts') ) {
 	add_action('admin_notices', create_function( '', "echo \"<div class='error'><p>My Content Management must be activated to use MCM Glossary Filter. <a href='$activate'>Visit your plugins page to activate</a>.</p></div>\";" ) );
 }
 
-function mcm_glossary_alphabet() {
+function mcm_glossary_alphabet($atts) {
+	extract(shortcode_atts(array(
+		'numbers' => 'true',
+		), $atts));
+		
 	$return = '';
-	$letters = explode( ',','0,1,2,3,4,5,6,7,8,9,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z' );
-		$words = get_option( 'mcm_glossary' );
-		if ( !is_array( $words ) ) {
-			$words = mcm_set_glossary();
+	$nums = range('0','9');
+	$letters = range('a','z');
+	if ($numbers != 'false') {
+		$letters = array_merge($nums, $letters);
+	}
+	
+	$words = get_option( 'mcm_glossary' );
+	if ( !is_array( $words ) ) {
+		$words = mcm_set_glossary();
+	}
+
+	foreach ( $words as $key=>$value ) {
+		$this_letter = strtolower( substr( $key, 0, 1 ) );
+		$live[]=$this_letter;
+	}
+	foreach ( $letters as $letter ) {
+		if ( in_array( $letter, $live ) ) {
+			$return .= "<li><a href='#glossary$letter'>$letter</a></li>";
+		} else {
+			$return .= "<li class='inactive'>$letter</li>";
 		}
-		foreach ( $words as $key=>$value ) {
-			$this_letter = strtolower( substr( $key, 0, 1 ) );
-			$live[]=$this_letter;
-		}
-		foreach ( $letters as $letter ) {
-			if ( in_array( $letter, $live ) ) {
-				$return .= "<li><a href='#glossary$letter'>$letter</a></li>";
-			} else {
-				$return .= "<li class='inactive'>$letter</li>";
-			}
-		}
+	}
 	return "<ul class='glossary-alphabet' id='alpha'>".$return."</ul>";
 }
 add_shortcode('alphabet','mcm_glossary_alphabet');

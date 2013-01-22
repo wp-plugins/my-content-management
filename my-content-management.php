@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/articles/my-content-management/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.2.8
+Version: 1.3.0
 */
 /*  Copyright 2011-2012  Joe Dolson (email : joe@joedolson.com)
 
@@ -23,7 +23,7 @@ Version: 1.2.8
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-$mcm_version = '1.2.8';
+$mcm_version = '1.3.0';
 // Enable internationalisation
 load_plugin_textdomain( 'my-content-management',false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
@@ -119,8 +119,9 @@ function mcm_show_archive($atts) {
 
 // filter to auto replace content with full template
 add_filter( 'the_content','mcm_replace_content', 10, 2 );
-function mcm_replace_content( $content ) {
+function mcm_replace_content( $content, $id=false ) {
 	global $template;
+	if ( !is_main_query() && !$id ) { return $content; }
 	$post_type = get_post_type();
 	$mcm_options = get_option('mcm_options');
 	if ( strpos( $template, $post_type ) !== false ) { return $content; }
@@ -140,10 +141,18 @@ function mcm_search_custom($atts) {
 			), $atts));
 	return mcm_search_form( $type );
 }
+
+function mcm_munger($atts) {
+	extract(shortcode_atts(array(
+				'address' => ''
+			), $atts));
+	return mcm_munge( $address );
+}
 // Shortcodes 
 add_shortcode('my_content','mcm_show_posts');
 add_shortcode('custom_search','mcm_search_custom');
 add_shortcode('my_archive','mcm_show_archive'); 
+add_shortcode('email','mcm_munger');
 // Filters
 //add_filter('the_content', 'mcm_pre_process_shortcode', 7);
 add_filter('pre_get_posts','mcm_searchfilter');
@@ -197,6 +206,7 @@ $types = $default_mcm_types;
 
 function mcm_upgrade_plugin() {
 //  no upgrade routine for 1.2.0
+//  no upgrade routine for 1.3.0
 	global $mcm_version,$default_mcm_types, $default_mcm_fields, $default_mcm_extras;;
 	$from = get_option('mcm_version');
 	if ( $mcm_version == $from ) { return; }
@@ -239,7 +249,7 @@ get_currentuserinfo();
 	// send fields for all plugins
 	$wp_version = get_bloginfo('version');
 	$home_url = home_url();
-	$wp_url = get_bloginfo('wpurl');
+	$wp_url = site_url();
 	$language = get_bloginfo('language');
 	$charset = get_bloginfo('charset');
 	// server
@@ -362,9 +372,8 @@ $plugins_string
 
 // Function to add javascript to the admin header
 function mcm_add_scripts() {
-	wp_enqueue_script('common');
-	wp_enqueue_script('wp-lists');
-	wp_enqueue_script('postbox');
+	wp_register_script( 'addfields', plugins_url( 'js/jquery.addfields.js', __FILE__ ), array( 'jquery' ) );
+	wp_enqueue_script( 'addfields' );
 }
 
 function mcm_settings_page() {
@@ -372,74 +381,16 @@ global $mcm_enabled;
 $enabled = $mcm_enabled;
 $enabled = (isset($_POST['mcm_enabler']))?$_POST['mcm_posttypes']:$enabled;
 ?>
-<div class="wrap">
-<div id="icon-index" class="icon32"><br /></div>
-<h2><?php _e('My Content Management','my-content-management'); ?></h2>
-<div class="mcm-template-guide">
-<h3><?php _e('Basic Template Tags','my-content-management'); ?></h3>
-<dl>
-<dt><code>{id}</code></dt>
-<dd><?php _e('Post ID','my-content-management'); ?></dd>
-
-<dt><code>{excerpt}</code></dt>
-<dd><?php _e('Post excerpt (with auto paragraphs)','my-content-management'); ?></dd>
-
-<dt><code>{excerpt_raw}</code></dt>
-<dd><?php _e('Post excerpt (unmodified)','my-content-management'); ?></dd>
-
-<dt><code>{content}</code></dt>
-<dd><?php _e('Post content (with auto paragraphs and shortcodes processed)','my-content-management'); ?></dd>
-
-<dt><code>{content_raw}</code></dt>
-<dd><?php _e('Post content (unmodified)','my-content-management'); ?></dd>
-
-<dt><code>{thumbnail}</code></dt>
-<dd><?php _e('Featured image as thumbnail.','my-content-management'); ?></dd>
-
-<dt><code>{medium}</code></dt>
-<dd><?php _e('Featured image at medium size.','my-content-management'); ?></dd>
-
-<dt><code>{large}</code></dt>
-<dd><?php _e('Featured image at large size.','my-content-management'); ?></dd>
-
-<dt><code>{full}</code></dt>
-<dd><?php _e('Featured image at original size.','my-content-management'); ?></dd>
-
-<dt><code>{permalink}</code></dt>
-<dd><?php _e('Permalink URL for post','my-content-management'); ?></dd>
-
-<dt><code>{link_title}</code></dt>
-<dd><?php _e('Post title linked to permalink URL','my-content-management'); ?></dd>
-
-<dt><code>{title}</code></dt>
-<dd><?php _e('Post title','my-content-management'); ?></dd>
-
-<dt><code>{shortlink}</code></dt>
-<dd><?php _e('Post shortlink','my-content-management'); ?></dd>
-
-<dt><code>{modified}</code></dt>
-<dd><?php _e('Post last modified date','my-content-management'); ?></dd>
-
-<dt><code>{date}</code></dt>
-<dd><?php _e('Post publication date','my-content-management'); ?></dd>
-
-<dt><code>{author}</code></dt>
-<dd><?php _e('Post author display name','my-content-management'); ?></dd>
-
-<dt><code>{terms}</code></dt>
-<dd><?php _e('List of taxonomy terms associated with post.','my-content-management'); ?></dd>
-
-</dl>
-<p>
-<?php _e('Any custom field can also be referenced via shortcode, using the same pattern with the name of the custom field: <code>{custom_field_name}</code>','my-content-management'); ?>
-</p>
-</div>
-
-	<div class="mcm-settings meta-box-sortables" id="poststuff">
-		<div class="postbox" id="mcm-settings">
+	<div class='wrap mcm-settings'>
+	<div id="icon-index" class="icon32"><br /></div>
+	<h2><?php _e('My Content Management','my-content-management'); ?></h2>
+	<div class="postbox-container" style="width: 70%">
+	
+		<div class="metabox-holder">
+		<div class="mcm-settings ui-sortable meta-box-sortables">   
+		<div class="postbox">
 		<h3><?php _e('Enable Custom Post Types','my-content-management'); ?></h3>
 			<div class="inside">
-			<?php mcm_show_support_box(); ?>		
 			<?php mcm_updater(); ?>
 			<form method='post' action='<?php echo admin_url('options-general.php?page=my-content-management/my-content-management.php'); ?>'>
 				<div><input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('my-content-management-nonce'); ?>' /></div>
@@ -455,12 +406,98 @@ $enabled = (isset($_POST['mcm_enabler']))?$_POST['mcm_posttypes']:$enabled;
 		<?php if ( !empty($enabled) ) { ?>
 		<?php mcm_template_setter(); ?>
 		<?php } ?>
+		</div>
+		</div>
 
+		<div class="metabox-holder">
+		<div class="mcm-settings ui-sortable meta-box-sortables">   
 		<div class="postbox" id="get-support">
 		<h3><?php _e('Get Plug-in Support','my-content-management'); ?></h3>
 			<div class="inside">
 			<?php mcm_get_support_form(); ?>
 			</div>
+		</div>
+		</div>
+		</div>
+	</div>
+	<div class="postbox-container" style="width: 20%">
+		<div class="metabox-holder">
+		<div class="mcm-settings ui-sortable meta-box-sortables">   
+		<div class="mcm-template-guide postbox" id="get-support">
+		<h3><?php _e('Support My Content Management','my-content-management'); ?></h3>
+			<div class="inside">
+				<?php mcm_show_support_box(); ?>		
+			</div>
+		</div>
+		</div>
+		</div>	
+		<div class="metabox-holder">
+		<div class="mcm-settings ui-sortable meta-box-sortables">   
+		<div class="mcm-template-guide postbox" id="get-support">
+		<h3><?php _e('Basic Template Tags','my-content-management'); ?></h3>
+			<div class="inside">
+			<dl>
+			<dt><code>{id}</code></dt>
+			<dd><?php _e('Post ID','my-content-management'); ?></dd>
+
+			<dt><code>{excerpt}</code></dt>
+			<dd><?php _e('Post excerpt (with auto paragraphs)','my-content-management'); ?></dd>
+
+			<dt><code>{excerpt_raw}</code></dt>
+			<dd><?php _e('Post excerpt (unmodified)','my-content-management'); ?></dd>
+
+			<dt><code>{content}</code></dt>
+			<dd><?php _e('Post content (with auto paragraphs and shortcodes processed)','my-content-management'); ?></dd>
+
+			<dt><code>{content_raw}</code></dt>
+			<dd><?php _e('Post content (unmodified)','my-content-management'); ?></dd>
+
+			<dt><code>{thumbnail}</code></dt>
+			<dd><?php _e('Featured image as thumbnail.','my-content-management'); ?></dd>
+
+			<dt><code>{medium}</code></dt>
+			<dd><?php _e('Featured image at medium size.','my-content-management'); ?></dd>
+
+			<dt><code>{large}</code></dt>
+			<dd><?php _e('Featured image at large size.','my-content-management'); ?></dd>
+
+			<dt><code>{full}</code></dt>
+			<dd><?php _e('Featured image at original size.','my-content-management'); ?></dd>
+
+			<dt><code>{permalink}</code></dt>
+			<dd><?php _e('Permalink URL for post','my-content-management'); ?></dd>
+
+			<dt><code>{link_title}</code></dt>
+			<dd><?php _e('Post title linked to permalink URL','my-content-management'); ?></dd>
+
+			<dt><code>{title}</code></dt>
+			<dd><?php _e('Post title','my-content-management'); ?></dd>
+
+			<dt><code>{shortlink}</code></dt>
+			<dd><?php _e('Post shortlink','my-content-management'); ?></dd>
+
+			<dt><code>{modified}</code></dt>
+			<dd><?php _e('Post last modified date','my-content-management'); ?></dd>
+
+			<dt><code>{date}</code></dt>
+			<dd><?php _e('Post publication date','my-content-management'); ?></dd>
+
+			<dt><code>{author}</code></dt>
+			<dd><?php _e('Post author display name','my-content-management'); ?></dd>
+
+			<dt><code>{terms}</code></dt>
+			<dd><?php _e('List of taxonomy terms associated with post.','my-content-management'); ?></dd>
+
+			<dt><code>{edit_link}</code></dt>
+			<dd><?php _e('When logged in, display link to edit the current post.','my-content-management'); ?></dd>
+
+			</dl>
+			<p>
+			<?php _e('Any custom field can also be referenced via shortcode, using the same pattern with the name of the custom field: <code>{custom_field_name}</code>','my-content-management'); ?>
+			</p>
+			</div>
+		</div>
+		</div>
 		</div>
 	</div>
 </div>
@@ -488,7 +525,7 @@ function mcm_enabler() {
 				if ( is_array($enabled) ) {
 					if ( in_array( $key, $enabled ) ) { $checked = ' checked="checked"'; } else { $checked = ''; }
 				}
-				$return .= "<li><input type='checkbox' value='$key' name='mcm_posttypes[]' id='mcm_$key'$checked /> <label for='mcm_$key'>$value[3] <small><a href='".admin_url("options-general.php?page=my-content-management/my-content-management.php&mcm_edit=$key")."'>".__('Edit','my-content-management')." '$value[3]'</a> &bull; <a href='".admin_url("options-general.php?page=my-content-management/my-content-management.php&mcm_delete=$key")."'>".__('Delete','my-content-management')."  '$value[3]'</a></small></label></li>\n";
+				$return .= "<li><input type='checkbox' value='$key' name='mcm_posttypes[]' id='mcm_$key'$checked /> <label for='mcm_$key'>$value[3] (<code>$key</code>) <small><a href='".admin_url("options-general.php?page=my-content-management/my-content-management.php&mcm_edit=$key")."'>".__('Edit','my-content-management')." '$value[3]'</a> &bull; <a href='".admin_url("options-general.php?page=my-content-management/my-content-management.php&mcm_delete=$key")."'>".__('Delete','my-content-management')."  '$value[3]'</a></small></label></li>\n";
 			}
 		}
 	}
@@ -700,7 +737,7 @@ function mcm_template_setter() {
 				if ( $value == 'mcm_glossary' && function_exists('mcm_set_glossary') ) { $extension = "<h4>Glossary Extension</h4>
 				<p>".__('The glossary extension to My Content Management is enabled.','my-content-management')."</p>
 				<ul>
-				<li><code>[alphabet]</code>: ".__('displays list of linked first characters represented in your Glossary. (Roman alphabet only.)','my-content-management')."</li>
+				<li><code>[alphabet numbers='true']</code>: ".__('displays list of linked first characters represented in your Glossary. (Roman alphabet only, including numbers 0-9 by default.)','my-content-management')."</li>
 				<li><code>[term id='' term='']</code>: ".__('displays value of term attribute linked to glossary term with ID attribute.','my-content-management')."</li>
 				<li><strong>".__('Feature','my-content-management').":</strong> ".__('Adds links throughout content for each term in your glossary.','my-content-management')."</li>
 				<li><strong>".__('Feature','my-content-management').":</strong> ".__('Adds character headings to each section of your glossary list.','my-content-management')."</li>
@@ -784,12 +821,15 @@ function mcm_show_support_box() {
 ?>
 	<div id="support">
 		<div class="buy">
-		<a href="http://www.joedolson.com/articles/my-content-management/guide/" rel="external"><?php _e("Buy the User's Guide",'my-content-management'); ?></a>
+		<a href="http://www.joedolson.com/articles/my-content-management/guide/" rel="external"><?php _e("Need Help? <strong>Buy the User's Guide</strong>",'my-content-management'); ?></a>
 		</div>
 		<div class="resources">
+		<p>
+		<a href="https://twitter.com/intent/tweet?screen_name=joedolson&text=My%20Content%20Management%20is%20awesome!" class="twitter-mention-button" data-size="large" data-related="joedolson">Tweet to @joedolson</a>
+		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+		</p>		
 		<ul>
-		<li><strong><a href="#get-support" rel="external"><?php _e("Get Support",'my-content-management'); ?></a></strong></li>
-		<li><a href="http://www.joedolson.com/articles/bugs/"><?php _e("Report a bug",'my-content-management'); ?></a></li>	
+		<li><strong><a href="#get-support" rel="external"><?php _e("Get Support",'my-content-management'); ?></a></strong> &bull; <a href="http://www.joedolson.com/articles/bugs/"><?php _e("Report a bug",'my-content-management'); ?></a></li>	
 			<li><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 			<div>
 			<input type="hidden" name="cmd" value="_s-xclick" />
@@ -808,30 +848,372 @@ function mcm_show_support_box() {
 <?php
 }
 
+add_action( 'admin_menu','mcm_add_fields_pages');
+
+function mcm_add_fields_pages() {
+    if ( function_exists( 'add_submenu_page' ) ) {
+		$post_types = get_post_types('','object');
+		$submenu_page = add_submenu_page( "edit.php", "Posts > My Content Management > Custom Fields", "Custom Fields", 'manage_options', "post_fields", 'mcm_assign_custom_fields' );
+		add_action( 'admin_head-'. $submenu_page, 'mcm_styles' );		
+		foreach ( $post_types as $type ) {
+			$name = $type->name;
+			$label = $type->labels->name;
+			$submenu_page = add_submenu_page( "edit.php?post_type=$name", "$label > My Content Management > Custom Fields", "Custom Fields", 'manage_options', $name."_fields", 'mcm_assign_custom_fields' );
+			add_action( 'admin_head-'. $submenu_page, 'mcm_styles' );
+		}
+    }
+}
+
+add_action( 'admin_head', 'mcm_admin_style' );
+function mcm_admin_style() {
+?>
+<style type='text/css'>
+#normal-sortables .mcm_field { float: left; width:50%; }
+</style>
+<?php
+}
+
+function mcm_assign_custom_fields() {
+?>
+<div class="wrap">
+<div id="icon-index" class="icon32"><br /></div>
+<h2><?php _e('My Content Management &raquo; Manage Custom Fields','my-content-management'); ?></h2>
+	<div class="postbox-container" style="width: 70%">
+		<div class="metabox-holder">
+		<div class="mcm-settings ui-sortable meta-box-sortables">   
+		<div class="postbox" id="mcm-settings">
+		<h3><?php _e('Custom Fields Assigned to this post type','my-content-management'); ?></h3>
+			<div class="inside">
+			<p><?php _e('Select the sets of custom fields enabled for this post type','my-content-management'); ?></p>
+			<?php $current_post_type = $_GET['page']; $page = ( isset($_GET['post_type']) )?$_GET['post_type']:'post'; ?>
+			<form method='post' action='<?php echo esc_url( admin_url("edit.php?post_type=$page&page=$current_post_type") ); ?>'>
+				<div><input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('my-content-management-nonce'); ?>' /></div>
+				<div>
+				<?php mcm_fields( 'assign', $page ); ?>
+				<p>
+					<input type='submit' value='<?php _e('Update Assignments','my-content-manager'); ?>' name='mcm_custom_fields' class='button-primary' /> <a href="<?php echo admin_url("options-general.php?page=mcm_custom_fields&mcm_fields_add=new"); ?>"><?php _e('Add new custom field set','my-content-manager'); ?></a>
+				</p>
+				</div>
+			</form>
+			</div>			
+		</div>
+		</div>
+		</div>
+	</div>
+	<div class="postbox-container" style="width: 20%">
+		<div class="metabox-holder">
+		<div class="mcm-settings ui-sortable meta-box-sortables">   
+		<div class="postbox" id="mcm-settings">
+		<h3><?php _e('Support My Content Management','my-content-management'); ?></h3>
+			<div class="inside">	
+				<?php mcm_show_support_box(); ?>
+			</div>
+		</div>
+		</div>
+		</div>
+	</div>
+	
+</div>
+	<?php
+}
+
+function mcm_add_custom_field_support( $fieldset, $page ) {
+	$option = get_option('mcm_options');
+	$array = $option['extras'][$fieldset][0];
+	if ( is_string($array) ) { $array = array( $array ); }
+	if ( !in_array( $page, $array ) ) { array_push( $array, $page ); }
+	$option['extras'][$fieldset][0] = $array;
+	update_option( 'mcm_options', $option );
+}
+
+function mcm_delete_custom_field_support( $fieldset, $page ) {
+	$option = get_option('mcm_options');
+	$array = $option['extras'][$fieldset][0];
+	if ( is_string($array) ) { $array = array(); }
+	if ( in_array( $page, $array ) ) { $key = array_search( $page, $array ); unset( $array[$key] ); }
+	$option['extras'][$fieldset][0] = $array;
+	update_option( 'mcm_options', $option );
+}
+
+function mcm_fields( $show='assign',$post_type=false ) {
+	if ( isset($_POST['mcm_custom_fields']) ) {
+		$nonce=$_REQUEST['_wpnonce'];
+		if (! wp_verify_nonce($nonce,'my-content-management-nonce') ) die("Security check failed");		
+		$extras = $_POST['mcm_field_extras'];
+		$page = $post_type;
+		foreach ( $extras as $key => $value ) {
+			if ( $value == 'on' ) {
+				mcm_add_custom_field_support( $key, $page );
+			} else {
+				mcm_delete_custom_field_support( $key, $page );
+			}
+		}		
+		echo "<div class='updated fade'><p>".__('Custom fields for this post type updated','my-content-management')."</p></div>";
+	}
+	$option = get_option('mcm_options');
+	$extras = $option['extras'];
+	$checked = '';
+	$return = '';
+	if ( is_array($extras) ) {
+		foreach ( $extras as $key=>$value ) {
+			$page = $post_type;
+			$checked_off = ' checked="checked"';
+			if ( is_string( $value[0] ) ) {
+				$checked_on = ( $value[0] == $page )?' checked="checked"':'';
+			} else if ( in_array( $page, $value[0] ) ) {
+				$checked_on = ( in_array( $page, $value[0] ) )?' checked="checked"':'';
+			} else {
+				$checked_off = ' checked="checked"';
+				$checked_on = ''; 
+			}
+			$k = urlencode($key);
+			if ( $show == 'assign' ) {
+				$return .= "<li><fieldset><legend>$key</legend>
+				<input type='radio' value='off' name='mcm_field_extras[$key]' id='mcm_off_$page'$checked_off /> <label for='mcm_off_$page'>".__('Off','my-content-management')."</label> 
+				<input type='radio' value='on' name='mcm_field_extras[$key]' id='mcm_off_$page'$checked_on /> <label for='mcm_off_$page'>".__('On','my-content-management')." <small><a href='".admin_url("options-general.php?page=mcm_custom_fields&mcm_fields_edit=$k")."'>".__('Edit','my-content-management')."</a></small></label>
+				</fieldset></li>\n";
+			} else {
+				$return .= "<li><a href='".admin_url("options-general.php?page=mcm_custom_fields&mcm_fields_edit=$k")."'>".__('Edit','my-content-management')." $key</a></li>";
+			}
+		}
+	}
+	echo "<ul class='mcm_customfields'>".$return."</ul>";
+}
+
+function mcm_fields_updater() {
+	// This is what I do to edit custom field sets or add new sets.
+	if ( !isset( $_GET['mcm_fields_edit'] ) ) {
+		mcm_get_fieldset();
+	}
+	if ( isset($_POST['mcm_custom_field_sets']) ) {
+		$message = mcm_update_custom_fieldset( $_POST );
+	}	
+	if ( isset( $_GET['mcm_fields_edit'] ) ) {
+		mcm_get_fieldset( $_GET['mcm_fields_edit'] );
+	}
+}
+
+function mcm_get_fieldset( $fieldset=false ) {
+	$option = get_option( 'mcm_options' );
+	if ( !$fieldset ) {
+		$posts = get_post_types(array( 'public'=>'true' ) ,'object');
+		$post_types = '';
+		foreach ( $posts as $value ) {
+			$name = $value->name;
+			$label = $value->labels->name;
+			$post_types .= "<option value='$name'>$label</option>\n";
+		}
+		$fieldset_title = "<p><label for='mcm_new_fieldset'><strong>".__('New Fieldset Title','my-content-management')."</strong></label> <input type='text' id='mcm_new_fieldset' name='mcm_new_fieldset' /></p><p><label for='mcm_assign_to'><strong>".__('Attach to','my-content-management')."</strong></label><br /><select name='mcm_assign_to' id='mcm_assign_to' multiple='multiple'>$post_types</select></p>";
+	} else {
+		$fieldset_title = '';
+	}
+	
+	$form = $fieldset_title.'<table class="widefat"><thead><tr><th scope="col">'.__('Field Label','my-content-management').'</th><th scope="col">'.__('Input Type','my-content-management').'</th><th scope="col">Description/Options</th><th  scope="col">'.__('Delete','my-content-management').'</th></tr></thead><tbody>';
+	$odd = 'odd'; 
+	if ( isset( $option['fields'][$fieldset] ) ) {
+		$fields = ( $fieldset )?$option['fields'][urldecode($fieldset)]:'';
+	}
+		$field_types = array(
+			'text'=>__('Single line of text','my-content-management'),
+			'textarea'=>__('Multiple lines of text','my-content-management'),
+			'select'=>__('Select dropdown','my-content-management'),
+			'color'=>__('Color input / HTML5','my-content-management'),
+			'date'=>__('Date input / HTML5','my-content-management'),
+			'tel'=>__('Telephone / HTML5','my-content-management'),
+			'time'=>__('Time / HTML5','my-content-management'),
+			'url'=>__('URL / HTML5','my-content-management'),
+			'email'=>__('Email / HTML5','my-content-management')
+			);	
+	if ( $fieldset && isset( $option['fields'][$fieldset] ) ) {
+		foreach ( $fields as $key=>$value ) {
+			if ( is_array( $value[2] ) ) {
+				$choices = esc_attr( stripslashes( implode( ', ', $value[2] ) ) );
+			} else {
+				$choices = esc_attr(stripslashes($value[2]));
+			}
+			$field_type_select = '';
+			foreach ( $field_types as $k => $v ) {
+				$selected = ( $value[3] == $k  || ( $k == 'text' && $value[3] == 'mcm_text_field' ) )?' selected="selected"':'';
+				$field_type_select .= "<option value='$k'$selected>$v</option>\n";
+			}
+			if ( $value[3] == 'select' ) { $labeled = __("Options",'my-content-management'); } else { $labeled = __("Additional Text",'my-content-management'); }
+		$form .= "
+		<tr class='mcm_custom_fields_form $odd'>
+			<td>
+				<input type='hidden' name='mcm_field_key[$key]'  value='$value[0]' />
+				<label for='mcm_field_label$key'>".__('Label','my-content-management')."</label> <input type='text' name='mcm_field_label[$key]' id='mcm_field_label$key' value='".esc_attr(stripslashes($value[1]))."' />
+			</td>
+			<td>
+				<label for='mcm_field_type$key'>".__('Type','my-content-management')."</label> 
+					<select name='mcm_field_type[$key]' id='mcm_field_type$key'>
+					$field_type_select
+					</select>
+			</td>
+			<td>
+				<label for='mcm_field_options$key'>$labeled</label> <input type='text' name='mcm_field_options[$key]' id='mcm_field_options$key' value='$choices' />
+			</td>
+			<td>
+				<label for='mcm_field_delete$key'>".__('Delete','my-content-management')."</label> <input type='checkbox' name='mcm_field_delete[$key]' id='mcm_field_delete$key' value='delete' />
+			</td>
+		</tr>";
+		$odd = ( $odd == 'odd' ) ? 'even' : 'odd';
+		}
+	} else if ( $fieldset && !isset( $option['fields'][$fieldset] ) ) {
+		echo "<div class='updated error'><p>".__('There is no field set by that name','my-content-management')."</p></div>";
+	}
+		$field_type_select = '';
+		foreach ( $field_types as $k => $v ) {
+			$field_type_select .= "<option value='$k'>$v</option>";
+		}	
+	$form .= "
+	<tr class='mcm_custom_fields_form clonedInput' id='field1'>
+		<td>
+			<input type='hidden' name='mcm_field_key[]'  value='' />
+			<label for='mcm_field_label'>".__('Label','my-content-management')."</label> <input type='text' name='mcm_field_label[]' id='mcm_field_label' value='' />
+		</td>
+		<td>
+			<label for='mcm_field_type'>".__('Type','my-content-management')."</label> 
+				<select name='mcm_field_type[]' id='mcm_field_type'>
+				$field_type_select
+				</select>
+		</td>
+		<td>
+			<label for='mcm_field_options'>".__('Options/Additional Text','my-content-management')."</label> <input type='text' name='mcm_field_options[]' id='mcm_field_options' value='' />
+		</td>
+		<td>
+		</td>
+	</tr>";	
+	$form .= '</tbody></table>';
+		$add_field =__('Add another field','my-content-management');
+		$del_field = __('Remove last field','my-content-management');
+	$form .=  '
+			<p>
+				<input type="button" class="add_field" value="'.$add_field.'" class="button" />
+				<input type="button" class="del_field" value="'.$del_field.'" class="button" />
+			</p>';
+
+	echo $form;
+}
+
+function mcm_update_custom_fieldset( $post ) {
+	$option = get_option('mcm_options');
+	$array = array();
+	if ( !isset($post['mcm_field_delete']) ) { $post['mcm_field_delete'] = array(); }
+	$delete = @array_keys( $post['mcm_field_delete'] );
+	$keys = $post['mcm_field_key'];
+	$labels = $post['mcm_field_label'];
+	$types = $post['mcm_field_type'];
+	$options = $post['mcm_field_options'];
+	$count = count( $labels );
+	$delete_count = count( $delete );
+		for ( $i=0;$i<$count;$i++ ) {
+			if ( in_array( $i, $delete ) ) { } else {
+				if ( $keys[$i] != '' ) {
+				if ( $types[$i] == 'select' ) { $opt = explode( ',', $options[$i] ); } else { $opt = $options[$i]; }
+				$array[$i] = array( 
+					$keys[$i], 
+					$labels[$i], 
+					$opt, 
+					$types[$i] 
+				);
+				} else if ( $labels[$i] != '' ) {
+				if ( $types[$i] == 'select' ) { $opt = explode( ',', $options[$i] ); } else { $opt = $options[$i]; }		
+				$k = '_'.sanitize_title($labels[$i]);
+				$array[$i] = array( 
+					$k, 
+					$labels[$i], 
+					$opt, 
+					$types[$i] 
+				);	
+				} else {
+					continue;
+				}
+			}
+		}
+	$fieldset = ( isset($_GET['mcm_fields_edit']) )?$_GET['mcm_fields_edit']:false;
+	if ( isset( $post['mcm_new_fieldset'] ) ) { $fieldset = $post['mcm_new_fieldset']; $added = __('added','my-content-management'); } else { $added = __('updated','my-content-management'); }
+	if ( !empty( $option['extras'][$fieldset] ) && isset( $post['mcm_new_fieldset'] ) ) { $fieldset = $fieldset.' (2)'; }
+	if ( !$fieldset ) { return __("No custom field set was defined.",'my-content-management'); } else { $fieldset = urldecode( $fieldset ); }
+	if ( isset( $post['mcm_new_fieldset'] ) ) { $mcm_assign_to = $post['mcm_assign_to']; $option['extras'][$fieldset] = array( $mcm_assign_to, 'side' ); }
+	$option['fields'][$fieldset] = $array;
+	if ( $count == $delete_count || $delete_count > $count || ( $count == 1 && !isset( $post['mcm_new_fieldset'] ) ) ) { unset( $option['fields'][$fieldset] ); unset( $option['extras'][$fieldset] ); } // if all fields are deleted, remove set.
+	update_option('mcm_options',$option);
+	return sprintf( __('You have %1$s the %2$s group of custom fields.', 'my-content-management' ), $added, $fieldset );
+}
+
 // Add the administrative settings to the "Settings" menu.
 function mcm_add_support_page() {
     if ( function_exists( 'add_options_page' ) ) {
 		 $plugin_page = add_options_page( 'My Content Management', 'My Content Management', 'manage_options', __FILE__, 'mcm_settings_page' );
 		 add_action( 'admin_head-'. $plugin_page, 'mcm_styles' );
-    }
-	add_action('admin_print_styles-'. $plugin_page, 'mcm_add_scripts');
- }
-function mcm_styles() {
-	if ( $_GET['page'] == "my-content-management/my-content-management.php" ) {
-		echo '<link type="text/css" rel="stylesheet" href="'.plugins_url('mcm-styles.css', __FILE__ ).'" />';
-?>
-<script type="text/javascript">
-	//<![CDATA[
-	jQuery(document).ready( function($) {
-		// close postboxes that should be closed
-		$('.if-js-closed').removeClass('if-js-closed').addClass('closed');
-		// postboxes setup
-		postboxes.add_postbox_toggles('wrap');
-	});
-	//]]>
-</script>
-<?php
+		 add_action('admin_print_styles-'. $plugin_page, 'mcm_add_scripts');
+		 $plugin_page = add_options_page( 'My Custom Fields', 'My Custom Fields', 'manage_options', 'mcm_custom_fields', 'mcm_configure_custom_fields' );	 
+		 add_action( 'admin_head-'. $plugin_page, 'mcm_styles' );
+		 add_action('admin_print_styles-'. $plugin_page, 'mcm_add_scripts');
+		 
 	}
+}
+
+
+function mcm_configure_custom_fields() {
+?>
+<div class="wrap">
+<div id="icon-index" class="icon32"><br /></div>
+<h2><?php _e('My Content Management &raquo; Manage Custom Fields','my-content-management'); ?></h2>
+
+	<div class="postbox-container" style="width: 70%">
+		<div class="metabox-holder">
+		<div class="mcm-settings ui-sortable meta-box-sortables">   
+		<div class="postbox" id="mcm-settings">
+		<h3><?php _e('Manage Custom Fieldsets','my-content-management'); ?></h3>
+			<div class="inside">
+<?php
+	if ( isset($_POST['mcm_custom_fieldsets']) ) {
+		$message = mcm_update_custom_fieldset( $_POST );
+	} else {
+		$message = false;
+	}
+	if ( $message ) { echo "<div class='updated notice'><p>$message</p></div>"; }
+?>	
+			<?php mcm_fields( 'edit' ); ?>
+			<p><?php _e('If the input type is a Select box, enter the selectable options as a comma-separated list in the Description/Options field.','my-content-management'); ?></p>
+			<?php if ( isset($_GET['mcm_fields_edit'] ) ) { $append = "&mcm_fields_edit=".urlencode($_GET['mcm_fields_edit']); } else { $append = ''; } ?>
+			<form method='post' action='<?php echo esc_url( admin_url("options-general.php?page=mcm_custom_fields$append") ); ?>'>
+				<div><input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('my-content-management-nonce'); ?>' /></div>
+				<div>
+				<?php mcm_fields_updater(); ?>
+				<p>
+					<input type='submit' value='<?php _e('Update Custom Fieldsets','my-content-manager'); ?>' name='mcm_custom_fieldsets' class='button-primary' /> <a href="<?php echo admin_url("options-general.php?page=mcm_custom_fields&mcm_fields_add=new"); ?>"><?php _e('Add new custom field set','my-content-manager'); ?></a>
+				</p>
+				</div>
+			</form>
+			<p><?php printf(__('HTML5 Input types have limited browser support. <a href="%s">Check whether your browser supports these fields</a>','my-content-management'),'http://miketaylr.com/code/input-type-attr.html'); ?></p>					
+			</div>	
+		</div>
+		</div>
+		</div>
+	</div>
+	
+	<div class="postbox-container" style="width: 20%">
+		<div class="metabox-holder">
+		<div class="mcm-settings ui-sortable meta-box-sortables">   
+		<div class="mcm-template-guide postbox" id="get-support">
+		<h3><?php _e('Support My Content Management','my-content-management'); ?></h3>
+			<div class="inside">
+				<?php mcm_show_support_box(); ?>		
+			</div>
+		</div>
+		</div>
+		</div>
+	</div>
+</div>
+	<?php
+}
+
+function mcm_styles() {
+	//if ( $_GET['page'] == "my-content-management/my-content-management.php" || $_GET['page'] == 'mcm_custom_fields' || ) {
+		echo '<link type="text/css" rel="stylesheet" href="'.plugins_url('mcm-styles.css', __FILE__ ).'" />';
+	//}
 }
 add_action( 'admin_menu', 'mcm_add_support_page' );
 
