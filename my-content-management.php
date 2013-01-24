@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/articles/my-content-management/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.3.0
+Version: 1.3.1
 */
 /*  Copyright 2011-2012  Joe Dolson (email : joe@joedolson.com)
 
@@ -23,7 +23,7 @@ Version: 1.3.0
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-$mcm_version = '1.3.0';
+$mcm_version = '1.3.1';
 // Enable internationalisation
 load_plugin_textdomain( 'my-content-management',false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
@@ -714,21 +714,37 @@ function mcm_template_setter() {
 	if ( is_array($enabled) ) {
 		foreach ( $enabled as $value ) {
 			if ( isset($types[$value] ) ) {
-				$pointer = '';
+				$pointer = array();
 				$display_value = str_replace('mcm_','',$value);
 				$template = (isset($templates[$value]))?$templates[$value]:$default;
 				$label = $types[$value];
+				$extra_fields = array();
 				foreach ( $extras as $k=>$v ) {
-					if ( $v[0] == $value ) {
-						$extra_fields = $fields[$k];
-						$pointer = $value;
+					if ( is_string($v[0]) && $v[0] == $value ) {
+						$extra_fields[] = $fields[$k];
+						$pointer[] = $value;
+					} else {
+						if ( is_array( $v[0] ) ) {
+							foreach ( $v[0] as $ka => $va ) {
+								if ( $va == $value ) {
+									$extra_fields[] = $fields[$k];
+									$pointer[] = $value; 
+								}
+							}
+						}
 					}
 				}
-				if ( $pointer != $value ) { $extra_fields = false; }
+				if ( !in_array( $value, $pointer ) ) { $extra_fields = false; }
 				$show_fields = '';
 				if ( is_array( $extra_fields ) ) {
 					foreach ( $extra_fields as $k=>$v ) {
-						$show_fields .= "<p><code>&#123;$v[0]&#125;</code>: $v[1]</p>";
+						if ( is_array( $v ) ) {
+							foreach ( $v as $f ) {
+								$show_fields .= "<p><code>&#123;$f[0]&#125;</code>: $f[1]</p>";
+							}
+						} else {
+							$show_fields .= "<p><code>&#123;$v[0]&#125;</code>: $v[1]</p>";						
+						}
 					}
 				} else {
 					$show_fields = '';
@@ -1041,7 +1057,7 @@ function mcm_get_fieldset( $fieldset=false ) {
 		<tr class='mcm_custom_fields_form $odd'>
 			<td>
 				<input type='hidden' name='mcm_field_key[$key]'  value='$value[0]' />
-				<label for='mcm_field_label$key'>".__('Label','my-content-management')."</label> <input type='text' name='mcm_field_label[$key]' id='mcm_field_label$key' value='".esc_attr(stripslashes($value[1]))."' />
+				<label for='mcm_field_label$key'>".__('Label','my-content-management')."</label> <input type='text' name='mcm_field_label[$key]' id='mcm_field_label$key' value='".esc_attr(stripslashes($value[1]))."' /><br /><small>{<code>$value[0]</code>}</small>
 			</td>
 			<td>
 				<label for='mcm_field_type$key'>".__('Type','my-content-management')."</label> 

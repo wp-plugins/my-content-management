@@ -263,7 +263,7 @@ if ( !function_exists('mcm_custom_field') ) {
 		return $custom_field;
 	}
 }
-function mcm_custom_field( $field,$before,$after,$id='' ) {
+function mcm_custom_field( $field,$before='',$after='',$id='' ) {
 	$value = mcm_get_custom_field($field, $id);
 	if ( $value ) {
 		if ( is_array( $value ) ) {

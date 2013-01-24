@@ -3,7 +3,7 @@ Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebars, content management
 Requires at least: 3.2.1
-Tested up to: 3.4.2
+Tested up to: 3.5.0
 License: GPLv2 or later
 Stable tag: trunk
 
@@ -67,6 +67,12 @@ Translator Credits (in no particular order)*:
 * Translators may not have contributed to this plug-in; but have contributed to my [translation repository](http://translate.joedolson.com).
 
 == Changelog ==
+
+= 1.3.1 =
+
+* Better exposure for custom field keys with added custom fields.
+* Fixed bug in display of custom field keys on MCM settings page with modified storage system.
+* Fixed bug: before and after variables should not be required for mcm_custom_field() function.
 
 = 1.3.0 =
 
