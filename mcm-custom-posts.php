@@ -38,9 +38,9 @@ function mcm_posttypes() {
 				'hierarchical' => $raw['hierarchical'],
 				'menu_position' => 20,
 				'has_archive' => true,
-				'supports' => $raw['supports']
-				//'map_meta_cap'=>true,
-				//'capability_type'=>array( $value[4],$value[3] )
+				'supports' => $raw['supports'],
+				'map_meta_cap'=>true,
+				'capability_type'=>'post' // capability type is post type
 			); 
 			register_post_type($key,$args);
 		}

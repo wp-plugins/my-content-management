@@ -27,8 +27,8 @@ $templates = $mcm_templates; $types = $mcm_types;
 		$cache_key = md5( $type . $display . $taxonomy . $term . $count . $order . $direction . $meta_key . $template . $offset . $id . $year . $month . $week . $day);
 		$the_cache = get_transient( "mcm_$cache_key" );
 	}
-	if ( $the_cache ) { 
-		return $the_cache; 
+	if ( $the_cache ) {
+		return $the_cache;
 	} else {
 	$keys = array_keys($types);
 	$mcm = true;
@@ -45,7 +45,7 @@ $templates = $mcm_templates; $types = $mcm_types;
 	$primary = $types[0];
 		if ( !in_array($primary,$keys,true) && !in_array('mcm_'.$primary,$keys,true ) ) {
 			$wrapper = ( $template != '' )?$template:'mcm_people';
-			$mcm = false;		
+			$mcm = false;
 		} else {
 			$wrapper = ( $template != '' )?$template:$primary;
 		}
@@ -57,7 +57,7 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$tax_root = str_replace( $search,'',$taxonomy );
 			if ( in_array( $tax_root, $keys, true ) ) { 
 				$taxes[] = $tax; 
-			} else { 
+			} else {
 				if ( in_array( 'mcm_'.$tax_root,$keys,true ) ) {
 					$taxes[] = 'mcm_'.$tax;
 				} else {
@@ -419,7 +419,7 @@ add_filter( 'mcm_munge','mcm_munge', 10, 3 );
 function mcm_munge($address) {
     $address = strtolower($address);
     $coded = "";
-    $unmixedkey = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.@";
+    $unmixedkey = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.@-";
     $inprogresskey = $unmixedkey;
     $mixedkey="";
     $unshuffled = strlen($unmixedkey);

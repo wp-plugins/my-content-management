@@ -3,7 +3,7 @@ Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebars, content management
 Requires at least: 3.2.1
-Tested up to: 3.5.0
+Tested up to: 3.5.1
 License: GPLv2 or later
 Stable tag: trunk
 
@@ -67,6 +67,10 @@ Translator Credits (in no particular order)*:
 * Translators may not have contributed to this plug-in; but have contributed to my [translation repository](http://translate.joedolson.com).
 
 == Changelog ==
+
+= 1.3.2 =
+
+* Bug fix: hyphens not correctly rendered in email munging.
 
 = 1.3.1 =
 
