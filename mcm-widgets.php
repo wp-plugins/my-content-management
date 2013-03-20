@@ -23,15 +23,15 @@ class mcm_search_widget extends WP_Widget {
 	function form($instance) {
 		global $mcm_enabled;
 		$enabled = $mcm_enabled;
-		$post_type = esc_attr($instance['mcm_widget_post_type']);
-		$title = esc_attr($instance['title']);
+		$post_type = isset( $instance['mcm_widget_post_type'] ) ? esc_attr($instance['mcm_widget_post_type']) : '';
+		$title = isset( $instance['title'] ) ? esc_attr($instance['title']) : '';
 	?>
 		<p>
 		<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title','my-content-management'); ?>:</label><br />
 		<input class="widefat" type="text" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo $title; ?>"/>
 		</p>	
 		<p>
-		<label for="<?php echo $this->get_field_id('mcm_widget_post_type'); ?>"><?php _e('Post type to search','my-content-management'); ?></label> <select<?php echo $disabled; ?> id="<?php echo $this->get_field_id('mcm_widget_post_type'); ?>" name="<?php echo $this->get_field_name('mcm_widget_post_type'); ?>">
+		<label for="<?php echo $this->get_field_id('mcm_widget_post_type'); ?>"><?php _e('Post type to search','my-content-management'); ?></label> <select<?php echo $enabled; ?> id="<?php echo $this->get_field_id('mcm_widget_post_type'); ?>" name="<?php echo $this->get_field_name('mcm_widget_post_type'); ?>">
 	<?php
 		foreach( $enabled as $v ) {
 			$display = ucfirst( str_replace( 'mcm_','',$v ) );

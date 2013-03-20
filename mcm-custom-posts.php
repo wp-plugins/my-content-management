@@ -149,7 +149,9 @@ function mcm_field_html( $args ) {
 		case 'textarea':
 			return mcm_text_area( $args );
 		case 'select':
-			return mcm_select( $args );		
+			return mcm_select( $args );	
+		case 'upload':
+			return mcm_upload_field( $args );
 		default:
 			return mcm_text_field( $args, $args[3] );
 	}
@@ -171,17 +173,41 @@ function mcm_create_options( $choices, $selected, $type='select' ) {
 
 add_action( 'save_post', 'mcm_save_postdata', 1, 2 );
 // this is the default text field meta box
-function mcm_text_field( $args, $type='text' ) {
-	$types = array( 'color','date','number','tel','time','url' );
-	if ( $type == 'mcm_text_field' ) { $type = 'text'; } else { $type = ( in_array( $type, $types ) )?$type:'text'; }
+
+function mcm_upload_field( $args ) {
 	global $post;
 	$description = $args[2];
 	// adjust data
 	$args[2] = get_post_meta($post->ID, $args[0], true);
 	$args[1] = __($args[1], 'sp' );
+    if(!empty($args[2]) && $args[2] != '0') {
+        $download = '<p><a href="'.$args[2].'">View '.$args[1].'</a></p>';
+    }
+	$max_upload = (int)(ini_get('upload_max_filesize'));
+	$max_post = (int)(ini_get('post_max_size'));
+	$memory_limit = (int)(ini_get('memory_limit'));
+	$upload_mb = min($max_upload, $max_post, $memory_limit);
 	$label_format =
 		'<p class="mcm_text_field mcm_field"><label for="%1$s"><strong>%2$s</strong></label><br />'.
-		'<input style="width: 80%%;" type="text" name="%1$s" value="%3$s" id="%1$s" />';
+		'<input style="width: 80%%;" type="file" name="%1$s" value="%3$s" id="%1$s" /><br />'.
+		sprintf( __( "Upload limit: %s MB",'my-content-management' ),$upload_mb );
+		if ( $description != '' ) { $label_format .= '<br /><em>'.$description.'</em></p>'; } else { $label_format .= '</p>'; }
+		if ( $download != '' ) { $label_format .= $download; }
+		return vsprintf( $label_format, $args );
+}
+
+function mcm_text_field( $args, $type='text' ) {
+	$types = array( 'color','date','number','tel','time','url' );
+	if ( $type == 'mcm_text_field' ) { $type = 'text'; } else { $type = ( in_array( $type, $types ) )?$type:'text'; }
+	global $post;
+	$description = $args[2];
+	$args[4] = $type;
+	// adjust data
+	$args[2] = get_post_meta($post->ID, $args[0], true);
+	$args[1] = __($args[1], 'sp' );
+	$label_format =
+		'<p class="mcm_text_field mcm_field"><label for="%1$s"><strong>%2$s</strong></label><br />'.
+		'<input style="width: 80%%;" type="%4$s" name="%1$s" value="%3$s" id="%1$s" />';
 		if ( $description != '' ) { $label_format .= '<br /><em>'.$description.'</em></p>'; } else { $label_format .= '</p>'; }
 		return vsprintf( $label_format, $args );
 }
@@ -239,6 +265,25 @@ function mcm_save_postdata($post_id, $post) {
 				if (isset($_POST[$value[0]]) ) {
 					$my_data[$value[0]] = $_POST[$value[0]];
 				}
+				if(!empty($_FILES[$value[0]])) {
+					$file   = $_FILES[$value[0]];
+					$upload = wp_handle_upload($file, array('test_form' => false));
+					if(!isset($upload['error']) && isset($upload['file'])) {
+						$filetype   = wp_check_filetype(basename($upload['file']), null);
+						$title      = $file['name'];
+						$ext        = strrchr($title, '.');
+						$title      = ($ext !== false) ? substr($title, 0, -strlen($ext)) : $title;
+						$attachment = array(
+							'post_mime_type'    => $wp_filetype['type'],
+							'post_title'        => addslashes($title),
+							'post_content'      => '',
+							'post_status'       => 'inherit',
+							'post_parent'       => $post->ID
+						);
+						$attach_id = wp_insert_attachment($attachment, $upload['file']);
+						$my_data[$value[0]] = wp_get_attachment_url( $attach_id );
+					}
+				}				
 			}
 		}
 		// Add values of $my_data as custom fields
@@ -258,8 +303,8 @@ function mcm_save_postdata($post_id, $post) {
 				add_post_meta($post->ID, $key, $value);
 			}
 			if (!$value) {
-				// delete blanks
-				delete_post_meta($post->ID, $key);
+				// have empty values for blanks (so templating works)
+				update_post_meta($post->ID, $key,'');
 			}
 		}
 	}

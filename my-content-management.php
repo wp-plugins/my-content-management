@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/articles/my-content-management/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.3.2
+Version: 1.3.3
 */
 /*  Copyright 2011-2012  Joe Dolson (email : joe@joedolson.com)
 
@@ -23,7 +23,7 @@ Version: 1.3.2
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-$mcm_version = '1.3.2';
+$mcm_version = '1.3.3';
 // Enable internationalisation
 load_plugin_textdomain( 'my-content-management',false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
@@ -33,6 +33,26 @@ include(dirname(__FILE__).'/mcm-widgets.php' );
 
 if ( !get_option( 'mcm_version' ) ) {  mcm_install_plugin(); }
 if ( version_compare( get_option('mcm_version'), $mcm_version, '<' ) ) { mcm_upgrade_plugin(); }
+
+function mcm_is_plugin_installed($plugin_dir) {
+	require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+	$plugins = get_plugins($plugin_dir);
+	if ($plugins) return true;
+	return false;
+}
+if ( isset($_GET['ignore']) && $_GET['ignore'] == 'glossary' ) {
+	update_option( 'mcm_glossary_ignore', 'true' );
+}
+if ( ! ( mcm_is_plugin_installed('/my-content-glossary') ) && get_option( 'mcm_glossary_ignore' ) != 'true' ) {
+	function mcm_glossary_notice() {
+		if ( current_user_can( 'install_plugins' ) ) {
+			$install = admin_url('plugin-install.php?tab=search&s=my+content+glossary');
+			$ignore = admin_url('options-general.php?page=my-content-management/my-content-management.php&ignore=glossary');
+			echo "<div class='error'><p>The My Content Management Glossary Filter is now an independent plug-in and must be installed separately. <a href='$install'>Install My Content Glossary</a>. <a href='$ignore'>Ignore</a></p></div>";
+		}
+	}
+	add_action('admin_notices', 'mcm_glossary_notice' );
+}
 
 // eventually, options. For now, not.
 $mcm_options = get_option('mcm_options');
@@ -66,6 +86,11 @@ function mcm_show_posts($atts) {
 				'custom' => false
 			), $atts));
 	return mcm_get_show_posts( $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id, $custom_wrapper, $custom, $operator, $year, $month, $week, $day );
+}
+
+add_action('post_edit_form_tag', 'mcm_post_edit_form_tag');
+function mcm_post_edit_form_tag() {
+    echo ' enctype="multipart/form-data"';
 }
 
 function mcm_show_archive($atts) {
@@ -214,12 +239,12 @@ function mcm_upgrade_plugin() {
 		case '1.2.1':
 		break;
 		case '1.2.0':
-		default:
 	$options = get_option('mcm_options');
 	$options['types'][]=$default_mcm_types;
 	$options['fields']=$default_mcm_fields;
 	$options['extras']=$default_mcm_extras;
 	update_option( 'mcm_options', $options );
+		default:
 		break;
 	}
 	update_option( 'mcm_version', $mcm_version );
@@ -241,11 +266,6 @@ function mcm_plugin_update_message() {
 
 
 function mcm_get_support_form() {
-
-echo "<pre>";
-print_r( $GLOBALS['wp_post_types']['mcm_people'] );
-echo "</pre>";
-
 global $current_user, $mcm_version;
 $textdomain = 'my-content-management';
 get_currentuserinfo();
@@ -551,7 +571,7 @@ function mcm_updater() {
 					'show_in_menu' => ( isset($ns['show_in_menu']) && $ns['show_in_menu'] == 1 )?true:false,
 					'show_ui' => ( isset($ns['show_ui']) && $ns['show_ui'] == 1 )?true:false, 
 					'hierarchical' => ( isset($ns['hierarchical']) && $ns['hierarchical'] == 1 )?true:false,
-					'menu_icon' => ($ns['menu_icon']=='')?null:$ns['menu_icon'],
+					'menu_icon' => ( !isset($ns['menu_icon']) || $ns['menu_icon']=='')?null:$ns['menu_icon'],
 					'supports' => $ns['supports'],
 					'slug' => $ns['slug'] ) );
 			$option['types'][$type] = $new;
@@ -567,7 +587,7 @@ function mcm_updater() {
 					'show_in_menu' => ( isset($ns['show_in_menu']) && $ns['show_in_menu'] == 1 )?true:false,
 					'show_ui' => ( isset($ns['show_ui']) && $ns['show_ui'] == 1 )?true:false,
 					'hierarchical' => ( isset($ns['hierarchical']) && $ns['hierarchical'] == 1 )?true:false,					
-					'menu_icon' => $ns['menu_icon'],
+					'menu_icon' => ( !isset($ns['menu_icon']) || $ns['menu_icon']=='')?null:$ns['menu_icon'],
 					'supports' => $ns['supports'],
 					'slug' => $ns['slug'] ) );
 			$option['types'][$type] = $new;
@@ -1038,6 +1058,7 @@ function mcm_get_fieldset( $fieldset=false ) {
 			'text'=>__('Single line of text','my-content-management'),
 			'textarea'=>__('Multiple lines of text','my-content-management'),
 			'select'=>__('Select dropdown','my-content-management'),
+			'upload'=>__('File upload','my-content-management'),
 			'color'=>__('Color input / HTML5','my-content-management'),
 			'date'=>__('Date input / HTML5','my-content-management'),
 			'tel'=>__('Telephone / HTML5','my-content-management'),

@@ -8,9 +8,8 @@ License: GPLv2 or later
 Stable tag: trunk
 
 Creates common custom post types for advanced content management: FAQ, Testimonials, people (staff, contributors, etc.), and others!
- 
-== Description ==
 
+== Description ==
 My Content Management creates a suite of custom post types, each with an appropriate custom taxonomy and a set of commonly needed custom fields. The purpose of the plug-in is to provide a single common interface to create commonly needed extra content tools. 
 
 In addition to the default custom post types and custom field groups, you can create new custom post types, create new groups of custom fields, and edit the post types and custom field groups that are built in.
@@ -67,6 +66,15 @@ Translator Credits (in no particular order)*:
 * Translators may not have contributed to this plug-in; but have contributed to my [translation repository](http://translate.joedolson.com).
 
 == Changelog ==
+
+= 1.3.3 =
+
+* New feature: Added file uploads option to custom field options.
+* Bug fix: function mcm_custom_field() did not exist.
+* Assorted bug fixes, [courtesy Juliette](http://wordpress.org/support/topic/few-small-bugsfixes-undefined-variables-and-such)
+* Bug fix: Upgrade bug that could wipe out custom fieldsets. Yikes! 
+* Bug fix: Empty custom fields returned template tags instead of blank fields.
+* Removed Glossary Filter plug-in so that plug-in can be maintained independently. 
 
 = 1.3.2 =
 
@@ -243,6 +251,10 @@ All of the  major WordPress features are types of posts: Posts are the main one,
 
 Well, there really isn't just one way to use this plug-in. There are many, many different ways to use it. I'd recommend buying the [User's Guide](http://www.joedolson.com/articles/my-content-management/guide/), which will walk you through many of the ways you can use this plug-in. Also, your purchase will help support me! Bonus!
 
+= OMG! What happened to my Glossary page! =
+
+I removed the Glossary Filter plug-in from the My Content Management package in version 1.3.3. It can now be downloaded separately at <a href="http://wordpress.org/extend/plugins/my-content-glossary/">My Content Glossary</a>. 
+
 == Screenshots ==
 
 1. Settings Page
@@ -251,4 +263,4 @@ Well, there really isn't just one way to use this plug-in. There are many, many 
 
 == Upgrade Notice ==
 
- * 1.3.0 Adds support for customizing custom field groups.
+ * 1.3.3 Important! Glossary Filter is no longer packaged with this plug-in. It must be downloaded separately.

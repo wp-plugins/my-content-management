@@ -255,14 +255,13 @@ $templates = $mcm_templates; $types = $mcm_types;
 }
 
 // A simple function to get data stored in a custom field
-if ( !function_exists('mcm_custom_field') ) {
-	function mcm_get_custom_field($field,$id='') {
-		global $post;
-		$id = ($id != '')?$id:$post->ID;
-		$custom_field = get_post_meta($id, $field, true);
-		return $custom_field;
-	}
+function mcm_get_custom_field($field,$id='') {
+	global $post;
+	$id = ($id != '')?$id:$post->ID;
+	$custom_field = get_post_meta($id, $field, true);
+	return $custom_field;
 }
+
 function mcm_custom_field( $field,$before='',$after='',$id='' ) {
 	$value = mcm_get_custom_field($field, $id);
 	if ( $value ) {

@@ -4,4 +4,5 @@ if ( !defined( 'ABSPATH' ) && !defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 } else {
 	delete_option( 'mcm_options' );
 	delete_option( 'mcm_version' );
+	delete_option( 'mcm_glossary_ignore' );
 }
