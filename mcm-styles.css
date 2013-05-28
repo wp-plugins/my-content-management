@@ -1,4 +1,4 @@
-.mcm-settings legend { font-weight: 700; font-size: 1.1em;}
+.mcm-settings legend { font-weight: 700; f ont-size: 1.1em;}
 .wrappers { width: 16em; float: left; padding-top: 1em; }
 .wrappers label { display: block; float: left; width: 7em; padding: 5px 0 0;}
 .extra_fields{ float: right; padding: 10px; width: 200px; }
@@ -12,3 +12,8 @@
 .mcm-settings .meta-box-sortables { min-height: 0; }
 .mcm-settings td label { position: absolute; left: -999em; } 
 .mcm-settings td input { width: 100%; }
+.mcm-settings .up span, .mcm-settings .down span { position: absolute; left: -999em; }
+.mcm-settings .up { background: url(/wp-content/plugins/my-content-management/images/up.png); width: 24px; height: 24px; display: inline-block; }
+.mcm-settings .down { background: url(/wp-content/plugins/my-content-management/images/down.png); width: 24px; height: 24px; display: inline-block; }
+.mcm-settings td a { opacity: .5; }
+.mcm-settings td a:hover, .mcm-settings td a:focus { opacity: 1; }

@@ -53,19 +53,24 @@ You can create a site map for a specific post type and taxonomy using the [my_ar
 The "id" attribute is not supported in the [my_archive] shortcode. (Because that would be silly.) The [my_archive] shortcode does support a "show_links" attribute which will turn on a navigation list to navigate to each displayed category.
 
 Available languages (in order of completeness):
-Irish, Spanish
+Irish, Spanish, Dutch
 
 Visit the [My Content Management translations site](http://translate.joedolson.com/projects/my-content-management/) to check how complete a translation is.
 
 Translating my plug-ins is always appreciated. Visit <a href="http://translate.joedolson.com">my translations site</a> to start getting your language into shape!
 
-Translator Credits (in no particular order)*:
-
-[Ale Gonzalez](http://60rpm.tv/i), [Outshine Solutions](http://outshinesolutions.com), [Jakob Smith](http://www.omkalfatring.dk/),, [globus2008](http://wordpress.org/support/profile/globus2008), Frederic Escallier, Luud Heck, Wim Strijbos, [Daisuke Abe](http://www.alter-ego.jp/), [Alex](http://blog.sotvoril.ru/), Mehmet Ko&ccedil;ali, Uwe Jonas, Florian Edelmann, Efva Nyberg, [Sabir Musta](http://mustaphasabir.altervista.org), Massimo Sgobino, Leonardo Kfoury, Alexandre Carvalho, Amir Khalilnejad, [Aurelio De Rosa](http://www.audero.it/), Bayram Dede, Dani Locasati, Dario Nunez, Dirk Ginader, Evren Erten, Fl&aacute;vio Pereira, Francois-Xavier Benard, [Gianni Diurno](http://www.gidibao.net), Giksi, Heinz Ochsner,  Kazuyuki Kumai, Liam Boogar, Maks, Mano, Massimo Sgobino, Mohsen Aghaei, Oscar, [Rashid Niamat](http://niamatmediagroup.nl/), Stefan Wikstrom, Thomas Meyer, Vedar Ozdemir, [Vikas Arora](http://www.wiznicworld.com), [Miriam de Paula](http://wpmidia.com.br), [HostUCan](http://www.hostucan.com), [Alex Alexandrov](http://www.webhostingrating.com), [Alyona Lompar](http://www.webhostinggeeks.com), [David Gil P&eacute;rez](http://www.sohelet.com), [Burkov Boris](http://chernobog.ru), [Raivo Ratsep](http://raivoratsep.com), [Jibo](http://jibo.ro), [Rasmus Himmelstrup](http://seoanalyst.dk), [kndb](http://blog.layer8.sh/)
-
-* Translators may not have contributed to this plug-in; but have contributed to my [translation repository](http://translate.joedolson.com).
+<a href="http://www.joedolson.com/articles/translator-credits/">Translator Credits</a>
 
 == Changelog ==
+
+= 1.3.4 =
+
+* Bug fix: custom field values improperly escaped when editing posts.
+* Bug fix: missing mimetype for uploaded files
+* New feature: change the display order of custom fields when editing.
+* New feature: support for all defined featured image sizes.
+* New feature: support for passing GET variables to shortcodes.
+* New language: Dutch.
 
 = 1.3.3 =
 

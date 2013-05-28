@@ -14,6 +14,7 @@
 @custom = custom variable; can be anything
 @operator = IN, NOT IN, or AND
 */
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 function mcm_get_single_post( $type, $id ) {
 	return mcm_get_show_posts( $type, 'full', 'all','','','','','','','','',$id,'','','','','','','' );
@@ -136,9 +137,10 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$p['content'] = apply_filters('the_content',get_the_content(), get_the_ID() );
 			add_filter('the_content','mcm_replace_content');
 			$p['content_raw'] = get_the_content();
-			$p['thumbnail'] = get_the_post_thumbnail( $id, 'thumbnail', array( 'class'=>'mcm_thumbnail', 'alt'=>trim( strip_tags( get_the_title( $id ) ) ), 'title'=>'' ) );
-			$p['medium'] = get_the_post_thumbnail( $id, 'medium', array( 'class'=>'mcm_medium', 'alt'=>trim( strip_tags( get_the_title( $id ) ) ), 'title'=>'' ) );
-			$p['large'] = get_the_post_thumbnail( $id, 'large', array( 'class'=>'mcm_large', 'alt'=>trim( strip_tags( get_the_title( $id ) ) ), 'title'=>'' ) );
+			$sizes = get_intermediate_image_sizes();
+			foreach ( $sizes as $size ) {
+				$p[$size] = get_the_post_thumbnail( get_the_ID(), $size, array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
+			}
 			$p['full'] = get_the_post_thumbnail( $id, 'full', array( 'class'=>'mcm_large', 'alt'=>trim( strip_tags( get_the_title( $id ) ) ), 'title'=>'' ) );
 			$p['shortlink'] = wp_get_shortlink();
 			$p['modified'] = get_the_modified_date();
@@ -190,9 +192,10 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$p['content'] = apply_filters('the_content', $the_post->post_content, $the_post->ID );	
 			add_filter('the_content','mcm_replace_content');
 			$p['content_raw'] = $the_post->post_content;
-			$p['thumbnail'] = get_the_post_thumbnail( $the_post->ID, 'thumbnail', array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
-			$p['medium'] = get_the_post_thumbnail( $the_post->ID, 'medium', array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
-			$p['large'] = get_the_post_thumbnail( $the_post->ID, 'large', array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
+			$sizes = get_intermediate_image_sizes();
+			foreach ( $sizes as $size ) {
+				$p[$size] = get_the_post_thumbnail( $the_post->ID, $size, array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
+			}
 			$p['full'] = get_the_post_thumbnail( $the_post->ID, 'full', array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
 			$p['permalink'] = get_permalink( $the_post->ID );
 			$p['link_title'] = "<a href='".get_permalink( $the_post->ID )."'>".$the_post->post_title."</a>";				

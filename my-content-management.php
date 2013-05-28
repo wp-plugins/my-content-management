@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/articles/my-content-management/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.3.3
+Version: 1.3.4
 */
 /*  Copyright 2011-2012  Joe Dolson (email : joe@joedolson.com)
 
@@ -23,7 +23,9 @@ Version: 1.3.3
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-$mcm_version = '1.3.3';
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+$mcm_version = '1.3.4';
 // Enable internationalisation
 load_plugin_textdomain( 'my-content-management',false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
@@ -85,6 +87,9 @@ function mcm_show_posts($atts) {
 				'custom_wrapper'=>'div',
 				'custom' => false
 			), $atts));
+			if ( isset( $_GET['mcm'] ) && isset( $_GET['mcm_value'] ) ) {
+				${$_GET['mcm']} = sanitize_text_field($_GET['mcm_value']);
+			}
 	return mcm_get_show_posts( $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id, $custom_wrapper, $custom, $operator, $year, $month, $week, $day );
 }
 
@@ -320,6 +325,7 @@ URL: $home_url
 Install: $wp_url
 Language: $language
 Charset: $charset
+Admin Email: $current_user->user_email
 
 ==Extra info:==
 PHP Version: $php_version
@@ -477,18 +483,17 @@ $enabled = (isset($_POST['mcm_enabler']))?$_POST['mcm_posttypes']:$enabled;
 			<dt><code>{content_raw}</code></dt>
 			<dd><?php _e('Post content (unmodified)','my-content-management'); ?></dd>
 
-			<dt><code>{thumbnail}</code></dt>
-			<dd><?php _e('Featured image as thumbnail.','my-content-management'); ?></dd>
-
-			<dt><code>{medium}</code></dt>
-			<dd><?php _e('Featured image at medium size.','my-content-management'); ?></dd>
-
-			<dt><code>{large}</code></dt>
-			<dd><?php _e('Featured image at large size.','my-content-management'); ?></dd>
-
 			<dt><code>{full}</code></dt>
 			<dd><?php _e('Featured image at original size.','my-content-management'); ?></dd>
 
+			<?php
+				$sizes = get_intermediate_image_sizes();
+				foreach ( $sizes as $size ) {
+					echo '	<dt><code>{'.$size.'}</code></dt>
+							<dd>'.sprintf( __('Featured image at %s size','my-content-management'),$size ).'</dd>';
+				}
+			?>
+			
 			<dt><code>{permalink}</code></dt>
 			<dd><?php _e('Permalink URL for post','my-content-management'); ?></dd>
 
@@ -867,7 +872,7 @@ function mcm_show_support_box() {
 		<div class="resources">
 		<p>
 		<a href="https://twitter.com/intent/tweet?screen_name=joedolson&text=My%20Content%20Management%20is%20awesome!" class="twitter-mention-button" data-size="large" data-related="joedolson">Tweet to @joedolson</a>
-		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 		</p>		
 		<ul>
 		<li><strong><a href="#get-support" rel="external"><?php _e("Get Support",'my-content-management'); ?></a></strong> &bull; <a href="http://www.joedolson.com/articles/bugs/"><?php _e("Report a bug",'my-content-management'); ?></a></li>	
@@ -1049,7 +1054,7 @@ function mcm_get_fieldset( $fieldset=false ) {
 		$fieldset_title = '';
 	}
 	
-	$form = $fieldset_title.'<table class="widefat"><thead><tr><th scope="col">'.__('Field Label','my-content-management').'</th><th scope="col">'.__('Input Type','my-content-management').'</th><th scope="col">Description/Options</th><th  scope="col">'.__('Delete','my-content-management').'</th></tr></thead><tbody>';
+	$form = $fieldset_title.'<table class="widefat"><thead><tr><th scope="col">'.__('Move','my-content-management').'</th><th scope="col">'.__('Field Label','my-content-management').'</th><th scope="col">'.__('Input Type','my-content-management').'</th><th scope="col">Description/Options</th><th  scope="col">'.__('Delete','my-content-management').'</th></tr></thead><tbody>';
 	$odd = 'odd'; 
 	if ( isset( $option['fields'][$fieldset] ) ) {
 		$fields = ( $fieldset )?$option['fields'][urldecode($fieldset)]:'';
@@ -1079,8 +1084,12 @@ function mcm_get_fieldset( $fieldset=false ) {
 				$field_type_select .= "<option value='$k'$selected>$v</option>\n";
 			}
 			if ( $value[3] == 'select' ) { $labeled = __("Options",'my-content-management'); } else { $labeled = __("Additional Text",'my-content-management'); }
+			/*
 		$form .= "
 		<tr class='mcm_custom_fields_form $odd'>
+			<td>
+				<a href='#' class='up'><span>Move Up</span></a> / <a href='#' class='down'><span>Move Down</span></a>
+			</td>		
 			<td>
 				<input type='hidden' name='mcm_field_key[$key]'  value='$value[0]' />
 				<label for='mcm_field_label$key'>".__('Label','my-content-management')."</label> <input type='text' name='mcm_field_label[$key]' id='mcm_field_label$key' value='".esc_attr(stripslashes($value[1]))."' /><br /><small>{<code>$value[0]</code>}</small>
@@ -1098,6 +1107,29 @@ function mcm_get_fieldset( $fieldset=false ) {
 				<label for='mcm_field_delete$key'>".__('Delete','my-content-management')."</label> <input type='checkbox' name='mcm_field_delete[$key]' id='mcm_field_delete$key' value='delete' />
 			</td>
 		</tr>";
+		*/
+		$form .= "
+		<tr class='mcm_custom_fields_form $odd'>
+			<td>
+				<a href='#' class='up'><span>Move Up</span></a> <a href='#' class='down'><span>Move Down</span></a>
+			</td>		
+			<td>
+				<input type='hidden' name='mcm_field_key[]'  value='$value[0]' />
+				<label for='mcm_field_label$key'>".__('Label','my-content-management')."</label> <input type='text' name='mcm_field_label[]' id='mcm_field_label$key' value='".esc_attr(stripslashes($value[1]))."' /><br /><small>{<code>$value[0]</code>}</small>
+			</td>
+			<td>
+				<label for='mcm_field_type$key'>".__('Type','my-content-management')."</label> 
+					<select name='mcm_field_type[]' id='mcm_field_type$key'>
+					$field_type_select
+					</select>
+			</td>
+			<td>
+				<label for='mcm_field_options$key'>$labeled</label> <input type='text' name='mcm_field_options[]' id='mcm_field_options$key' value='$choices' />
+			</td>
+			<td>
+				<label for='mcm_field_delete$key'>".__('Delete','my-content-management')."</label> <input type='checkbox' name='mcm_field_delete[$key]' id='mcm_field_delete$key' value='delete' />
+			</td>
+		</tr>";		
 		$odd = ( $odd == 'odd' ) ? 'even' : 'odd';
 		}
 	} else if ( $fieldset && !isset( $option['fields'][$fieldset] ) ) {
@@ -1109,6 +1141,7 @@ function mcm_get_fieldset( $fieldset=false ) {
 		}	
 	$form .= "
 	<tr class='mcm_custom_fields_form clonedInput' id='field1'>
+		<td></td>
 		<td>
 			<input type='hidden' name='mcm_field_key[]'  value='' />
 			<label for='mcm_field_label'>".__('Label','my-content-management')."</label> <input type='text' name='mcm_field_label[]' id='mcm_field_label' value='' />
@@ -1122,8 +1155,7 @@ function mcm_get_fieldset( $fieldset=false ) {
 		<td>
 			<label for='mcm_field_options'>".__('Options/Additional Text','my-content-management')."</label> <input type='text' name='mcm_field_options[]' id='mcm_field_options' value='' />
 		</td>
-		<td>
-		</td>
+		<td></td>
 	</tr>";	
 	$form .= '</tbody></table>';
 		$add_field =__('Add another field','my-content-management');

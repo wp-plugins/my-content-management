@@ -9,8 +9,8 @@ jQuery(document).ready(function($) {
 		$('#field' + num).after(newElem);
 		// enable the "remove" button
 		$('.del_field').removeAttr('disabled');
-		// business rule: you can only add 10 occurrences
-		if (newNum == 10)
+		// business rule: you can only add 16 occurrences
+		if (newNum == 16)
 			$('.add_field').attr('disabled','disabled');
 	});
 
@@ -24,4 +24,15 @@ jQuery(document).ready(function($) {
 			$('.del_field').attr('disabled','disabled');
 	});
 	$('.del_field').attr('disabled','disabled');
+	
+	$(".up,.down").click(function(e){
+		e.preventDefault();
+		$('#mcm-settings input[type=checkbox]').attr('disabled',true);
+		var row = $(this).parents("tr:first");
+		if ($(this).is(".up")) {
+			row.insertBefore(row.prev());
+		} else {
+			row.insertAfter(row.next());
+		}
+	});
 });

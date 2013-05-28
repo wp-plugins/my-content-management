@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 global $mcm_types,$mcm_fields,$mcm_extras,$mcm_enabled,$mcm_templates,
 $default_mcm_types,$default_mcm_fields,$default_mcm_extras;
 
@@ -203,7 +205,7 @@ function mcm_text_field( $args, $type='text' ) {
 	$description = $args[2];
 	$args[4] = $type;
 	// adjust data
-	$args[2] = get_post_meta($post->ID, $args[0], true);
+	$args[2] = esc_attr( get_post_meta($post->ID, $args[0], true) );
 	$args[1] = __($args[1], 'sp' );
 	$label_format =
 		'<p class="mcm_text_field mcm_field"><label for="%1$s"><strong>%2$s</strong></label><br />'.
@@ -243,7 +245,7 @@ function mcm_save_postdata($post_id, $post) {
 	global $mcm_fields;
 	$fields = $mcm_fields;
 
-	// verify this came from the our screen and with proper authorization,
+	// verify this came from our screen and with proper authorization,
 	// because save_post can be triggered at other times
 	if ( isset( $_POST['mcm_nonce_name'] ) ) {
 		if ( ! wp_verify_nonce( $_POST['mcm_nonce_name'], plugin_basename(__FILE__) ) ) {
@@ -274,7 +276,7 @@ function mcm_save_postdata($post_id, $post) {
 						$ext        = strrchr($title, '.');
 						$title      = ($ext !== false) ? substr($title, 0, -strlen($ext)) : $title;
 						$attachment = array(
-							'post_mime_type'    => $wp_filetype['type'],
+							'post_mime_type'    => $filetype['type'],
 							'post_title'        => addslashes($title),
 							'post_content'      => '',
 							'post_status'       => 'inherit',
@@ -289,8 +291,7 @@ function mcm_save_postdata($post_id, $post) {
 		// Add values of $my_data as custom fields
 		// Let's cycle through the $my_data array!
 		foreach ($my_data as $key => $value) {
-			if ( 'revision' == $post->post_type  ) {
-				// don't store custom data twice
+			if ( 'revision' == $post->post_type  ) { // don't store custom data twice
 				return;
 			}
 			// if $value is an array, make it a CSV (unlikely)
