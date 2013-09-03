@@ -25,14 +25,24 @@ jQuery(document).ready(function($) {
 	});
 	$('.del_field').attr('disabled','disabled');
 	
+	$('#mcm-settings select').on('change',function() {
+		var selected = $(this).val();
+		if ( selected == 'richtext' || selected == 'select' ) {
+			$(this).parents("tr:first").find('.mcm-repeatable').attr('disabled', true );
+		} else {
+			$(this).parents("tr:first").find('.mcm-repeatable').removeAttr( 'disabled' );
+		}
+	});
+	
 	$(".up,.down").click(function(e){
 		e.preventDefault();
-		$('#mcm-settings input[type=checkbox]').attr('disabled',true);
+		$('#mcm-settings input[class=mcm-delete]').attr('disabled',true);
+		$('#mcm-settings table tr').removeClass('fade');
 		var row = $(this).parents("tr:first");
 		if ($(this).is(".up")) {
-			row.insertBefore(row.prev());
+			row.insertBefore(row.prev()).addClass('fade');
 		} else {
-			row.insertAfter(row.next());
+			row.insertAfter(row.next()).addClass('fade');
 		}
 	});
 });

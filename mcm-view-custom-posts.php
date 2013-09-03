@@ -95,6 +95,7 @@ $templates = $mcm_templates; $types = $mcm_types;
 				if ( strpos($term, ',' ) !== false ) {
 					$term = explode( ',',$term );
 				}
+				if ( $term == 'null' ) { $term = array(null); }
 				$args['tax_query'] = array( array( 'taxonomy' => $taxes[0], 'field' => 'slug', 'terms' => $term, 'operator'=>$operator ) ); 
 			}
 		}
@@ -116,9 +117,9 @@ $templates = $mcm_templates; $types = $mcm_types;
 		
 		$debug = false;
 		if ( $debug ) {
-		echo "<pre>";
-		print_r($args);
-		echo "</pre>";
+			echo "<pre>";
+			print_r($args);
+			echo "</pre>";
 		}
 		$loop = new WP_Query( $args );
 		$last_term = false;
@@ -128,6 +129,7 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$p = array();
 			$id = get_the_ID();
 			$p['id'] = $id;
+			$p['post_type'] = get_post_type( $id );
 			$p['permalink'] = get_permalink();
 			$p['link_title'] = "<a href='".get_permalink()."'>".get_the_title()."</a>";			
 			$p['title'] = get_the_title();			
@@ -150,7 +152,7 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$p['edit_link'] = get_edit_post_link($id) ? "<a href='".get_edit_post_link($id)."'>".__( 'Edit', 'my-content-management' )."</a>" : "";	
 				$postclass = implode( ' ',get_post_class() );
 			$p['postclass'] = $postclass;
-			$p['terms'] = ($taxonomy != 'all')?get_the_term_list( $id, $taxonomy,'',', ','' ):'';
+			$p['terms'] = ($taxonomy != 'all')?get_the_term_list( $id, $taxonomy,'',', ','' ):get_the_term_list( $id, "mcm_category_$primary", '', ', ', '' );
 			$custom_fields = get_post_custom();
 				foreach ( $custom_fields as $key=>$value ) {
 					$is_email = ( stripos( $key, 'email' ) !== false )?true:false;
@@ -185,6 +187,7 @@ $templates = $mcm_templates; $types = $mcm_types;
 		foreach ( $ids as $v ) {
 			$the_post = get_post( $v );
 			$p['id'] = $the_post->ID;
+			$p['post_type'] = get_post_type( $the_post->ID );			
 			$p['excerpt'] = wpautop( $the_post->post_excerpt );
 			$p['excerpt_raw'] = $the_post->post_excerpt;
 			//$p['content'] = do_shortcode( wpautop( $the_post->post_content ) );
@@ -208,21 +211,27 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$p['edit_link'] = get_edit_post_link($the_post->ID) ? "<a href='".get_edit_post_link($the_post->ID)."'>".__( 'Edit', 'my-content-management' )."</a>" : "";
 			$postclass = implode( ' ',get_post_class( '',$the_post->ID ) );
 			$p['postclass'] = $postclass;				
-			$p['terms'] = ($taxonomy != 'all')?get_the_term_list( $the_post->ID, $taxonomy,'',', ','' ):'';
+			$p['terms'] = ($taxonomy != 'all')?get_the_term_list( $the_post->ID, $taxonomy,'',', ','' ):get_the_term_list( $id, "mcm_category_$primary", '', ', ', '' );
 			$custom_fields = get_post_custom( $the_post->ID );
-				foreach ( $custom_fields as $key=>$value ) {
-					$is_email = ( stripos( $key, 'email' ) !== false )?true:false;
-					if ( is_array( $value ) ) {
-						if ( is_array( $value[0] ) ) {
-							foreach( $value[0] as $val ) {
-								$cfield[] = ( $is_email )?apply_filters('mcm_munge',$val,$val,$custom ):$val;
-							}
-							$p[$key] =  explode( ", ", $cfield );
-						} else {
-							$p[$key] =  ( $is_email )?apply_filters('mcm_munge',$value[0],$value[0], $custom ):$value[0];
+			foreach ( $custom_fields as $key=>$value ) {
+				$cfield = array();
+				$is_email = ( stripos( $key, 'email' ) !== false )?true:false;
+				if ( is_array( $value ) ) {
+					$value = maybe_unserialize($value);
+					if ( is_array( $value[0] ) ) {
+						// if the saved value is an array
+						foreach( $value[0] as $val ) {
+							$cfield[] = ( $is_email )?apply_filters( 'mcm_munge',$val,$val,$custom ):$val;
+						}
+					} else {
+						// if multiple values
+						foreach ( $value as $v ) {
+							$cfield[] =  ( $is_email )?apply_filters( 'mcm_munge',$v,$v,$custom ):$v;
 						}
 					}
 				}
+				$p[$key] = $cfield;
+			}
 			$p = apply_filters('mcm_extend_posts', $p, $p, $custom );
 			$this_post = mcm_run_template( $p, $display, $column, $wrapper );
 			$return .= apply_filters('mcm_filter_post',$this_post, $p, $custom );
@@ -258,15 +267,28 @@ $templates = $mcm_templates; $types = $mcm_types;
 }
 
 // A simple function to get data stored in a custom field
-function mcm_get_custom_field($field,$id='') {
+function mcm_get_custom_field($field,$id='',$fallback=false ) {
 	global $post;
 	$id = ($id != '')?$id:$post->ID;
-	$custom_field = get_post_meta($id, $field, true);
+	$custom_field = '';
+	$single =  ( mcm_is_repeatable( $field ) )?false:true;
+	$plaintext = ( mcm_is_richtext( $field ) )?false:true;
+	$meta = get_post_meta( $id, $field, $single );
+	if ( $single ) {
+		$custom_field = ( $meta )?$meta:$fallback;	
+	} else {
+		foreach( $meta as $field ) {
+			$custom_field .= ( $field )?$field:$fallback;
+		}
+	}
+	if ( !$plaintext ) {
+		$custom_field = wpautop( $custom_field );
+	} 	
 	return $custom_field;
 }
 
-function mcm_custom_field( $field,$before='',$after='',$id='' ) {
-	$value = mcm_get_custom_field($field, $id);
+function mcm_custom_field( $field,$before='',$after='',$id='',$fallback=false ) {
+	$value = mcm_get_custom_field($field, $id, $fallback);
 	if ( $value ) {
 		if ( is_array( $value ) ) {
 			foreach ( $value as $v ) {
@@ -290,9 +312,7 @@ global $mcm_templates; $templates = $mcm_templates;
 		break;
 		case 'full':
 			$wrapper = ( isset($templates[$type]['wrapper']['item']['full']) )?$templates[$type]['wrapper']['item']['full']:'div';
-		
 			if ( $wrapper != '' ) { $pre = "<$wrapper class='$postclass $column'>"; $posttag = "</$wrapper>"; } else { $pre = $posttag = '';}
-			
 			if ( isset($templates[$type]['full']) && trim( $templates[$type]['full'] ) != '' ) {
 				$return .= "$pre
 				".mcm_draw_template($post,$templates[$type]['full'])."
@@ -306,9 +326,7 @@ global $mcm_templates; $templates = $mcm_templates;
 		break;
 		case 'excerpt':
 			$wrapper = ( isset($templates[$type]['wrapper']['item']['excerpt']) )?$templates[$type]['wrapper']['item']['excerpt']:'div';
-			
 			if ( $wrapper != '' ) { $pre = "<$wrapper class='$postclass $column'>"; $posttag = "</$wrapper>"; } else { $pre = $posttag = '';}
-
 			if ( isset($templates[$type]['excerpt']) && trim( $templates[$type]['excerpt'] ) != '' ) {
 				$return .= "$pre
 				".mcm_draw_template($post,$templates[$type]['excerpt'])."
@@ -322,11 +340,10 @@ global $mcm_templates; $templates = $mcm_templates;
 		break;
 		case 'list':
 			$wrapper = ( isset($templates[$type]['wrapper']['item']['list']) )?$templates[$type]['wrapper']['item']['list']:'li';
-			
 			if ( $wrapper != '' ) { $pre = "<$wrapper class='$postclass $column'>"; $posttag = "</$wrapper>"; } else { $pre = $posttag = '';}
 			if ( isset($templates[$type]['list']) && trim( $templates[$type]['list'] ) != '' ) {
 				$return .= "$pre
-				".mcm_draw_template($post,$templates[$type]['list'])."
+				".mcm_draw_template( $post,$templates[$type]['list'] )."
 				$posttag";
 			} else {		
 				$return .= "$post[link_title]\n";
@@ -342,45 +359,84 @@ global $mcm_templates; $templates = $mcm_templates;
 	}
 	return $return;
 }
-/*
-function mcm_draw_template( $array,$template ) {
-	//1st argument: array of details
-	//2nd argument: template to print details into
-	foreach ($array as $key=>$value) {
-		if ( !is_object($value) ) {
-			$search = "{".$key."}";
-			$template = stripcslashes(str_replace($search,$value,$template));
-		} else {
+
+// nested template tags: parses tags inside before or after values of tags
+function mcm_simple_template( $array=array(), $template=false ) {
+	if ( !$template ) { return; }
+	foreach ( $array as $key=>$value ) {
+		if ( !is_object( $value ) ) {
+			if ( strpos( $template, "{".$key."}" ) ) {
+				$template = str_replace( "{".$key."}", $value, $template );
+			}
 		}
 	}
-	return trim($template);
+	return $template;
 }
-*/
-function mcm_draw_template( $array='',$template='' ) {
-	//1st argument: array of details
-	//2nd argument: template to print details into
+
+function mcm_draw_template( $array=array(), $template='' ) {
 	$template = stripcslashes($template);
+	$fallback = $before = $after = $size = $output = '';
+	$template = mcm_simple_template( $array, $template );
 	foreach ($array as $key=>$value) {
+		$is_chooser = mcm_is_chooser( $key );
 		if ( !is_object($value) ) {
 			if ( strpos( $template, "{".$key ) !== false ) { // only check for tag parts that exist
-				preg_match_all('/{'.$key.'\b(?>\s+(?:before="([^"]*)"|after="([^"]*)")|[^\s]+|\s+){0,2}}/', $template, $matches, PREG_PATTERN_ORDER );
-				if ( $matches ) {
-					$before = ( isset( $matches[1][0] ) )?$matches[1][0]:'';
-					$after = ( isset( $matches[2][0] ) )?$matches[2][0]:'';
-					$value = ( $value == '' )?'':$before.$value.$after;
-					$whole_thang = ( isset( $matches[0][0] ) )?$matches[0][0]:'';
-					$template = str_replace( $whole_thang, $value, $template );
+				preg_match_all('/{'.$key.'[^}]*+}/i',$template, $result); 
+				if ( $result ) {
+					foreach( $result as $pass ) {
+						$whole_thang = $pass[0];
+						preg_match_all('/(before|after|fallback|size)="([^"]*)"/i', $whole_thang, $matches, PREG_PATTERN_ORDER );
+						if ( $matches ) {
+							foreach ( $matches[1] as $k => $v ) {
+								if ( $v == 'fallback' ) { $fallback = $matches[2][$k]; }
+								if ( $v == 'before' ) { $before = $matches[2][$k]; }
+								if ( $v == 'after' ) { $after = $matches[2][$k]; }
+								if ( $v == 'size' ) { $size = $matches[2][$k]; }
+							}
+							if ( is_array( $value ) ) {
+								foreach ( $value as $val ) {
+									if ( $is_chooser ) { if ( is_numeric( $val ) ) { $val = wp_get_attachment_link( $val, $size ); } }
+									$fb = ( $fallback != '' && $val == '' )?$before.$fallback.$after:'';
+									$output .= ( $val == '' )?$fb:$before.$val.$after;
+								}
+							} else {
+								if ( $is_chooser ) { $value = wp_get_attachment_link( $value, $size ); }
+								$fb = ( $fallback != '' && $value == '' )?$before.$fallback.$after:'';
+								$output = ( $value == '' )?$fb:$before.$value.$after;
+							}
+							$template = str_replace( $whole_thang, $output, $template );
+						}
+						$fallback = $before = $after = $size = $output = '';
+					}
 				}
 			}
-		} 
+		}
 	}
-	return stripslashes( trim( mc_clean_template($template) ) );
+	return stripslashes( trim( mc_clean_template($template) ) );			
 }
+//needs testing JCD
+function mcm_is_chooser( $key ) {
+	// determine whether a given key is a media chooser data type
+	global $mcm_fields;
+	$check = $found = false;
+	foreach ( $mcm_fields as $k=>$v ) {
+		foreach ( $v as $field ) {
+			if ( $field[0] == $key ) {
+				$found = true;
+			}
+			if ( $found ) {
+				$check = ( $field[3] == 'chooser' )?true:false;
+				return $check;
+			}
+		}
+	}
+	return $check;	
+}
+
 // function cleans unreplaced template tags out of the template. 
 // Necessary for custom fields, which do not exist in array if empty.
 function mc_clean_template( $template ) {
-	preg_match_all('/{[\w]*\b(?>\s+(?:before="([^"]*)"|after="([^"]*)")|[^\s]+|\s+){0,2}}/', $template, $matches, PREG_PATTERN_ORDER );
-
+	preg_match_all('/{\w[^}]*+}/i', $template, $matches, PREG_PATTERN_ORDER );
 	if ( $matches ) {
 		foreach ( $matches[0] as $match ) {
 		$template = str_replace( $match, '', $template );
@@ -427,7 +483,7 @@ function mcm_munge($address) {
     $unshuffled = strlen($unmixedkey);
     for ($i = 0; $i <= strlen($unmixedkey); $i++) {
 		$ranpos = rand(0,$unshuffled-1);
-		$nextchar = @$inprogresskey{$ranpos};
+		$nextchar = ( isset( $inprogresskey{$ranpos} ) )?$inprogresskey{$ranpos}:'';
 		$mixedkey .= $nextchar;
 		$before = substr($inprogresskey,0,$ranpos);
 		$after = substr($inprogresskey,$ranpos+1,$unshuffled-($ranpos+1));

@@ -3,9 +3,9 @@ Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebars, content management
 Requires at least: 3.2.1
-Tested up to: 3.5.1
+Tested up to: 3.6.0
 License: GPLv2 or later
-Stable tag: trunk
+Stable tag: 1.3.4
 
 Creates common custom post types for advanced content management: FAQ, Testimonials, people (staff, contributors, etc.), and others!
 
@@ -55,13 +55,29 @@ The "id" attribute is not supported in the [my_archive] shortcode. (Because that
 Available languages (in order of completeness):
 Irish, Spanish, Dutch
 
-Visit the [My Content Management translations site](http://translate.joedolson.com/projects/my-content-management/) to check how complete a translation is.
+Visit the [My Content Management translations site](http://translate.joedolson.com/projects/my-content-management/) to check the progress of a translation.
 
 Translating my plug-ins is always appreciated. Visit <a href="http://translate.joedolson.com">my translations site</a> to start getting your language into shape!
 
 <a href="http://www.joedolson.com/articles/translator-credits/">Translator Credits</a>
 
 == Changelog ==
+
+= 1.4.0 =
+
+* Bug fix: custom post type search widget; could not select post type.
+* Bug fix: if all "supports" options were disabled, could not later select options.
+* Minor rewrite of custom meta saving process.
+* New template tag attribute: fallback (all template tags; set fallback content if field not supplied.)
+* New template tag attribute: size (chooser template tags; image size keyword)
+* Revised template tag replacement function.
+* Added fallback content parameter to mcm_custom_field function.
+* If taxonomy not specified, fall back to MCM created taxonomy when generating terms.
+* Added media chooser option for input.
+* Added rich text editor option for input.
+* Automatically refresh permalinks.
+* Minor UI Changes.
+* Performance improvements.
 
 = 1.3.4 =
 

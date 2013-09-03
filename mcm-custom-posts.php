@@ -7,7 +7,6 @@ $default_mcm_types,$default_mcm_fields,$default_mcm_extras;
 function mcm_posttypes() {
 	global $mcm_types, $mcm_enabled;
 	$types = $mcm_types; $enabled = $mcm_enabled;
-	
 	if ( is_array( $enabled ) ) {
 		foreach ( $enabled as $key ) {
 			$value =& $types[$key];		
@@ -38,11 +37,12 @@ function mcm_posttypes() {
 				'query_var' => true,
 				'rewrite' => array('slug'=>$slug,'with_front'=>false),
 				'hierarchical' => $raw['hierarchical'],
-				'menu_position' => 20,
+				'menu_position' => 15,
 				'has_archive' => true,
 				'supports' => $raw['supports'],
 				'map_meta_cap'=>true,
-				'capability_type'=>'post' // capability type is post type
+				'capability_type'=>'post', // capability type is post type
+				'taxonomies'=>array( 'post_tag' )
 			); 
 			register_post_type($key,$args);
 		}
@@ -74,7 +74,6 @@ function mcm_posttypes_messages( $messages ) {
 	}
 	return $messages;
 }
-
 
 function mcm_taxonomies() {
 	global $mcm_types,$mcm_enabled;
@@ -119,9 +118,8 @@ $fields = $mcm_fields; $extras = $mcm_extras;
 function mcm_add_custom_box( $fields,$post_type='post',$location='side' ) {
     if ( function_exists( 'add_meta_box' ) ) {
         foreach ( array_keys( $fields ) as $field ) {
-			//$id = sanitize_title($field);
-            add_meta_box( $field, $field, 'mcm_build_custom_box', $post_type, $location, 'default', $fields );
-			//echo "$field, $post_type, $location, $fields";
+			$id = sanitize_title($field);
+            add_meta_box( $id, $field, 'mcm_build_custom_box', $post_type, $location, 'default', $fields );
         }
     }
 }
@@ -129,15 +127,16 @@ function mcm_add_custom_box( $fields,$post_type='post',$location='side' ) {
 function mcm_build_custom_box( $post, $fields ) {
 	static $nonce_flag = false;
 	// Run once
+	$id = $fields['title'];
 	echo "<div class='mcm_post_fields'>";
 	if ( !$nonce_flag ) {
 		mcm_echo_nonce();
-		mcm_echo_hidden($fields['args'][$fields['id']]);
 		$nonce_flag = true;
 	}
+	mcm_echo_hidden($fields['args'][$id]);	
 	// Generate box contents
 	$i = 0;
-	foreach ( $fields['args'][$fields['id']] as $field ) {
+	foreach ( $fields['args'][$id] as $field ) {
 		echo mcm_field_html( $field );
 		$i++;
 	}
@@ -154,6 +153,10 @@ function mcm_field_html( $args ) {
 			return mcm_select( $args );	
 		case 'upload':
 			return mcm_upload_field( $args );
+		case 'chooser':
+			return mcm_chooser_field( $args );
+		case 'richtext':
+			return mcm_rich_text_area( $args );
 		default:
 			return mcm_text_field( $args, $args[3] );
 	}
@@ -173,28 +176,79 @@ function mcm_create_options( $choices, $selected, $type='select' ) {
 	return $return;
 }
 
-add_action( 'save_post', 'mcm_save_postdata', 1, 2 );
-// this is the default text field meta box
-
 function mcm_upload_field( $args ) {
 	global $post;
 	$description = $args[2];
 	// adjust data
-	$args[2] = get_post_meta($post->ID, $args[0], true);
-	$args[1] = __($args[1], 'sp' );
-    if(!empty($args[2]) && $args[2] != '0') {
-        $download = '<p><a href="'.$args[2].'">View '.$args[1].'</a></p>';
-    }
+	$single = true;
+	$download = '';
+	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; } 	
+	$args[2] = get_post_meta($post->ID, $args[0], $single);
+    if ( !empty($args[2]) && $args[2] != '0' ) {
+		if ( $single ) {
+			$download = '<div><a href="'.$args[2].'">View '.$args[1].'</a></div>';
+		} else {
+			$download = "<ul>";
+			$i = 0;
+			foreach ( $args[2] as $file ) {
+				if ( $file != '' ) {
+					$short = str_replace( site_url(), '', $file );
+					$download .= '<li><input type="checkbox" id="del-'.$args[0].$i.'" name="mcm_delete['.$args[0].'][]" value="'.$file.'" /> <label for="del-'.$args[0].$i.'">'.__('Delete','my-content-management').'</label> <a href="'.$short.'">'.$short.'</a></li>';
+					$i++;
+				}
+			}
+			$download .= "</ul>";
+		}
+    } else {
+		$download = '';
+	}
 	$max_upload = (int)(ini_get('upload_max_filesize'));
 	$max_post = (int)(ini_get('post_max_size'));
 	$memory_limit = (int)(ini_get('memory_limit'));
 	$upload_mb = min($max_upload, $max_post, $memory_limit);
 	$label_format =
-		'<p class="mcm_text_field mcm_field"><label for="%1$s"><strong>%2$s</strong></label><br />'.
-		'<input style="width: 80%%;" type="file" name="%1$s" value="%3$s" id="%1$s" /><br />'.
+		'<div class="mcm_text_field mcm_field"><label for="%1$s"><strong>%2$s</strong></label><br />'.
+		'<input style="width: 80%;" type="file" name="%1$s" id="%1$s" /><br />'.
 		sprintf( __( "Upload limit: %s MB",'my-content-management' ),$upload_mb );
-		if ( $description != '' ) { $label_format .= '<br /><em>'.$description.'</em></p>'; } else { $label_format .= '</p>'; }
+		if ( $description != '' ) { $label_format .= '<br /><em>'.$description.'</em>'; } 
 		if ( $download != '' ) { $label_format .= $download; }
+		$label_format .= "</div>";
+		return vsprintf( $label_format, $args );
+}
+
+function mcm_chooser_field( $args ) {
+	global $post;
+	$description = $args[2];
+	// adjust data
+	$single = true;
+	$download = '';
+	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; } 
+	$args[2] = get_post_meta($post->ID, $args[0], $single );
+    if(!empty($args[2]) && $args[2] != '0') {
+		if ( $single ) {
+			$download = wp_get_attachment_url( $args[2] );
+			$img = wp_get_attachment_image( $args[2], 'thumbnail' );
+			$download = '<a href="'.$download.'">'.$img.'</a>';
+			$copy = __('Change Media','my-content-management');
+		} else {
+			$i = 0;
+			foreach ( $args[2] as $attachment ) {
+				$url = wp_get_attachment_url( $attachment );
+				$img = wp_get_attachment_image( $attachment, array(80,80) );
+				$download .= '<div class="mcm-chooser-image"><a href="'.$url.'">'.$img.'</a><span class="mcm-delete"><input type="checkbox" id="del-'.$args[0].$i.'" name="mcm_delete['.$args[0].'][]" value="'.$attachment.'" /> <label for="del-'.$args[0].$i.'">'.__('Delete','my-content-management').'</label></span></div> ';
+				$i++;
+			}
+			$copy = __('Add Media','my-content-management');
+		}
+    } else {
+		$copy = __('Choose Media','my-content-management');
+	}
+	$label_format =
+		'<div class="mcm_text_field mcm_field field-holder"><label for="%1$s"><strong>%2$s</strong></label> '.
+		'<input type="hidden" name="%1$s" value="" class="textfield" id="%1$s" /> <a href="#" class="button textfield-field">'.$copy.'</a><br />';
+		$label_format .= '<br /><div class="selected">'.$description.'</div>';
+		if ( $download != '' ) { $label_format .= $download; }
+		$label_format .= "</div>";
 		return vsprintf( $label_format, $args );
 }
 
@@ -202,46 +256,104 @@ function mcm_text_field( $args, $type='text' ) {
 	$types = array( 'color','date','number','tel','time','url' );
 	if ( $type == 'mcm_text_field' ) { $type = 'text'; } else { $type = ( in_array( $type, $types ) )?$type:'text'; }
 	global $post;
+	$name = $args[0];
+	$label = $args[1];
 	$description = $args[2];
-	$args[4] = $type;
 	// adjust data
-	$args[2] = esc_attr( get_post_meta($post->ID, $args[0], true) );
-	$args[1] = __($args[1], 'sp' );
-	$label_format =
-		'<p class="mcm_text_field mcm_field"><label for="%1$s"><strong>%2$s</strong></label><br />'.
-		'<input style="width: 80%%;" type="%4$s" name="%1$s" value="%3$s" id="%1$s" />';
-		if ( $description != '' ) { $label_format .= '<br /><em>'.$description.'</em></p>'; } else { $label_format .= '</p>'; }
-		return vsprintf( $label_format, $args );
+	$single = true;
+	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; }
+	$meta = get_post_meta($post->ID, $name, $single);
+	$value = ( $single ) ? $meta : '';
+	$output = "<div class='mcm_text_field mcm_field'>";
+		$output .=
+		'<p>
+			<label for="'.$name.'"><strong>'.$label.'</strong></label><br />
+			<input style="width: 80%;" type="'.$type.'" name="'.$name.'" value="'.$value.'" id="'.$name.'" />
+		</p>';
+		if ( is_array( $meta ) ) {
+			$i = 1;
+			$output .= "<ul>";
+			foreach ( $meta as $field ) {
+				if ( $field != '' ) {
+					$field = htmlentities($field);				
+					$output .=
+					'<li><span class="mcm-delete"><input type="checkbox" id="del-'.$name.$i.'" name="mcm_delete['.$name.'][]" value="'.$field.'" /> <label for="del-'.$name.$i.'">'.__('Delete','my-content-management').'</label></span> '.$field.'</li>';
+					$i++;
+				}
+			}
+			$output .= "</ul>";
+		}
+	if ( $description != '' ) { $output .= '<em>'.$description.'</em>'; }
+	$output .= "</div>";
+	return $output;
 }
 
 function mcm_select( $args ) {
-		global $post;
-		$choices = $args[2];
-		$custom = get_post_meta( $post->ID, $args[0], true );
-		$label_format = '<p class="mcm_select mcm_field"><label for="%1$s"><strong>%2$s</strong></label><br />'.
+	global $post;
+	$choices = $args[2];
+	$single = true;
+	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; } 	
+	$args[2] = get_post_meta($post->ID, $args[0], $single);
+	$label_format = '<p class="mcm_select mcm_field"><label for="%1$s"><strong>%2$s</strong></label><br />'.
 		'<select name="%1$s" id="%1$s">'.
 			mcm_create_options( $choices, $custom ).
 		'</select></p>';
-		return vsprintf( $label_format, $args );
-}
-
-// this is the text area meta box
-function mcm_text_area ( $args ) {
-	global $post;
-	$description = $args[2];
-	// adjust data
-	$args[2] = get_post_meta($post->ID, $args[0], true);
-	$args[1] = __($args[1], 'sp' );
-	$label_format =
-		'<p class="mcm_textarea mcm_field"><label for="%1$s"><strong>%2$s</strong></label><br />'.
-		'<textarea style="width: 90%%;" name="%1$s">%3$s</textarea>';
-		if ( $description != '' ) { $label_format .= '<br /><em>'.$description.'</em></p>'; } else { $label_format .= '</p>'; }
 	return vsprintf( $label_format, $args );
 }
 
-/* When the post is saved, saves our custom data */
 
+function mcm_text_area( $args ) {
+	global $post;
+	$name = $args[0];
+	$label = $args[1];
+	$description = $args[2];
+	// adjust data
+	$single = true;
+	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; }
+	$meta = get_post_meta($post->ID, $name, $single);
+	$value = ( $single ) ? $meta : '';
+	$output = "<div class='mcm_textarea mcm_field'>";
+		$output .=
+		'<p>
+			<label for="'.$name.'"><strong>'.$label.'</strong></label><br />
+			<textarea style="width: 90%;" name="'.$name.'" id="'.$name.'">'.$value.'</textarea>
+		</p>';
+		if ( is_array( $meta ) ) {
+			$i = 1;
+			$output .= "<ul>";
+			foreach ( $meta as $field ) {
+				if ( $field != '' ) {
+					$field = htmlentities($field);
+					$output .=
+					'<li><span class="mcm-delete"><input type="checkbox" id="del-'.$name.$i.'" name="mcm_delete['.$name.'][]" value="'.$field.'" /> <label for="del-'.$name.$i.'">'.__('Delete','my-content-management').'</label></span> '.$field.'</li>';
+					$i++;
+				}
+			}
+			$output .= "</ul>";
+		}
+	if ( $description != '' ) { $output .= '<em>'.$description.'</em>'; }
+	$output .= "</div>";
+	return $output;
+}
+
+// this is the text area meta box
+function mcm_rich_text_area ( $args ) {
+	global $post;
+	// adjust data
+	$single = true;
+	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; } 	
+	$args[2] = get_post_meta($post->ID, $args[0], $single);
+	$meta = $args[2];
+	$id = str_replace( array( '_','-'), '', $args[0] );	
+	$editor_args = array( 'textarea_name'=>$args[0], 'editor_css'=>'<style>background: #fff;</style>', 'editor_class'=>'mcm_rich_text_editor' );
+	echo wp_editor( $meta, $id, $editor_args );
+}
+
+/* When the post is saved, saves our custom data */
+add_action( 'save_post', 'mcm_save_postdata', 1, 2 );
 function mcm_save_postdata($post_id, $post) {
+	if ( empty($_POST) || ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) || wp_is_post_revision($post_id) || isset($_POST['_inline_edit']) ) { return $post_id; }
+
 	global $mcm_fields;
 	$fields = $mcm_fields;
 
@@ -251,65 +363,120 @@ function mcm_save_postdata($post_id, $post) {
 		if ( ! wp_verify_nonce( $_POST['mcm_nonce_name'], plugin_basename(__FILE__) ) ) {
 			return $post->ID;
 		}
-	// Is the user allowed to edit the post or page?
-	if ( 'page' == $_POST['post_type'] ) {
-		if ( ! current_user_can( 'edit_page', $post->ID )) {
-			return $post->ID;
+		// Is the user allowed to edit the post or page?
+		if ( 'page' == $_POST['post_type'] ) {
+			if ( ! current_user_can( 'edit_page', $post->ID )) {
+				return $post->ID;
+			}
+		} else {
+			if ( ! current_user_can( 'edit_post', $post->ID )) {
+				return $post->ID;
+			}
 		}
-	} else {
-		if ( ! current_user_can( 'edit_post', $post->ID )) {
-			return $post->ID;
+		$these_fields = array();		
+		if ( isset( $_POST['mcm_fields'] ) ) {
+			$these_fields = $_POST['mcm_fields'];
+		} else {
+			return;
 		}
-	}
 		// OK, we're authenticated: we need to find and save the data
-		foreach ( $fields as $field ) {
-			foreach ( $field as $key=>$value ) {	
-				if (isset($_POST[$value[0]]) ) {
-					$my_data[$value[0]] = $_POST[$value[0]];
-				}
-				if(!empty($_FILES[$value[0]])) {
-					$file   = $_FILES[$value[0]];
-					$upload = wp_handle_upload($file, array('test_form' => false));
-					if(!isset($upload['error']) && isset($upload['file'])) {
-						$filetype   = wp_check_filetype(basename($upload['file']), null);
-						$title      = $file['name'];
-						$ext        = strrchr($title, '.');
-						$title      = ($ext !== false) ? substr($title, 0, -strlen($ext)) : $title;
-						$attachment = array(
-							'post_mime_type'    => $filetype['type'],
-							'post_title'        => addslashes($title),
-							'post_content'      => '',
-							'post_status'       => 'inherit',
-							'post_parent'       => $post->ID
-						);
-						$attach_id = wp_insert_attachment($attachment, $upload['file']);
-						$my_data[$value[0]] = wp_get_attachment_url( $attach_id );
+		if ( isset( $_POST['mcm_delete'] ) ) {
+			foreach ( $_POST['mcm_delete'] as $data=>$deletion ) {
+				foreach ( $deletion as $delete ) {
+					if ( $delete != '' ) {
+						delete_post_meta( $post->ID, $data, $delete );
 					}
-				}				
+				}
 			}
-		}
-		// Add values of $my_data as custom fields
-		// Let's cycle through the $my_data array!
-		foreach ($my_data as $key => $value) {
-			if ( 'revision' == $post->post_type  ) { // don't store custom data twice
-				return;
-			}
-			// if $value is an array, make it a CSV (unlikely)
-			$value = implode(',', (array)$value);
-			if ( get_post_meta($post->ID, $key, FALSE) ) {
-				// Custom field has a value.
-				update_post_meta($post->ID, $key, $value);
-			} else {
-				// Custom field does not have a value.
-				add_post_meta($post->ID, $key, $value);
-			}
-			if (!$value) {
-				// have empty values for blanks (so templating works)
-				update_post_meta($post->ID, $key,'');
+		}	
+		foreach ( $fields as $field ) {
+			foreach ( $field as $key=>$value ) {
+				if ( in_array( $value[0], $these_fields ) ) {
+					if ( isset( $_POST[$value[0]] ) && ( !isset($value[4]) || $value[4] != 'true' ) ) {
+						update_post_meta( $post->ID, $value[0], $_POST[$value[0]] );
+					}
+					if ( isset( $_POST[$value[0]] ) && isset($value[4]) && $value[4] == 'true' ) {
+						if ( $_POST[$value[0]] != '' ) {
+							add_post_meta( $post->ID, $value[0], $_POST[$value[0]] );
+						}
+					}				
+					if(!empty($_FILES[$value[0]])) {
+						$file   = $_FILES[$value[0]];
+						$upload = wp_handle_upload($file, array('test_form' => false));
+						if(!isset($upload['error']) && isset($upload['file'])) {
+							$filetype   = wp_check_filetype(basename($upload['file']), null);
+							$title      = $file['name'];
+							$ext        = strrchr($title, '.');
+							$title      = ($ext !== false) ? substr($title, 0, -strlen($ext)) : $title;
+							$attachment = array(
+								'post_mime_type'    => $filetype['type'],
+								'post_title'        => addslashes($title),
+								'post_content'      => '',
+								'post_status'       => 'inherit',
+								'post_parent'       => $post->ID
+							);
+							$attach_id = wp_insert_attachment($attachment, $upload['file']);
+							$url = wp_get_attachment_url( $attach_id );
+							if ( !isset( $value[4] ) || $value[4] != 'true' ) {
+								update_post_meta( $post->ID, $value[0], $url );
+							} else if ( $value[4] == 'true' ) {
+								add_post_meta( $post->ID, $value[0], $url );
+							}
+						}
+					}
+					if ( empty( $_FILES[$value[0]]['name'] ) && !isset( $_POST[$value[0]] ) ) {
+						if ( mcm_is_repeatable( $value ) && mcm_has_value( $post->ID, $value[0] ) ) {
+							// do something here? ...
+						} else {
+							update_post_meta( $post->ID, $value[0], '' );
+						}
+					}
+				}
 			}
 		}
 	}
 }
+
+function mcm_is_repeatable( $value ) {
+	if ( is_array( $value ) ) {
+		if ( isset($value[4]) && $value[4] == 'true' ) {
+			return true; 
+		}
+	} else {
+		$options = get_option( 'mcm_options' );
+		$mcm_fields = $options['simplified'];
+		if ( is_array( $mcm_fields ) ) {		
+			foreach ( $mcm_fields as $set ) {
+				if ( isset( $set['repetition'] ) && $set['repetition'] == 'true' ) { return true; }
+			}
+		}
+	}
+	return false;
+}
+
+function mcm_is_richtext( $value ) {
+	if ( is_array( $value ) ) {
+		if ( isset($value[3]) && $value[3] == 'richtext' ) {
+			return true; 
+		}
+	} else {
+		$options = get_option( 'mcm_options' );
+		$mcm_fields = $options['simplified'];
+		if ( is_array( $mcm_fields ) ) {
+			foreach ( $mcm_fields as $set ) {
+				if ( isset( $set['type'] ) && $set['type'] == 'richtext' ) { return true; }
+			}
+		}
+	}
+	return false;
+}
+
+function mcm_has_value( $post_ID, $key ) {
+	$meta = get_post_meta( $post_ID, $key, true );
+	if ( $meta ) { return true; }
+	return false;
+}
+
 function mcm_echo_nonce() {
 	// Use nonce for verification ... ONLY USE ONCE!
 	echo sprintf(
@@ -320,15 +487,17 @@ function mcm_echo_nonce() {
 }
 
 function mcm_echo_hidden($fields) {
-	foreach ( $fields as $field ) {
-		foreach ( $field as $key=>$value ) {
-			$new_fields[] = $key;
+	// finish when I add hidden fields.
+	if ( is_array( $fields ) ) {
+		foreach ( $fields as $field ) {
+			$new_fields[] = $field[0];
+		}
+		$value = apply_filters( 'mcm_hidden_fields', $new_fields, $fields );
+		foreach ( $new_fields as $hidden ) {
+			echo '<input type="hidden" name="mcm_fields[]" value="'.$hidden.'" />';
 		}
 	}
-	$value = implode(',',$new_fields);
-	echo '<input type="hidden" name="mcm_fields" value="'.$value.'" />';
 }
-
 
 // defaults
 $d_mcm_args = array(
@@ -366,7 +535,7 @@ $default_mcm_fields =
 			array( '_title', __('Title','my-content-management'), '','mcm_text_field'),
 			array( '_subtitle',__('Subtitle','my-content-management'), '','mcm_text_field'),
 			array( '_business',__('Business','my-content-management'),'','mcm_text_field' ),
-			array( '_phone', __('Phone Number','my-content-management'), '','tel'),
+			array( '_phone', __('Phone Number','my-content-management'), '','tel','true'),
 			array( '_email', __('E-mail','my-content-management'), '', 'email')
 		),
 		__('Location Info','my-content-management') =>
@@ -405,7 +574,7 @@ $default_mcm_fields =
 		),
 		__('Resource Info','my-content-management') =>
 		array (
-			array( '_authors',__('Additional Authors','my-content-management'),'','mcm_text_field'),
+			array( '_authors',__('Additional Authors','my-content-management'),'','mcm_text_field','true'),
 			array( '_licensing',__('License Terms','my-content-management'),'','mcm_text_area'),
 			array( '_show',__('Show on','my-content-management'),'This is a label for advanced use in themes','mcm_text_field')
 		)

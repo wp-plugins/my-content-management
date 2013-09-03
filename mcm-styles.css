@@ -12,8 +12,16 @@
 .mcm-settings .meta-box-sortables { min-height: 0; }
 .mcm-settings td label { position: absolute; left: -999em; } 
 .mcm-settings td input { width: 100%; }
+.mcm-settings tr.fade { background: #ff9; transition: background .5s ease-in-out; }
+.mcm-settings tr.fade:hover { background: #ffe; }
 .mcm-settings .up span, .mcm-settings .down span { position: absolute; left: -999em; }
 .mcm-settings .up { background: url(/wp-content/plugins/my-content-management/images/up.png); width: 24px; height: 24px; display: inline-block; }
 .mcm-settings .down { background: url(/wp-content/plugins/my-content-management/images/down.png); width: 24px; height: 24px; display: inline-block; }
 .mcm-settings td a { opacity: .5; }
 .mcm-settings td a:hover, .mcm-settings td a:focus { opacity: 1; }
+
+.mcm-settings .tabs { margin: 0; padding: 0 4px; position: relative; top: 1px; }
+.mcm-settings .tabs li { display: inline; margin: 0 auto; line-height: 1; }
+.mcm-settings .tabs a { display: inline-block; padding: 4px 8px; border-radius: 4px 4px 0 0; border: 1px solid #ccc; background: #f3f3f3; }
+.mcm-settings .tabs a.active { border-bottom: 1px solid #fefefe; background: #fefefe; }
+.mcm-settings .wptab { background: #fff; border: 1px solid #ddd; padding: 0 10px; }
