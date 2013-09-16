@@ -1,12 +1,12 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-global $mcm_types,$mcm_fields,$mcm_extras,$mcm_enabled,$mcm_templates,
-$default_mcm_types,$default_mcm_fields,$default_mcm_extras;
+global $mcm_types,$mcm_fields,$mcm_extras,$mcm_enabled,$mcm_templates,$default_mcm_types,$default_mcm_fields,$default_mcm_extras;
 
 function mcm_posttypes() {
 	global $mcm_types, $mcm_enabled;
 	$types = $mcm_types; $enabled = $mcm_enabled;
+	$i = 0;
 	if ( is_array( $enabled ) ) {
 		foreach ( $enabled as $key ) {
 			$value =& $types[$key];		
@@ -25,6 +25,7 @@ function mcm_posttypes() {
 			);
 			$raw = $value[4];
 			$slug = ( !isset($raw['slug']) || $raw['slug'] == '' )?$key:$raw['slug'];
+			$icon = ($raw['menu_icon']==null)?plugins_url('images',__FILE__)."/$key.png":$raw['menu_icon'];
 			$args = array(
 				'labels' => $labels,
 				'public' => $raw['public'],
@@ -33,11 +34,11 @@ function mcm_posttypes() {
 				'show_ui' => $raw['show_ui'],
 				'show_in_menu' => $raw['show_in_menu'],
 				'show_ui' => $raw['show_ui'], 
-				'menu_icon' => ($raw['menu_icon']==null)?plugins_url('images',__FILE__)."/$key.png":$raw['menu_icon'],
+				'menu_icon' => ($icon=='')?plugins_url('images',__FILE__)."/mcm_resources.png":$icon,
 				'query_var' => true,
 				'rewrite' => array('slug'=>$slug,'with_front'=>false),
 				'hierarchical' => $raw['hierarchical'],
-				'menu_position' => 15,
+				'menu_position' => 25+$i,
 				'has_archive' => true,
 				'supports' => $raw['supports'],
 				'map_meta_cap'=>true,
@@ -45,6 +46,7 @@ function mcm_posttypes() {
 				'taxonomies'=>array( 'post_tag' )
 			); 
 			register_post_type($key,$args);
+			$i++;
 		}
 	}
 }
@@ -133,7 +135,7 @@ function mcm_build_custom_box( $post, $fields ) {
 		mcm_echo_nonce();
 		$nonce_flag = true;
 	}
-	mcm_echo_hidden($fields['args'][$id]);	
+	mcm_echo_hidden($fields['args'][$id], $id );	
 	// Generate box contents
 	$i = 0;
 	foreach ( $fields['args'][$id] as $field ) {
@@ -224,17 +226,18 @@ function mcm_chooser_field( $args ) {
 	$download = '';
 	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; } 
 	$args[2] = get_post_meta($post->ID, $args[0], $single );
+	$attr = array( 'height' => 80, 'width'=> 80 );
     if(!empty($args[2]) && $args[2] != '0') {
 		if ( $single ) {
 			$download = wp_get_attachment_url( $args[2] );
-			$img = wp_get_attachment_image( $args[2], 'thumbnail' );
+			$img = wp_get_attachment_image( $args[2], array( 80, 80 ), true, $attr );
 			$download = '<a href="'.$download.'">'.$img.'</a>';
 			$copy = __('Change Media','my-content-management');
 		} else {
 			$i = 0;
 			foreach ( $args[2] as $attachment ) {
 				$url = wp_get_attachment_url( $attachment );
-				$img = wp_get_attachment_image( $attachment, array(80,80) );
+				$img = wp_get_attachment_image( $attachment, array( 80, 80 ), true, $attr );
 				$download .= '<div class="mcm-chooser-image"><a href="'.$url.'">'.$img.'</a><span class="mcm-delete"><input type="checkbox" id="del-'.$args[0].$i.'" name="mcm_delete['.$args[0].'][]" value="'.$attachment.'" /> <label for="del-'.$args[0].$i.'">'.__('Delete','my-content-management').'</label></span></div> ';
 				$i++;
 			}
@@ -244,8 +247,8 @@ function mcm_chooser_field( $args ) {
 		$copy = __('Choose Media','my-content-management');
 	}
 	$label_format =
-		'<div class="mcm_text_field mcm_field field-holder"><label for="%1$s"><strong>%2$s</strong></label> '.
-		'<input type="hidden" name="%1$s" value="" class="textfield" id="%1$s" /> <a href="#" class="button textfield-field">'.$copy.'</a><br />';
+		'<div class="mcm_chooser_field mcm_field field-holder"><label for="%1$s"><strong>%2$s</strong></label> '.
+		'<input type="hidden" name="%1$s" value="%3$d" class="textfield" id="%1$s" /> <a href="#" class="button textfield-field">'.$copy.'</a><br />';
 		$label_format .= '<br /><div class="selected">'.$description.'</div>';
 		if ( $download != '' ) { $label_format .= $download; }
 		$label_format .= "</div>";
@@ -389,9 +392,9 @@ function mcm_save_postdata($post_id, $post) {
 				}
 			}
 		}	
-		foreach ( $fields as $field ) {
+		foreach ( $fields as $set => $field ) {
 			foreach ( $field as $key=>$value ) {
-				if ( in_array( $value[0], $these_fields ) ) {
+				if ( in_array( $value[0], $these_fields ) && in_array( $set, $_POST['mcm_fieldsets'] ) ) {
 					if ( isset( $_POST[$value[0]] ) && ( !isset($value[4]) || $value[4] != 'true' ) ) {
 						update_post_meta( $post->ID, $value[0], $_POST[$value[0]] );
 					}
@@ -486,8 +489,9 @@ function mcm_echo_nonce() {
 	);
 }
 
-function mcm_echo_hidden($fields) {
+function mcm_echo_hidden($fields, $id ) {
 	// finish when I add hidden fields.
+	echo '<input type="hidden" name="mcm_fieldsets[]" value="'.$id.'" />';	
 	if ( is_array( $fields ) ) {
 		foreach ( $fields as $field ) {
 			$new_fields[] = $field[0];

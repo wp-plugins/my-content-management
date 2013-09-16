@@ -168,7 +168,7 @@ $templates = $mcm_templates; $types = $mcm_types;
 					}
 				}
 			// use this filter to insert any additional custom template tags required		
-			$p = apply_filters('mcm_extend_posts', $p, $p, $custom );
+			$p = apply_filters('mcm_extend_posts', $p, $custom );
 			// This filter is used to insert alphabetical headings. You can probably find another use for it.
 			$return = apply_filters('mcm_filter_posts',$return, $p, $last_term, $elem, $type, $first, $last_post, $custom );
 			$first = false;
@@ -232,7 +232,7 @@ $templates = $mcm_templates; $types = $mcm_types;
 				}
 				$p[$key] = $cfield;
 			}
-			$p = apply_filters('mcm_extend_posts', $p, $p, $custom );
+			$p = apply_filters('mcm_extend_posts', $p, $custom );
 			$this_post = mcm_run_template( $p, $display, $column, $wrapper );
 			$return .= apply_filters('mcm_filter_post',$this_post, $p, $custom );
 			switch ($column) {

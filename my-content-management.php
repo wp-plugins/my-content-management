@@ -42,19 +42,6 @@ function mcm_is_plugin_installed($plugin_dir) {
 	if ($plugins) return true;
 	return false;
 }
-if ( isset($_GET['ignore']) && $_GET['ignore'] == 'glossary' ) {
-	update_option( 'mcm_glossary_ignore', 'true' );
-}
-if ( ! ( mcm_is_plugin_installed('/my-content-glossary') ) && get_option( 'mcm_glossary_ignore' ) != 'true' ) {
-	function mcm_glossary_notice() {
-		if ( current_user_can( 'install_plugins' ) ) {
-			$install = admin_url('plugin-install.php?tab=search&s=my+content+glossary');
-			$ignore = admin_url('options-general.php?page=my-content-management/my-content-management.php&ignore=glossary');
-			echo "<div class='error'><p>The My Content Management Glossary Filter is now an independent plug-in and must be installed separately. <a href='$install'>Install My Content Glossary</a>. <a href='$ignore'>Ignore</a></p></div>";
-		}
-	}
-	add_action('admin_notices', 'mcm_glossary_notice' );
-}
 
 // eventually, options. For now, not.
 $mcm_options = get_option('mcm_options');
@@ -440,10 +427,10 @@ function mcm_add_scripts() {
 
 
 function mcm_settings_page() {
-global $mcm_enabled;
-$enabled = $mcm_enabled;
-$enabled = (isset($_POST['mcm_enabler']))?$_POST['mcm_posttypes']:$enabled;
-?>
+	global $mcm_enabled;
+	$enabled = $mcm_enabled;
+	$enabled = ( isset( $_POST['mcm_enabler'] ) ) ? $_POST['mcm_posttypes'] : $enabled;
+	?>
 	<div class='wrap mcm-settings'>
 	<div id="icon-index" class="icon32"><br /></div>
 	<h2><?php _e('My Content Management','my-content-management'); ?></h2>
@@ -493,7 +480,19 @@ $enabled = (isset($_POST['mcm_enabler']))?$_POST['mcm_posttypes']:$enabled;
 			</div>
 		</div>
 		</div>
-		</div>	
+		</div>
+		<div class="metabox-holder">
+		<div class="mcm-settings ui-sortable meta-box-sortables">   
+		<div class="mcm-template-guide postbox" id="mcm-companions">
+		<h3><?php _e('Companion Plug-ins','my-content-management'); ?></h3>
+			<div class="inside">
+				<ul>
+					<li><a href="http://wordpress.org/plugins/my-content-glossary/"><?php _e( 'My Content Glossary','my-content-management' ); ?></a> -- <?php _e( 'Additional functions to use with the Glossary custom post type','my-content-management'); ?>
+				</ul>
+			</div>
+		</div>
+		</div>
+		</div>		
 		<div class="metabox-holder">
 		<div class="mcm-settings ui-sortable meta-box-sortables">   
 		<div class="mcm-template-guide postbox" id="get-support">
@@ -574,6 +573,7 @@ function mcm_enabler() {
 		$option = get_option('mcm_options');
 		$option['enabled'] = $enable;
 		update_option('mcm_options',$option);
+		flush_rewrite_rules();		
 		echo "<div class='updated fade'><p>".__('Enabled post types updated','my-content-management')."</p></div>";
 	}
 	$option = get_option('mcm_options');
@@ -840,50 +840,52 @@ function mcm_template_setter() {
 			<h4>".sprintf(__('%s Templates', 'my-content-management'),$types[$value][2] )."</h4>
 			$show_fields
 			$extension
+			<p>".__('Example shortcode:','my-content-management')."<br /><code>[my_content type='$display_value' display='full' taxonomy='mcm_category_$display_value' order='menu_order']</code></p>			
 			<form method='post' action='".admin_url('options-general.php?page=my-content-management/my-content-management.php')."'>
 				<div><input type='hidden' name='_wpnonce' value='".wp_create_nonce('my-content-management-nonce')."' /></div>
 				<div><input type='hidden' name='mcm_post_type' value='$value' /></div>
 				<div>
 				<fieldset>
 				<legend>Full</legend>
-				<p>".__('Example shortcode:','my-content-management')."<br /><code>[my_content type='$display_value' display='full' taxonomy='mcm_category_$display_value' order='menu_order']</code></p>
 				<p class='wrappers'>
-				<label for='mcm_full_list_wrapper_$value'>".__('List Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][list][full]' id='mcm_full_list_wrapper_$value'>".mcm_option_list( $list, $template['wrapper']['list']['full'] )."</select><br />
-				<label for='mcm_full_item_wrapper_$value'>".__('Item Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][item][full]' id='mcm_full_itemwrapper_$value'>".mcm_option_list( $item, $template['wrapper']['item']['full'] )."</select>
+					<label for='mcm_full_list_wrapper_$value'>".__('List Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][list][full]' id='mcm_full_list_wrapper_$value'>".mcm_option_list( $list, $template['wrapper']['list']['full'] )."</select><br />
+					<label for='mcm_full_item_wrapper_$value'>".__('Item Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][item][full]' id='mcm_full_itemwrapper_$value'>".mcm_option_list( $item, $template['wrapper']['item']['full'] )."</select>
 				</p>
 				<p>
-				<label for='mcm_full_wrapper_$value'>".__('Full Template','my-content-management')."</label><br /> <textarea name='templates[$value][full]' id='mcm_full_wrapper_$value' rows='8' cols='60'>".stripslashes(htmlentities($template['full']))."</textarea>
+					<label for='mcm_full_wrapper_$value'>".__('Full Template','my-content-management')."</label><br /> <textarea name='templates[$value][full]' id='mcm_full_wrapper_$value' rows='7' cols='60'>".stripslashes(htmlentities($template['full']))."</textarea>
 				</p>
 				</fieldset>
 				<fieldset>
 				<legend>Excerpt</legend>
 				<p class='wrappers'>
-				<label for='mcm_excerpt_list_wrapper_$value'>".__('List Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][list][excerpt]' id='mcm_excerpt_list_wrapper_$value'>".mcm_option_list( $list, $template['wrapper']['list']['excerpt'] )."</select><br />
-				<label for='mcm_excerpt_item_wrapper_$value'>".__('Item Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][item][excerpt]' id='mcm_excerpt_item_wrapper_$value'>".mcm_option_list( $item, $template['wrapper']['item']['excerpt'] )."</select>
+					<label for='mcm_excerpt_list_wrapper_$value'>".__('List Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][list][excerpt]' id='mcm_excerpt_list_wrapper_$value'>".mcm_option_list( $list, $template['wrapper']['list']['excerpt'] )."</select><br />
+					<label for='mcm_excerpt_item_wrapper_$value'>".__('Item Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][item][excerpt]' id='mcm_excerpt_item_wrapper_$value'>".mcm_option_list( $item, $template['wrapper']['item']['excerpt'] )."</select>
 				</p>
 				<p>
-				<label for='mcm_excerpt_wrapper_$value'>".__('Excerpt Template','my-content-management')."</label><br /> <textarea name='templates[$value][excerpt]' id='mcm_excerpt_wrapper_$value' rows='4' cols='60'>".stripslashes(htmlentities($template['excerpt']))."</textarea>
+					<label for='mcm_excerpt_wrapper_$value'>".__('Excerpt Template','my-content-management')."</label><br /> <textarea name='templates[$value][excerpt]' id='mcm_excerpt_wrapper_$value' rows='3' cols='60'>".stripslashes(htmlentities($template['excerpt']))."</textarea>
 				</p>
 				</fieldset>
 				<fieldset>
 				<legend>List</legend>
 				<p class='wrappers'>
-				<label for='mcm_list_list_wrapper_$value'>".__('List Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][list][list]' id='mcm_list_list_wrapper_$value'>".mcm_option_list( $list, $template['wrapper']['list']['list'] )."</select><br />
-				<label for='mcm_list_item_wrapper_$value'>".__('Item Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][item][list]' id='mcm_list_item_wrapper_$value'>".mcm_option_list( $item, $template['wrapper']['item']['list'] )."</select>
+					<label for='mcm_list_list_wrapper_$value'>".__('List Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][list][list]' id='mcm_list_list_wrapper_$value'>".mcm_option_list( $list, $template['wrapper']['list']['list'] )."</select><br />
+					<label for='mcm_list_item_wrapper_$value'>".__('Item Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][item][list]' id='mcm_list_item_wrapper_$value'>".mcm_option_list( $item, $template['wrapper']['item']['list'] )."</select>
 				</p>
 				<p>
-				<label for='mcm_list_wrapper_$value'>".__('List Template','my-content-management')."</label><br /> <textarea name='templates[$value][list]' id='mcm_list_wrapper_$value' rows='2' cols='60'>".stripslashes(htmlentities($template['list']))."</textarea>
+					<label for='mcm_list_wrapper_$value'>".__('List Template','my-content-management')."</label><br /> <textarea name='templates[$value][list]' id='mcm_list_wrapper_$value' rows='1' cols='60'>".stripslashes(htmlentities($template['list']))."</textarea>
 				</p>
 				</fieldset>
 				<p>
-						<input type='submit' value='".sprintf( __('Save %s Templates','my-content-manager'), $label[2] )."' name='mcm_save_templates' class='button-primary' />
+					<input type='submit' value='".sprintf( __('Update %s Templates','my-content-manager'), $label[2] )."' name='mcm_save_templates' class='button-primary' />
 				</p>
 				</div>
 				</form>
 				<h4>".__('Naming for theme templates','my-content-management')."</h4>
-				<p>".__('Theme template for this taxonomy:','my-content-management')." <code>taxonomy-mcm_category_$display_value.php</code></p>
-				<p>".__('Theme template for this custom post type:','my-content-management')." <code>single-mcm_$display_value.php</code></p>
-				<p>".__('Theme template for archive pages with this post type:','my-content-management')." <code>archive-mcm_$display_value.php</code></p>
+				<ul>
+					<li>".__('Theme template for this taxonomy:','my-content-management')." <code>taxonomy-mcm_category_$display_value.php</code></li>
+					<li>".__('Theme template for this custom post type:','my-content-management')." <code>single-mcm_$display_value.php</code></li>
+					<li>".__('Theme template for archive pages with this post type:','my-content-management')." <code>archive-mcm_$display_value.php</code></li>		
+				</ul>
 			</div>
 				";
 			} else {
@@ -921,7 +923,6 @@ function mcm_show_support_box() {
 		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 		</p>		
 		<ul>
-		<li><strong><a href="#get-support" rel="external"><?php _e("Get Support",'my-content-management'); ?></a></strong> &bull; <a href="http://www.joedolson.com/articles/bugs/"><?php _e("Report a bug",'my-content-management'); ?></a></li>	
 			<li><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 			<div>
 			<input type="hidden" name="cmd" value="_s-xclick" />
@@ -932,8 +933,9 @@ function mcm_show_support_box() {
 			</form>
 			</li>
 			<li><a href="http://profiles.wordpress.org/users/joedolson/"><?php _e('Check out my other plug-ins','my-content-management'); ?></a></li>
-			<li><a href="http://wordpress.org/extend/plugins/my-content-management/"><?php _e('Rate this plug-in','my-content-management'); ?></a></li>
+			<li><a href="http://wordpress.org/support/view/plugin-reviews/my-content-management"><?php _e('Review this plug-in','my-content-management'); ?></a></li>
 			<li><a href='http://translate.joedolson.com/projects/my-content-management'><?php _e('Help translate this plug-in','my-content-management'); ?></a></li>
+			<li><strong><a href="#get-support" rel="external"><?php _e("Get Support",'my-content-management'); ?></a></strong></li>			
 		</ul>
 		</div>
 	</div>

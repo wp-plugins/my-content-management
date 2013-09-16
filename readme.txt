@@ -3,7 +3,7 @@ Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebars, content management
 Requires at least: 3.2.1
-Tested up to: 3.6.0
+Tested up to: 3.6.1
 License: GPLv2 or later
 Stable tag: 1.3.4
 
@@ -73,6 +73,7 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 * Revised template tag replacement function.
 * Added fallback content parameter to mcm_custom_field function.
 * If taxonomy not specified, fall back to MCM created taxonomy when generating terms.
+* Add support for post_tag taxonomy on all MCM created post types.
 * Added media chooser option for input.
 * Added rich text editor option for input.
 * Automatically refresh permalinks.
