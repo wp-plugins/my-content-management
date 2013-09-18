@@ -1217,7 +1217,7 @@ function mcm_update_custom_fieldset( $post ) {
 	$labels = $post['mcm_field_label'];
 	$types = $post['mcm_field_type'];
 	$options = $post['mcm_field_options'];
-	$repeatable = $post['mcm_field_repeatable'];
+	$repeatable = ( isset( $post['mcm_field_repeatable'] ) ) ? $post['mcm_field_repeatable'] : false;
 	$count = count( $labels );
 	$delete_count = count( $delete );
 	// ID fieldset
@@ -1250,7 +1250,7 @@ function mcm_update_custom_fieldset( $post ) {
 						$types[$i],
 						$repetition
 					);
-					$simplified[] = array( 'key'=>$keys[$i], 'label'=>$labels[$i], 'description'=>$opt, 'type'=>$types[$i], 'repetition'=>$repetition, 'fieldset'=>$fieldset );				
+					$simplified[] = array( 'key'=>$k, 'label'=>$labels[$i], 'description'=>$opt, 'type'=>$types[$i], 'repetition'=>$repetition, 'fieldset'=>$fieldset );				
 				} else {
 					continue;
 				}
@@ -1258,7 +1258,7 @@ function mcm_update_custom_fieldset( $post ) {
 		}
 	$option['fields'][$fieldset] = $array;
 	// update simple array of fields.
-	$simple = $option['simplified'];
+	$simple = ( isset( $option['simplified'] ) ) ? $option['simplified'] : array();
 	$simplified = (array) $simplified + (array) $simple;
 	$option['simplified'] = $simplified;
 	if ( $count == $delete_count || $delete_count > $count || ( $count == 1 && !isset( $post['mcm_new_fieldset'] ) ) ) { unset( $option['fields'][$fieldset] ); unset( $option['extras'][$fieldset] ); } // if all fields are deleted, remove set.

@@ -344,12 +344,18 @@ function mcm_rich_text_area ( $args ) {
 	global $post;
 	// adjust data
 	$single = true;
+	$description = $args[2];
 	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; } 	
 	$args[2] = get_post_meta($post->ID, $args[0], $single);
 	$meta = $args[2];
 	$id = str_replace( array( '_','-'), '', $args[0] );	
-	$editor_args = array( 'textarea_name'=>$args[0], 'editor_css'=>'<style>background: #fff;</style>', 'editor_class'=>'mcm_rich_text_editor' );
-	echo wp_editor( $meta, $id, $editor_args );
+	$editor_args = apply_filters( 'mcm_filter_editor_args', array( 'textarea_name'=>$args[0], 'editor_css'=>'<style>background: #fff;</style>', 'editor_class'=>'mcm_rich_text_editor' ), $args );
+	$return = "<div class='mcm_rich_text_area'>
+				<label for='$id'>$args[1]</label>";
+	$return .= wp_editor( $meta, $id, $editor_args );
+	$return .= "<p><em>$description</em></p>
+			</div>";
+	echo $return;
 }
 
 /* When the post is saved, saves our custom data */
@@ -458,6 +464,9 @@ function mcm_is_repeatable( $value ) {
 }
 
 function mcm_is_richtext( $value ) {
+	if ( is_string( $value ) ) { // if this isn't a custom field, ignore it.
+		if ( strpos( $value, '_' ) !== 0 ) { return false; }
+	}
 	if ( is_array( $value ) ) {
 		if ( isset($value[3]) && $value[3] == 'richtext' ) {
 			return true; 
@@ -467,7 +476,7 @@ function mcm_is_richtext( $value ) {
 		$mcm_fields = $options['simplified'];
 		if ( is_array( $mcm_fields ) ) {
 			foreach ( $mcm_fields as $set ) {
-				if ( isset( $set['type'] ) && $set['type'] == 'richtext' ) { return true; }
+				if ( isset( $set['type'] ) && $set['type'] == 'richtext' && isset( $set['key'] ) && $set['key'] == $value ) { return true; }
 			}
 		}
 	}

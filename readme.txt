@@ -76,6 +76,7 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 * Add support for post_tag taxonomy on all MCM created post types.
 * Added media chooser option for input.
 * Added rich text editor option for input.
+* Added filter 'mcm_filter_editor_args' to customize arguments for rich text editor
 * Automatically refresh permalinks.
 * Minor UI Changes.
 * Performance improvements.

@@ -283,7 +283,7 @@ function mcm_get_custom_field($field,$id='',$fallback=false ) {
 	}
 	if ( !$plaintext ) {
 		$custom_field = wpautop( $custom_field );
-	} 	
+	}
 	return $custom_field;
 }
 
@@ -364,9 +364,20 @@ global $mcm_templates; $templates = $mcm_templates;
 function mcm_simple_template( $array=array(), $template=false ) {
 	if ( !$template ) { return; }
 	foreach ( $array as $key=>$value ) {
+		$plaintext = ( mcm_is_richtext( $key ) )?false:true;		
 		if ( !is_object( $value ) ) {
-			if ( strpos( $template, "{".$key."}" ) ) {
-				$template = str_replace( "{".$key."}", $value, $template );
+			if ( is_array( $value ) ) {
+				foreach ( $value as $val ) {
+					if ( strpos( $template, "{".$key."}" ) ) {
+						if ( !$plaintext ) { $val = wpautop( $val ); }					
+						$template = str_replace( "{".$key."}", $val, $template );
+					}
+				}
+			} else {
+				if ( strpos( $template, "{".$key."}" ) ) {
+					if ( !$plaintext ) { $value = wpautop( $value ); }				
+					$template = str_replace( "{".$key."}", $value, $template );
+				}			
 			}
 		}
 	}
@@ -379,6 +390,7 @@ function mcm_draw_template( $array=array(), $template='' ) {
 	$template = mcm_simple_template( $array, $template );
 	foreach ($array as $key=>$value) {
 		$is_chooser = mcm_is_chooser( $key );
+		$plaintext = ( mcm_is_richtext( $key ) )?false:true;		
 		if ( !is_object($value) ) {
 			if ( strpos( $template, "{".$key ) !== false ) { // only check for tag parts that exist
 				preg_match_all('/{'.$key.'[^}]*+}/i',$template, $result); 
@@ -397,6 +409,7 @@ function mcm_draw_template( $array=array(), $template='' ) {
 								foreach ( $value as $val ) {
 									if ( $is_chooser ) { if ( is_numeric( $val ) ) { $val = wp_get_attachment_link( $val, $size ); } }
 									$fb = ( $fallback != '' && $val == '' )?$before.$fallback.$after:'';
+									if ( !$plaintext ) { $value = wpautop($value); }
 									$output .= ( $val == '' )?$fb:$before.$val.$after;
 								}
 							} else {
