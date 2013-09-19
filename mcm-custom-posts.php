@@ -349,19 +349,23 @@ function mcm_rich_text_area ( $args ) {
 	$args[2] = get_post_meta($post->ID, $args[0], $single);
 	$meta = $args[2];
 	$id = str_replace( array( '_','-'), '', $args[0] );	
-	$editor_args = apply_filters( 'mcm_filter_editor_args', array( 'textarea_name'=>$args[0], 'editor_css'=>'<style>background: #fff;</style>', 'editor_class'=>'mcm_rich_text_editor' ), $args );
-	$return = "<div class='mcm_rich_text_area'>
-				<label for='$id'>$args[1]</label>";
-	$return .= wp_editor( $meta, $id, $editor_args );
-	$return .= "<p><em>$description</em></p>
-			</div>";
-	echo $return;
+	$editor_args = apply_filters( 'mcm_filter_editor_args', array( 'textarea_name'=>$args[0], 'editor_css'=>'<style>.wp_themeSkin iframe { background: #fff; color: #222; }</style>', 'editor_class'=>'mcm_rich_text_editor' ), $args );
+	echo "<div class='mcm_rich_text_area'>
+				<label for='$id'><strong>$args[1]</strong></label><br />
+				<em>$description</em>";
+	wp_editor( $meta, $id, $editor_args );
+	echo "</div>";
 }
 
 /* When the post is saved, saves our custom data */
 add_action( 'save_post', 'mcm_save_postdata', 1, 2 );
-function mcm_save_postdata($post_id, $post) {
-	if ( empty($_POST) || ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) || wp_is_post_revision($post_id) || isset($_POST['_inline_edit']) ) { return $post_id; }
+function mcm_save_postdata( $post_id, $post ) {
+	if ( 
+		empty($_POST) || 
+		( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) || 
+		wp_is_post_revision($post_id) || 
+		isset($_POST['_inline_edit']) 
+		) { return; }
 
 	global $mcm_fields;
 	$fields = $mcm_fields;

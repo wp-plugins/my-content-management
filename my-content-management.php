@@ -969,6 +969,8 @@ function mcm_admin_style() {
 .mcm_post_fields .mcm-delete:hover { background-color: #fff; outline: 1px solid #933; }
 .mcm_post_fields .mcm-delete input { margin-left: 2px; margin-top: -1px;}
 .mcm_post_fields .mcm-chooser-image .mcm-delete { position: absolute; left: 0; width: 100%; padding: 2px 0; }
+.mcm_rich_text_area em { display: block; margin-bottom: 10px; }
+.mcm_rich_text_area { margin-bottom : 10px;}
 </style>
 <?php
 }
