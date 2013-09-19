@@ -1,0 +1,929 @@
+# Copyright (C) 2013 My Content Management
+# This file is distributed under the same license as the My Content Management package.
+msgid ""
+msgstr ""
+"Project-Id-Version: My Content Management 1.3.0\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/my-content-management\n"
+"POT-Creation-Date: 2013-01-22 20:10:32+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2013-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: mcm-custom-posts.php:58
+msgid "%1$s Listing updated. <a href=\"%2$s\">View %1$s listing</a>"
+msgstr ""
+
+#: mcm-custom-posts.php:59
+msgid "Custom field updated."
+msgstr ""
+
+#: mcm-custom-posts.php:60
+msgid "Custom field deleted."
+msgstr ""
+
+#: mcm-custom-posts.php:61
+msgid "%s listing updated."
+msgstr ""
+
+#. translators: %s: date and time of the revision
+#: mcm-custom-posts.php:63
+msgid "%1$s restored to revision from %2$ss"
+msgstr ""
+
+#: mcm-custom-posts.php:64
+msgid "%1$s published. <a href=\"%2$s\">View %3$s listing</a>"
+msgstr ""
+
+#: mcm-custom-posts.php:65
+msgid "Product listing saved."
+msgstr ""
+
+#: mcm-custom-posts.php:66
+msgid ""
+"%1$s listing submitted. <a target=\"_blank\" href=\"%2$s\">Preview %3$s "
+"listing</a>"
+msgstr ""
+
+#: mcm-custom-posts.php:67
+msgid ""
+"%1$s listing scheduled for: <strong>%1$s</strong>. <a target=\"_blank\" href="
+"\"%2$s\">Preview %3$s item</a>"
+msgstr ""
+
+#: mcm-custom-posts.php:68
+msgid "M j, Y @ G:i"
+msgstr ""
+
+#: mcm-custom-posts.php:69
+msgid ""
+"%1$s draft updated. <a target=\"_blank\" href=\"%s\">Preview %3$s listing</a>"
+msgstr ""
+
+#: mcm-custom-posts.php:302
+msgid "faq"
+msgstr ""
+
+#: mcm-custom-posts.php:302
+msgid "faqs"
+msgstr ""
+
+#: mcm-custom-posts.php:302
+msgid "FAQ"
+msgstr ""
+
+#: mcm-custom-posts.php:302
+msgid "FAQs"
+msgstr ""
+
+#: mcm-custom-posts.php:303
+msgid "person"
+msgstr ""
+
+#: mcm-custom-posts.php:303
+msgid "people"
+msgstr ""
+
+#: mcm-custom-posts.php:303
+msgid "Person"
+msgstr ""
+
+#: mcm-custom-posts.php:303
+msgid "People"
+msgstr ""
+
+#: mcm-custom-posts.php:304
+msgid "testimonial"
+msgstr ""
+
+#: mcm-custom-posts.php:304
+msgid "testimonials"
+msgstr ""
+
+#: mcm-custom-posts.php:304
+msgid "Testimonial"
+msgstr ""
+
+#: mcm-custom-posts.php:304
+msgid "Testimonials"
+msgstr ""
+
+#: mcm-custom-posts.php:305
+msgid "location"
+msgstr ""
+
+#: mcm-custom-posts.php:305
+msgid "locations"
+msgstr ""
+
+#: mcm-custom-posts.php:305 mcm-custom-posts.php:343 mcm-custom-posts.php:349
+msgid "Location"
+msgstr ""
+
+#: mcm-custom-posts.php:305
+msgid "Locations"
+msgstr ""
+
+#: mcm-custom-posts.php:306
+msgid "quote"
+msgstr ""
+
+#: mcm-custom-posts.php:306
+msgid "quotes"
+msgstr ""
+
+#: mcm-custom-posts.php:306
+msgid "Quote"
+msgstr ""
+
+#: mcm-custom-posts.php:306
+msgid "Quotes"
+msgstr ""
+
+#: mcm-custom-posts.php:307
+msgid "glossary term"
+msgstr ""
+
+#: mcm-custom-posts.php:307
+msgid "glossary terms"
+msgstr ""
+
+#: mcm-custom-posts.php:307
+msgid "Glossary Term"
+msgstr ""
+
+#: mcm-custom-posts.php:307
+msgid "Glossary Terms"
+msgstr ""
+
+#: mcm-custom-posts.php:308
+msgid "portfolio item"
+msgstr ""
+
+#: mcm-custom-posts.php:308
+msgid "portfolio items"
+msgstr ""
+
+#: mcm-custom-posts.php:308
+msgid "Portfolio Item"
+msgstr ""
+
+#: mcm-custom-posts.php:308
+msgid "Portfolio Items"
+msgstr ""
+
+#: mcm-custom-posts.php:309
+msgid "resource"
+msgstr ""
+
+#: mcm-custom-posts.php:309
+msgid "resources"
+msgstr ""
+
+#: mcm-custom-posts.php:309
+msgid "Resource"
+msgstr ""
+
+#: mcm-custom-posts.php:309
+msgid "Resources"
+msgstr ""
+
+#: mcm-custom-posts.php:318 mcm-custom-posts.php:370
+msgid "Personal Information"
+msgstr ""
+
+#: mcm-custom-posts.php:320 mcm-custom-posts.php:342 mcm-custom-posts.php:348
+#: mcm-widgets.php:30 mcm-widgets.php:95
+msgid "Title"
+msgstr ""
+
+#: mcm-custom-posts.php:321
+msgid "Subtitle"
+msgstr ""
+
+#: mcm-custom-posts.php:322
+msgid "Business"
+msgstr ""
+
+#: mcm-custom-posts.php:323
+msgid "Phone Number"
+msgstr ""
+
+#: mcm-custom-posts.php:324
+msgid "E-mail"
+msgstr ""
+
+#: mcm-custom-posts.php:326 mcm-custom-posts.php:371
+msgid "Location Info"
+msgstr ""
+
+#: mcm-custom-posts.php:328
+msgid "Street Address"
+msgstr ""
+
+#: mcm-custom-posts.php:329
+msgid "City"
+msgstr ""
+
+#: mcm-custom-posts.php:330
+msgid "Neighborhood"
+msgstr ""
+
+#: mcm-custom-posts.php:331
+msgid "State"
+msgstr ""
+
+#: mcm-custom-posts.php:332
+msgid "Country"
+msgstr ""
+
+#: mcm-custom-posts.php:333
+msgid "Postal Code"
+msgstr ""
+
+#: mcm-custom-posts.php:334
+msgid "Phone"
+msgstr ""
+
+#: mcm-custom-posts.php:335
+msgid "Fax"
+msgstr ""
+
+#: mcm-custom-posts.php:336
+msgid "Business Name"
+msgstr ""
+
+#: mcm-custom-posts.php:337
+msgid "Contact Email"
+msgstr ""
+
+#: mcm-custom-posts.php:339 mcm-custom-posts.php:373
+msgid "Quotation Info"
+msgstr ""
+
+#: mcm-custom-posts.php:341 mcm-custom-posts.php:347
+msgid "URL"
+msgstr ""
+
+#: mcm-custom-posts.php:345 mcm-custom-posts.php:372
+msgid "Testimonial Info"
+msgstr ""
+
+#: mcm-custom-posts.php:351 mcm-custom-posts.php:374
+msgid "Portfolio Info"
+msgstr ""
+
+#: mcm-custom-posts.php:353
+msgid "Medium"
+msgstr ""
+
+#: mcm-custom-posts.php:354
+msgid "Width"
+msgstr ""
+
+#: mcm-custom-posts.php:355
+msgid "Height"
+msgstr ""
+
+#: mcm-custom-posts.php:356
+msgid "Depth"
+msgstr ""
+
+#: mcm-custom-posts.php:357
+msgid "Price"
+msgstr ""
+
+#: mcm-custom-posts.php:358
+msgid "Year"
+msgstr ""
+
+#: mcm-custom-posts.php:360 mcm-custom-posts.php:375
+msgid "Resource Info"
+msgstr ""
+
+#: mcm-custom-posts.php:362
+msgid "Additional Authors"
+msgstr ""
+
+#: mcm-custom-posts.php:363
+msgid "License Terms"
+msgstr ""
+
+#: mcm-custom-posts.php:364
+msgid "Show on"
+msgstr ""
+
+#: mcm-view-custom-posts.php:148 mcm-view-custom-posts.php:205
+#: my-content-management.php:528 my-content-management.php:973
+#: my-content-management.php:976
+msgid "Edit"
+msgstr ""
+
+#: mcm-widgets.php:7
+msgid "Custom Post Search"
+msgstr ""
+
+#: mcm-widgets.php:34
+msgid "Post type to search"
+msgstr ""
+
+#: mcm-widgets.php:60
+msgid "Custom Post List"
+msgstr ""
+
+#: mcm-widgets.php:99
+msgid "Post type to list"
+msgstr ""
+
+#: mcm-widgets.php:110
+msgid "Template"
+msgstr ""
+
+#: mcm-widgets.php:111
+msgid "List"
+msgstr ""
+
+#: mcm-widgets.php:112
+msgid "Excerpt"
+msgstr ""
+
+#: mcm-widgets.php:113
+msgid "Full"
+msgstr ""
+
+#: mcm-widgets.php:117
+msgid "Display order"
+msgstr ""
+
+#: mcm-widgets.php:118
+msgid "Menu Order"
+msgstr ""
+
+#: mcm-widgets.php:119
+msgid "None"
+msgstr ""
+
+#: mcm-widgets.php:120 my-content-management.php:441
+msgid "Post ID"
+msgstr ""
+
+#: mcm-widgets.php:121
+msgid "Author"
+msgstr ""
+
+#: mcm-widgets.php:122
+msgid "Post Title"
+msgstr ""
+
+#: mcm-widgets.php:123
+msgid "Post Date"
+msgstr ""
+
+#: mcm-widgets.php:124
+msgid "Post Modified Date"
+msgstr ""
+
+#: mcm-widgets.php:125
+msgid "Random"
+msgstr ""
+
+#: mcm-widgets.php:126
+msgid "Number of comments"
+msgstr ""
+
+#: mcm-widgets.php:130
+msgid "Number to display"
+msgstr ""
+
+#: mcm-widgets.php:130
+msgid "-1 to display all posts"
+msgstr ""
+
+#: mcm-widgets.php:133
+msgid "Order direction"
+msgstr ""
+
+#: mcm-widgets.php:134
+msgid "Ascending (A-Z)"
+msgstr ""
+
+#: mcm-widgets.php:135
+msgid "Descending (Z-A)"
+msgstr ""
+
+#: mcm-widgets.php:139
+msgid "Category (single term or comma-separated list)"
+msgstr ""
+
+#: my-content-management.php:238
+msgid ""
+"<br /><strong>Note:</strong> Please review the <a class=\"thickbox\" href="
+"\"%1$s\">changelog</a> before upgrading."
+msgstr ""
+
+#: my-content-management.php:326
+msgid ""
+"Please read the FAQ and other Help documents before making a support request."
+msgstr ""
+
+#: my-content-management.php:331
+msgid ""
+"Thank you for supporting the continuing development of this plug-in! I'll "
+"get back to you as soon as I can."
+msgstr ""
+
+#: my-content-management.php:333
+msgid ""
+"I'll get back to you as soon as I can, after dealing with any support "
+"requests from plug-in supporters."
+msgstr ""
+
+#: my-content-management.php:343
+msgid ""
+"Please note: I do keep records of donations, but if your donation came from "
+"somebody other than your account at this web site, please note this in your "
+"message."
+msgstr ""
+
+#: my-content-management.php:346
+msgid "From:"
+msgstr ""
+
+#: my-content-management.php:346
+msgid "Can't get email at this address? Provide a different one below."
+msgstr ""
+
+#: my-content-management.php:349
+msgid ""
+"I have read <a href=\"http://www.joedolson.com/articles/my-content-"
+"management/\">the FAQ for this plug-in</a>."
+msgstr ""
+
+#: my-content-management.php:352
+msgid ""
+"I have <a href=\"http://www.joedolson.com/donate.php\">made a donation to "
+"help support this plug-in</a>."
+msgstr ""
+
+#: my-content-management.php:355
+msgid ""
+"I have <a href=\"http://www.joedolson.com/articles/my-content-management/"
+"guide/\">purchased the User's Guide</a>, but could not find an answer to "
+"this question."
+msgstr ""
+
+#: my-content-management.php:361
+msgid "Send Support Request"
+msgstr ""
+
+#: my-content-management.php:364
+msgid ""
+"The following additional information will be sent with your support request:"
+msgstr ""
+
+#. #-#-#-#-#  plugin.pot (My Content Management 1.3.0)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
+#: my-content-management.php:386
+msgid "My Content Management"
+msgstr ""
+
+#: my-content-management.php:392
+msgid "Enable Custom Post Types"
+msgstr ""
+
+#: my-content-management.php:400
+msgid "Enable Selected Post Types"
+msgstr ""
+
+#: my-content-management.php:400 my-content-management.php:584
+msgid "Add new post type"
+msgstr ""
+
+#: my-content-management.php:415
+msgid "Get Plug-in Support"
+msgstr ""
+
+#: my-content-management.php:427 my-content-management.php:907
+#: my-content-management.php:1201
+msgid "Support My Content Management"
+msgstr ""
+
+#: my-content-management.php:437
+msgid "Basic Template Tags"
+msgstr ""
+
+#: my-content-management.php:444
+msgid "Post excerpt (with auto paragraphs)"
+msgstr ""
+
+#: my-content-management.php:447
+msgid "Post excerpt (unmodified)"
+msgstr ""
+
+#: my-content-management.php:450
+msgid "Post content (with auto paragraphs and shortcodes processed)"
+msgstr ""
+
+#: my-content-management.php:453
+msgid "Post content (unmodified)"
+msgstr ""
+
+#: my-content-management.php:456
+msgid "Featured image as thumbnail."
+msgstr ""
+
+#: my-content-management.php:459
+msgid "Featured image at medium size."
+msgstr ""
+
+#: my-content-management.php:462
+msgid "Featured image at large size."
+msgstr ""
+
+#: my-content-management.php:465
+msgid "Featured image at original size."
+msgstr ""
+
+#: my-content-management.php:468
+msgid "Permalink URL for post"
+msgstr ""
+
+#: my-content-management.php:471
+msgid "Post title linked to permalink URL"
+msgstr ""
+
+#: my-content-management.php:474
+msgid "Post title"
+msgstr ""
+
+#: my-content-management.php:477
+msgid "Post shortlink"
+msgstr ""
+
+#: my-content-management.php:480
+msgid "Post last modified date"
+msgstr ""
+
+#: my-content-management.php:483
+msgid "Post publication date"
+msgstr ""
+
+#: my-content-management.php:486
+msgid "Post author display name"
+msgstr ""
+
+#: my-content-management.php:489
+msgid "List of taxonomy terms associated with post."
+msgstr ""
+
+#: my-content-management.php:492
+msgid "When logged in, display link to edit the current post."
+msgstr ""
+
+#: my-content-management.php:496
+msgid ""
+"Any custom field can also be referenced via shortcode, using the same "
+"pattern with the name of the custom field: <code>{custom_field_name}</code>"
+msgstr ""
+
+#: my-content-management.php:515
+msgid "Enabled post types updated"
+msgstr ""
+
+#: my-content-management.php:528 my-content-management.php:1011
+#: my-content-management.php:1056
+msgid "Delete"
+msgstr ""
+
+#: my-content-management.php:554
+msgid "Post type settings modified."
+msgstr ""
+
+#: my-content-management.php:570
+msgid "Added new custom post type."
+msgstr ""
+
+#: my-content-management.php:584
+msgid "Edit type \"%1$s\""
+msgstr ""
+
+#: my-content-management.php:600 my-content-management.php:631
+msgid "Singular Name, lower"
+msgstr ""
+
+#: my-content-management.php:601 my-content-management.php:632
+msgid "Singular Name, upper"
+msgstr ""
+
+#: my-content-management.php:602 my-content-management.php:633
+msgid "Plural Name, lower"
+msgstr ""
+
+#: my-content-management.php:603 my-content-management.php:634
+msgid "Plural Name, upper"
+msgstr ""
+
+#: my-content-management.php:655
+msgid "Add New Custom Post Type"
+msgstr ""
+
+#: my-content-management.php:674
+msgid "Custom post type \"%1$s\" has been deleted."
+msgstr ""
+
+#: my-content-management.php:676
+msgid "Custom post type \"%1$s\" was not found, and could not be deleted."
+msgstr ""
+
+#: my-content-management.php:688
+msgid "Post Type templates updated"
+msgstr ""
+
+#: my-content-management.php:738
+msgid "The glossary extension to My Content Management is enabled."
+msgstr ""
+
+#: my-content-management.php:740
+msgid ""
+"displays list of linked first characters represented in your Glossary. "
+"(Roman alphabet only, including numbers 0-9 by default.)"
+msgstr ""
+
+#: my-content-management.php:741
+msgid ""
+"displays value of term attribute linked to glossary term with ID attribute."
+msgstr ""
+
+#: my-content-management.php:742 my-content-management.php:743
+msgid "Feature"
+msgstr ""
+
+#: my-content-management.php:742
+msgid "Adds links throughout content for each term in your glossary."
+msgstr ""
+
+#: my-content-management.php:743
+msgid "Adds character headings to each section of your glossary list."
+msgstr ""
+
+#: my-content-management.php:745
+msgid "Added custom fields:"
+msgstr ""
+
+#: my-content-management.php:749
+msgid "Template Manager"
+msgstr ""
+
+#: my-content-management.php:761 my-content-management.php:771
+#: my-content-management.php:781
+msgid "List Wrapper"
+msgstr ""
+
+#: my-content-management.php:762 my-content-management.php:772
+#: my-content-management.php:782
+msgid "Item Wrapper"
+msgstr ""
+
+#: my-content-management.php:765
+msgid "Full Template"
+msgstr ""
+
+#: my-content-management.php:775
+msgid "Excerpt Template"
+msgstr ""
+
+#: my-content-management.php:785
+msgid "List Template"
+msgstr ""
+
+#: my-content-management.php:789
+msgid "Save %s Templates"
+msgstr ""
+
+#: my-content-management.php:793
+msgid "Naming for theme templates"
+msgstr ""
+
+#: my-content-management.php:794
+msgid "Theme template for this taxonomy:"
+msgstr ""
+
+#: my-content-management.php:795
+msgid "Theme template for this custom post type:"
+msgstr ""
+
+#: my-content-management.php:796
+msgid "Theme template for archive pages with this post type:"
+msgstr ""
+
+#: my-content-management.php:816
+msgid "No wrapper"
+msgstr ""
+
+#: my-content-management.php:824
+msgid "Need Help? <strong>Buy the User's Guide</strong>"
+msgstr ""
+
+#: my-content-management.php:832
+msgid "Get Support"
+msgstr ""
+
+#: my-content-management.php:832
+msgid "Report a bug"
+msgstr ""
+
+#: my-content-management.php:842
+msgid "Check out my other plug-ins"
+msgstr ""
+
+#: my-content-management.php:843
+msgid "Rate this plug-in"
+msgstr ""
+
+#: my-content-management.php:844
+msgid "Help translate this plug-in"
+msgstr ""
+
+#: my-content-management.php:880 my-content-management.php:1162
+msgid "My Content Management &raquo; Manage Custom Fields"
+msgstr ""
+
+#: my-content-management.php:885
+msgid "Custom Fields Assigned to this post type"
+msgstr ""
+
+#: my-content-management.php:887
+msgid "Select the sets of custom fields enabled for this post type"
+msgstr ""
+
+#: my-content-management.php:894
+msgid "Update Assignments"
+msgstr ""
+
+#: my-content-management.php:894 my-content-management.php:1186
+msgid "Add new custom field set"
+msgstr ""
+
+#: my-content-management.php:951
+msgid "Custom fields for this post type updated"
+msgstr ""
+
+#: my-content-management.php:972
+msgid "Off"
+msgstr ""
+
+#: my-content-management.php:973
+msgid "On"
+msgstr ""
+
+#: my-content-management.php:1006
+msgid "New Fieldset Title"
+msgstr ""
+
+#: my-content-management.php:1006
+msgid "Attach to"
+msgstr ""
+
+#: my-content-management.php:1011
+msgid "Field Label"
+msgstr ""
+
+#: my-content-management.php:1011
+msgid "Input Type"
+msgstr ""
+
+#: my-content-management.php:1017
+msgid "Single line of text"
+msgstr ""
+
+#: my-content-management.php:1018
+msgid "Multiple lines of text"
+msgstr ""
+
+#: my-content-management.php:1019
+msgid "Select dropdown"
+msgstr ""
+
+#: my-content-management.php:1020
+msgid "Color input / HTML5"
+msgstr ""
+
+#: my-content-management.php:1021
+msgid "Date input / HTML5"
+msgstr ""
+
+#: my-content-management.php:1022
+msgid "Telephone / HTML5"
+msgstr ""
+
+#: my-content-management.php:1023
+msgid "Time / HTML5"
+msgstr ""
+
+#: my-content-management.php:1024
+msgid "URL / HTML5"
+msgstr ""
+
+#: my-content-management.php:1025
+msgid "Email / HTML5"
+msgstr ""
+
+#: my-content-management.php:1039
+msgid "Options"
+msgstr ""
+
+#: my-content-management.php:1039
+msgid "Additional Text"
+msgstr ""
+
+#: my-content-management.php:1044 my-content-management.php:1072
+msgid "Label"
+msgstr ""
+
+#: my-content-management.php:1047 my-content-management.php:1075
+msgid "Type"
+msgstr ""
+
+#: my-content-management.php:1062
+msgid "There is no field set by that name"
+msgstr ""
+
+#: my-content-management.php:1081
+msgid "Options/Additional Text"
+msgstr ""
+
+#: my-content-management.php:1087
+msgid "Add another field"
+msgstr ""
+
+#: my-content-management.php:1088
+msgid "Remove last field"
+msgstr ""
+
+#: my-content-management.php:1134
+msgid "added"
+msgstr ""
+
+#: my-content-management.php:1134
+msgid "updated"
+msgstr ""
+
+#: my-content-management.php:1136
+msgid "No custom field set was defined."
+msgstr ""
+
+#: my-content-management.php:1141
+msgid "You have %1$s the %2$s group of custom fields."
+msgstr ""
+
+#: my-content-management.php:1168
+msgid "Manage Custom Fieldsets"
+msgstr ""
+
+#: my-content-management.php:1179
+msgid ""
+"If the input type is a Select box, enter the selectable options as a comma-"
+"separated list in the Description/Options field."
+msgstr ""
+
+#: my-content-management.php:1186
+msgid "Update Custom Fieldsets"
+msgstr ""
+
+#: my-content-management.php:1190
+msgid ""
+"HTML5 Input types have limited browser support. <a href=\"%s\">Check whether "
+"your browser supports these fields</a>"
+msgstr ""
+
+#: my-content-management.php:1222
+msgid "Settings"
+msgstr ""
+
+#: my-content-management.php:1223
+msgid "Donate"
+msgstr ""
+
+#: my-glossary-filter.php:88
+msgid "Back to Top"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://www.joedolson.com/articles/my-content-management/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Creates a set of common custom post types for extended content management: "
+"FAQ, Testimonials, people lists, term lists, etc."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Joseph C Dolson"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://www.joedolson.com"
+msgstr ""
