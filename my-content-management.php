@@ -419,8 +419,8 @@ function mcm_add_scripts() {
 	wp_register_script( 'mcm.tabs', plugins_url( 'js/tabs.js', __FILE__ ), array( 'jquery' ) );
 	wp_enqueue_script( 'addfields' );
 	wp_enqueue_script( 'mcm.tabs' );
-	global $mcm_types;
-	$keys = array_keys( $mcm_types );
+	global $mcm_enabled;
+	$keys = $mcm_enabled;
 	$mcm_selected = $keys[0].'-container';
 	wp_localize_script( 'mcm.tabs', 'firstItem', $mcm_selected );
 }
@@ -618,7 +618,7 @@ function mcm_updater() {
 		} else {
 			$option = get_option('mcm_options');
 			$ns = $_POST['new'];
-			$type = 'mcm_'.sanitize_title($ns['pt1']);			
+			$type = substr( 'mcm_'.sanitize_title($ns['pt1']), 0, 20 );			
 			$new = array( $ns['pt1'],$ns['pt2'],$ns['pt3'],$ns['pt4'],array( 'public' => ( isset($ns['public']) && $ns['public'] == 1 )?true:false,
 					'publicly_queryable' => ( isset($ns['publicly_queryable']) && $ns['hierarchical'] == 1 )?true:false,
 					'exclude_from_search'=> ( isset($ns['exclude_from_search']) && $ns['exclude_from_search']==1)?true:false,

@@ -38,7 +38,7 @@ function mcm_posttypes() {
 				'query_var' => true,
 				'rewrite' => array('slug'=>$slug,'with_front'=>false),
 				'hierarchical' => $raw['hierarchical'],
-				'menu_position' => 25+$i,
+				'menu_position' => 30+$i,
 				'has_archive' => true,
 				'supports' => $raw['supports'],
 				'map_meta_cap'=>true,

@@ -5,7 +5,7 @@ Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebar
 Requires at least: 3.2.1
 Tested up to: 3.6.1
 License: GPLv2 or later
-Stable tag: 1.3.4
+Stable tag: 1.4.0
 
 Creates common custom post types for advanced content management: FAQ, Testimonials, people (staff, contributors, etc.), and others!
 
@@ -67,6 +67,7 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 * Bug fix: custom post type search widget; could not select post type.
 * Bug fix: if all "supports" options were disabled, could not later select options.
+* Bug fix: automatically truncate post type names to max 20 characters, as required by WP.
 * Minor rewrite of custom meta saving process.
 * New template tag attribute: fallback (all template tags; set fallback content if field not supplied.)
 * New template tag attribute: size (chooser template tags; image size keyword)

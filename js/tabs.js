@@ -1,5 +1,7 @@
 jQuery(document).ready(function($){
+	var tabs = $('.mcm-settings .wptab').length;
 	$('.mcm-settings .tabs a[href="#'+firstItem+'"]').addClass('active');
+	if ( tabs > 1 ) {
 	$('.mcm-settings .wptab').not('#'+firstItem).hide();
 	$('.mcm-settings .tabs a').on('click',function(e) {
 		e.preventDefault();
@@ -9,4 +11,5 @@ jQuery(document).ready(function($){
 		$('.mcm-settings .wptab').not(target).hide();
 		$(target).show();
 	});
+	}
 });
