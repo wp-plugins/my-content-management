@@ -231,8 +231,8 @@ $templates = $mcm_templates; $types = $mcm_types;
 					}
 				}
 				$p[$key] = $cfield;
-			}
-			$p = apply_filters('mcm_extend_posts', $p, $custom );
+			}		
+			$p = apply_filters('mcm_extend_posts', $p, $custom );		
 			$this_post = mcm_run_template( $p, $display, $column, $wrapper );
 			$return .= apply_filters('mcm_filter_post',$this_post, $p, $custom );
 			switch ($column) {
@@ -360,22 +360,38 @@ global $mcm_templates; $templates = $mcm_templates;
 	return $return;
 }
 
+function mcm_default_fields() {
+	$defaults = array( 'id', 'excerpt', 'excerpt_raw', 'content', 'content_raw', 'permalink', 'link_title', 'title', 'shortlink', 'modified', 'date', 'author', 'terms', 'edit_link','full' );
+	$sizes = get_intermediate_image_sizes();
+	foreach ( $sizes as $size ) {
+		$defaults[] = $size;
+	}
+	return $defaults;
+}
+
 // nested template tags: parses tags inside before or after values of tags
 function mcm_simple_template( $array=array(), $template=false ) {
+	$defaults = mcm_default_fields();
 	if ( !$template ) { return; }
 	foreach ( $array as $key=>$value ) {
-		$plaintext = ( mcm_is_richtext( $key ) )?false:true;		
+		if ( !in_array( $key, $defaults ) ) {
+			$is_chooser = mcm_is_chooser( $key );
+			$richtext = ( mcm_is_richtext( $key ) )?true:false;
+		} else {
+			$is_chooser = false;
+			$richtext = false;
+		}	
 		if ( !is_object( $value ) ) {
 			if ( is_array( $value ) ) {
 				foreach ( $value as $val ) {
-					if ( strpos( $template, "{".$key."}" ) ) {
-						if ( !$plaintext ) { $val = wpautop( $val ); }					
+					if ( strpos( $template, "{".$key."}" ) !== false ) {
+						if ( $richtext ) { $val = wpautop( $val ); }
 						$template = str_replace( "{".$key."}", $val, $template );
 					}
 				}
 			} else {
-				if ( strpos( $template, "{".$key."}" ) ) {
-					if ( !$plaintext ) { $value = wpautop( $value ); }				
+				if ( strpos( $template, "{".$key."}" ) !== false ) {
+					if ( $richtext ) { $value = wpautop( $value ); }
 					$template = str_replace( "{".$key."}", $value, $template );
 				}			
 			}
@@ -386,11 +402,17 @@ function mcm_simple_template( $array=array(), $template=false ) {
 
 function mcm_draw_template( $array=array(), $template='' ) {
 	$template = stripcslashes($template);
+	$defaults = mcm_default_fields();
 	$fallback = $before = $after = $size = $output = '';
 	$template = mcm_simple_template( $array, $template );
 	foreach ($array as $key=>$value) {
-		$is_chooser = mcm_is_chooser( $key );
-		$plaintext = ( mcm_is_richtext( $key ) )?false:true;		
+		if ( !in_array( $key, $defaults ) ) {
+			$is_chooser = mcm_is_chooser( $key );
+			$richtext = ( mcm_is_richtext( $key ) )?true:false;
+		} else {
+			$is_chooser = false;
+			$richtext = false;
+		}
 		if ( !is_object($value) ) {
 			if ( strpos( $template, "{".$key ) !== false ) { // only check for tag parts that exist
 				preg_match_all('/{'.$key.'[^}]*+}/i',$template, $result); 
@@ -409,12 +431,13 @@ function mcm_draw_template( $array=array(), $template='' ) {
 								foreach ( $value as $val ) {
 									if ( $is_chooser ) { if ( is_numeric( $val ) ) { $val = wp_get_attachment_link( $val, $size ); } }
 									$fb = ( $fallback != '' && $val == '' )?$before.$fallback.$after:'';
-									if ( !$plaintext ) { $value = wpautop($value); }
+									if ( $richtext ) { $value = wpautop($value); }
 									$output .= ( $val == '' )?$fb:$before.$val.$after;
 								}
 							} else {
 								if ( $is_chooser ) { $value = wp_get_attachment_link( $value, $size ); }
 								$fb = ( $fallback != '' && $value == '' )?$before.$fallback.$after:'';
+								if ( $richtext ) { $value = wpautop($value); }								
 								$output = ( $value == '' )?$fb:$before.$value.$after;
 							}
 							$template = str_replace( $whole_thang, $output, $template );

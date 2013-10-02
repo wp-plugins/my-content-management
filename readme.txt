@@ -5,7 +5,7 @@ Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebar
 Requires at least: 3.2.1
 Tested up to: 3.6.1
 License: GPLv2 or later
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 
 Creates common custom post types for advanced content management: FAQ, Testimonials, people (staff, contributors, etc.), and others!
 
@@ -62,6 +62,10 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 <a href="http://www.joedolson.com/articles/translator-credits/">Translator Credits</a>
 
 == Changelog ==
+
+= 1.4.1 =
+
+* Bug fix: ran wpautop on plaintext elements.
 
 = 1.4.0 =
 
