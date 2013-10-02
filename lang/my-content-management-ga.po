@@ -1,0 +1,710 @@
+# Translation of My Content Management in Irish
+# This file is distributed under the same license as the My Content Management package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2013-01-21 23:56:05+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=5; plural=n==1 ? 0 : n==2 ? 1 : n<7 ? 2 : n<11 ? 3 : 4;\n"
+"X-Generator: GlotPress/0.1\n"
+"Project-Id-Version: My Content Management\n"
+
+#: mcm-custom-posts.php:288
+msgid "Country"
+msgstr "tír"
+
+#: mcm-widgets.php:140
+msgid "Category (single term or comma-separated list)"
+msgstr "Catagóir (téarma amháin nó camóg-scartha liosta)"
+
+#: my-content-management.php:336
+msgid "Can't get email at this address? Provide a different one below."
+msgstr "Ní féidir a fháil ríomhphost ag an seoladh seo? Sholáthar ceann eile thíos."
+
+#: my-content-management.php:345
+msgid "I have <a href=\"http://www.joedolson.com/articles/my-content-management/guide/\">purchased the User's Guide</a>, but could not find an answer to this question."
+msgstr "Tá mé <a href=\"http://www.joedolson.com/articles/my-content-management/guide/\"> cheannaigh an Úsáideoir Treoir</a>, ach nach bhféadfaí teacht ar an freagra don cheist seo."
+
+#: my-content-management.php:477
+msgid "Enabled post types updated"
+msgstr "Cineálacha post Cumasaithe cothrom le dáta"
+
+#: my-content-management.php:490
+msgid "Edit post type:"
+msgstr "Cuir cineál poist:"
+
+#: my-content-management.php:516
+msgid "Post type settings modified."
+msgstr "Suímh cineál Post mhodhnú."
+
+#: my-content-management.php:532
+msgid "Added new custom post type."
+msgstr "Chuir cineál post nua saincheaptha."
+
+#: my-content-management.php:545
+msgid "Edit Custom Post Type"
+msgstr "Cuir Cineál Post Chustaim"
+
+#: my-content-management.php:548
+msgid "Add new"
+msgstr "Cuir nua"
+
+#: my-content-management.php:561 my-content-management.php:592
+msgid "Singular Name, lower"
+msgstr "Ainm uimhir uatha, níos ísle"
+
+#: my-content-management.php:562 my-content-management.php:593
+msgid "Plural Name, lower"
+msgstr "Ainm iolra, níos ísle"
+
+#: my-content-management.php:563 my-content-management.php:594
+msgid "Singular Name, upper"
+msgstr "Ainm, uimhir uatha uachtarach"
+
+#: my-content-management.php:564 my-content-management.php:595
+msgid "Plural Name, upper"
+msgstr "Ainm iolra, uachtair"
+
+#: my-content-management.php:616
+msgid "Add New Custom Post Type"
+msgstr "Cuir cineál Post Nua an Chustaim"
+
+#: my-content-management.php:633
+msgid "Post Type templates updated"
+msgstr "Teimpléid Cineál Post cothrom le dáta"
+
+#: my-content-management.php:749
+msgid "Buy the User's Guide"
+msgstr "Ceannaigh an Úsáideoir Treoir"
+
+#: my-content-management.php:801
+msgid "Settings"
+msgstr "Socruithe"
+
+#: mcm-custom-posts.php:258
+msgid "faq"
+msgstr "faq"
+
+#: mcm-custom-posts.php:258
+msgid "faqs"
+msgstr "faqs"
+
+#: mcm-custom-posts.php:258
+msgid "FAQ"
+msgstr "FAQ"
+
+#: mcm-custom-posts.php:258
+msgid "FAQs"
+msgstr "FAQs"
+
+#: mcm-custom-posts.php:259
+msgid "person"
+msgstr "duine"
+
+#: mcm-custom-posts.php:259
+msgid "people"
+msgstr "daoine"
+
+#: mcm-custom-posts.php:259
+msgid "Person"
+msgstr "duine"
+
+#: mcm-custom-posts.php:259
+msgid "People"
+msgstr "Daoine"
+
+#: mcm-custom-posts.php:260
+msgid "testimonial"
+msgstr "teistiméireacht"
+
+#: mcm-custom-posts.php:260
+msgid "testimonials"
+msgstr "teistiméireachtaí"
+
+#: mcm-custom-posts.php:260
+msgid "Testimonial"
+msgstr "teistiméireachtaí"
+
+#: mcm-custom-posts.php:260
+msgid "Testimonials"
+msgstr "teistiméireachtaí"
+
+#: mcm-custom-posts.php:261
+msgid "location"
+msgstr "suíomh"
+
+#: mcm-custom-posts.php:261
+msgid "locations"
+msgstr "suíomhanna"
+
+#: mcm-custom-posts.php:261 mcm-custom-posts.php:299 mcm-custom-posts.php:305
+msgid "Location"
+msgstr "suíomh"
+
+#: mcm-custom-posts.php:261
+msgid "Locations"
+msgstr "Suímh"
+
+#: mcm-custom-posts.php:262
+msgid "quote"
+msgstr "ceanglófar"
+
+#: mcm-custom-posts.php:262
+msgid "quotes"
+msgstr "Sleachta"
+
+#: mcm-custom-posts.php:262
+msgid "Quote"
+msgstr "Tosach"
+
+#: mcm-custom-posts.php:262
+msgid "Quotes"
+msgstr "Sleachta"
+
+#: mcm-custom-posts.php:263
+msgid "glossary term"
+msgstr "gluais téarma"
+
+#: mcm-custom-posts.php:263
+msgid "glossary terms"
+msgstr "téarmaí gluais"
+
+#: mcm-custom-posts.php:263
+msgid "Glossary Term"
+msgstr "Gluais Téarma"
+
+#: mcm-custom-posts.php:263
+msgid "Glossary Terms"
+msgstr "Téarmaí Gluais"
+
+#: mcm-custom-posts.php:264
+msgid "portfolio item"
+msgstr "mír punainne"
+
+#: mcm-custom-posts.php:264
+msgid "portfolio items"
+msgstr "míreanna phunann"
+
+#: mcm-custom-posts.php:264
+msgid "Portfolio Item"
+msgstr "Mír Punann"
+
+#: mcm-custom-posts.php:264
+msgid "Portfolio Items"
+msgstr "Míreanna Punainne"
+
+#: mcm-custom-posts.php:265
+msgid "resource"
+msgstr "acmhainn"
+
+#: mcm-custom-posts.php:265
+msgid "resources"
+msgstr "acmhainní"
+
+#: mcm-custom-posts.php:265
+msgid "Resource"
+msgstr "Acmhainní"
+
+#: mcm-custom-posts.php:265
+msgid "Resources"
+msgstr "Acmhainní"
+
+#: mcm-custom-posts.php:274 mcm-custom-posts.php:326
+msgid "Personal Information"
+msgstr "Faisnéis Phearsanta"
+
+#: mcm-custom-posts.php:276 mcm-custom-posts.php:298 mcm-custom-posts.php:304
+#: mcm-widgets.php:30 mcm-widgets.php:96
+msgid "Title"
+msgstr "Teideal"
+
+#: mcm-custom-posts.php:277
+msgid "Subtitle"
+msgstr "Fotheideal"
+
+#: mcm-custom-posts.php:278
+msgid "Business"
+msgstr "Gnó"
+
+#: mcm-custom-posts.php:279
+msgid "Phone Number"
+msgstr "Uimhir Fón"
+
+#: mcm-custom-posts.php:280
+msgid "E-mail"
+msgstr "r-phost"
+
+#: mcm-custom-posts.php:282 mcm-custom-posts.php:327
+msgid "Location Info"
+msgstr "Eolas suíomh"
+
+#: mcm-custom-posts.php:284
+msgid "Street Address"
+msgstr "Seoladh Sráid an"
+
+#: mcm-custom-posts.php:285
+msgid "City"
+msgstr "Cathrach"
+
+#: mcm-custom-posts.php:286
+msgid "Neighborhood"
+msgstr "neighborhood"
+
+#: mcm-custom-posts.php:287
+msgid "State"
+msgstr "Stáit"
+
+#: mcm-custom-posts.php:289
+msgid "Postal Code"
+msgstr "poist cód"
+
+#: mcm-custom-posts.php:290
+msgid "Phone"
+msgstr "Fón"
+
+#: mcm-custom-posts.php:291
+msgid "Fax"
+msgstr "Facs"
+
+#: mcm-custom-posts.php:292
+msgid "Business Name"
+msgstr "Ainm Gnó"
+
+#: mcm-custom-posts.php:293
+msgid "Contact Email"
+msgstr "Déan teagmháil le Ríomhphost"
+
+#: mcm-custom-posts.php:295 mcm-custom-posts.php:329
+msgid "Quotation Info"
+msgstr "Eolas luachan"
+
+#: mcm-custom-posts.php:297 mcm-custom-posts.php:303
+msgid "URL"
+msgstr "URL"
+
+#: mcm-custom-posts.php:301 mcm-custom-posts.php:328
+msgid "Testimonial Info"
+msgstr "Eolas CABHAIR"
+
+#: mcm-custom-posts.php:307 mcm-custom-posts.php:330
+msgid "Portfolio Info"
+msgstr "Eolas Punann"
+
+#: mcm-custom-posts.php:309
+msgid "Medium"
+msgstr "Meánach"
+
+#: mcm-custom-posts.php:310
+msgid "Width"
+msgstr "leithead"
+
+#: mcm-custom-posts.php:311
+msgid "Height"
+msgstr "airde"
+
+#: mcm-custom-posts.php:312
+msgid "Depth"
+msgstr "Doimhneacht"
+
+#: mcm-custom-posts.php:313
+msgid "Price"
+msgstr "praghas"
+
+#: mcm-custom-posts.php:314
+msgid "Year"
+msgstr "Bliain"
+
+#: mcm-custom-posts.php:316 mcm-custom-posts.php:331
+msgid "Resource Info"
+msgstr "Eolas Acmhainní"
+
+#: mcm-custom-posts.php:318
+msgid "Additional Authors"
+msgstr "Údair breise"
+
+#: mcm-custom-posts.php:319
+msgid "License Terms"
+msgstr "Téarmaí Ceadúnas"
+
+#: mcm-custom-posts.php:320
+msgid "Show on"
+msgstr "Taispeáin ar"
+
+#: mcm-custom-posts.php:55
+msgid "%1$s Listing updated. <a href=\"%2$s\">View %1$s listing</a>"
+msgstr "Liosta %1$s suas chun dáta. <A View href=\"%2$s\"> %1$s liostú </ a>"
+
+#: mcm-custom-posts.php:56
+msgid "Custom field updated."
+msgstr "Réimse Chustaim suas chun dáta."
+
+#: mcm-custom-posts.php:57
+msgid "Custom field deleted."
+msgstr "Réimse Chustaim a scriosadh."
+
+#: mcm-custom-posts.php:58
+msgid "%s listing updated."
+msgstr "%s liosta suas chun dáta."
+
+#: mcm-custom-posts.php:60
+msgid "%1$s restored to revision from %2$ss"
+msgstr "%1$s ar ais athbhreithniú ó %2$ss"
+
+#: mcm-custom-posts.php:61
+msgid "%1$s published. <a href=\"%2$s\">View %3$s listing</a>"
+msgstr "%1$s foilsithe. <a href=\"%2$s\">fhonn  %3 $ s liostú </ a>"
+
+#: mcm-custom-posts.php:62
+msgid "Product listing saved."
+msgstr "Liosta Táirge shábháil."
+
+#: mcm-custom-posts.php:63
+msgid "%1$s listing submitted. <a target=\"_blank\" href=\"%2$s\">Preview %3$s listing</a>"
+msgstr "Liostú %1$s isteach. <a target=\"_blank\" href=\"%2$s\"> %3$s Réamhamhairc  liostú </ a>"
+
+#: mcm-custom-posts.php:64
+msgid "%1$s listing scheduled for: <strong>%1$s</strong>. <a target=\"_blank\" href=\"%2$s\">Preview %3$s item</a>"
+msgstr "%1$s liosta sceidealta le haghaidh: <strong>%1$s</ strong>. <a target=\"_blank\" href=\"%2$s\"> %3$s Réamhamhairc  mír </ a>"
+
+#: mcm-custom-posts.php:65
+msgid "M j, Y @ G:i"
+msgstr "M j, Y @ G:i"
+
+#: mcm-custom-posts.php:66
+msgid "%1$s draft updated. <a target=\"_blank\" href=\"%s\">Preview %3$s listing</a>"
+msgstr "%1$s dréacht suas chun dáta. <a target=\"_blank\" href=\"%s\"> %3$s Réamhamhairc liostú</ a>"
+
+#: mcm-widgets.php:7
+msgid "Custom Post Search"
+msgstr "Cuardaigh Post Chustaim"
+
+#: mcm-widgets.php:34
+msgid "Post type to search"
+msgstr "Cuir cineál a chuardach"
+
+#: mcm-widgets.php:60
+msgid "Custom Post List"
+msgstr "Liosta Post Chustaim"
+
+#: mcm-widgets.php:100
+msgid "Post type to list"
+msgstr "Cuir cineál a liostú"
+
+#: mcm-widgets.php:111
+msgid "Template"
+msgstr "teimpléad"
+
+#: mcm-widgets.php:112
+msgid "List"
+msgstr "Liosta"
+
+#: mcm-widgets.php:113
+msgid "Excerpt"
+msgstr "sliocht"
+
+#: mcm-widgets.php:114
+msgid "Full"
+msgstr "Iomlán"
+
+#: mcm-widgets.php:118
+msgid "Display order"
+msgstr "Taispeáin ordú"
+
+#: mcm-widgets.php:119
+msgid "Menu Order"
+msgstr "Ordú menu"
+
+#: mcm-widgets.php:120
+msgid "None"
+msgstr "Níl"
+
+#: mcm-widgets.php:121 my-content-management.php:382
+msgid "Post ID"
+msgstr "Iar-ID"
+
+#: mcm-widgets.php:122
+msgid "Author"
+msgstr "údar"
+
+#: mcm-widgets.php:123
+msgid "Post Title"
+msgstr "v"
+
+#: mcm-widgets.php:124
+msgid "Post Date"
+msgstr "Iar Dáta"
+
+#: mcm-widgets.php:125
+msgid "Post Modified Date"
+msgstr "Iar Dáta Athraithe"
+
+#: mcm-widgets.php:126
+msgid "Random"
+msgstr "randamach"
+
+#: mcm-widgets.php:127
+msgid "Number of comments"
+msgstr "Líon na tuairimí"
+
+#: mcm-widgets.php:131
+msgid "Number to display"
+msgstr "Líon a chur ar taispeáint"
+
+#: mcm-widgets.php:131
+msgid "-1 to display all posts"
+msgstr "-1 A chur ar taispeáint go léir"
+
+#: mcm-widgets.php:134
+msgid "Order direction"
+msgstr "treo Ordú"
+
+#: mcm-widgets.php:135
+msgid "Ascending (A-Z)"
+msgstr "Ag dul suas (A-Z)"
+
+#: mcm-widgets.php:136
+msgid "Descending (Z-A)"
+msgstr "Íslitheach (Z-A)"
+
+#: my-content-management.php:228
+msgid "<br /><strong>Note:</strong> Please review the <a class=\"thickbox\" href=\"%1$s\">changelog</a> before upgrading."
+msgstr "<br/> <strong>Tabhair faoi deara:</strong>Déan iniúchadh ar an <a class=\"thickbox\" href=\"%1$s\"> changelog </ a> roimh uasghrádú."
+
+#: my-content-management.php:316
+msgid "Please read the FAQ and other Help documents before making a support request."
+msgstr "Léigh na doiciméid Cabhair Ceisteanna Coitianta agus eile sula ndéanfaidh sé iarraidh tacaíochta."
+
+#: my-content-management.php:321
+msgid "Thank you for supporting the continuing development of this plug-in! I'll get back to you as soon as I can."
+msgstr "Go raibh maith agat as tacú le forbairt leanúnach seo plug-! Feicfidh mé dul ar ais chugat chomh luath agus is féidir liom."
+
+#: my-content-management.php:323
+msgid "I'll get back to you as soon as I can, after dealing with any support requests from plug-in supporters."
+msgstr "Feicfidh mé dul ar ais chugat chomh luath agus is féidir liom, tar éis déileáil le haon iarratas tacaíocht ó plug-in lucht tacaíochta."
+
+#: my-content-management.php:333
+msgid "Please note: I do keep records of donations, but if your donation came from somebody other than your account at this web site, please note this in your message."
+msgstr "Tabhair faoi deara: is féidir liom taifid a choimeád ar shíntiúis, ach má tháinig do síntiús ó dhuine eile seachas do chuntas ar an suíomh gréasáin seo, tabhair faoi deara seo i do theachtaireacht."
+
+#: my-content-management.php:336
+msgid "From:"
+msgstr "ó:"
+
+#: my-content-management.php:339
+msgid "I have read <a href=\"http://www.joedolson.com/articles/my-content-management/\">the FAQ for this plug-in</a>."
+msgstr "Léigh mé <a href=\"http://www.joedolson.com/articles/my-content-management/\"> an Ceisteanna Coitianta le haghaidh an plug-in </ a>."
+
+#: my-content-management.php:342
+msgid "I have <a href=\"http://www.joedolson.com/donate.php\">made a donation to help support this plug-in</a>."
+msgstr "Rinne mé <a href=\"http://www.joedolson.com/donate.php\"> síntiús chun cabhrú le tacú leis an breiseán-i </a>."
+
+#: my-content-management.php:351
+msgid "Send Support Request"
+msgstr "Seol Iarratas Tacaíocht"
+
+#: my-content-management.php:354
+msgid "The following additional information will be sent with your support request:"
+msgstr "Beidh an fhaisnéis bhreise seo a leanas a sheoladh le d'iarratas ar thacaíocht as:"
+
+#: my-content-management.php:377
+msgid "My Content Management"
+msgstr "Mo Bainistíocht Inneachair"
+
+#: my-content-management.php:379
+msgid "Basic Template Tags"
+msgstr "Tags Teimpléad Bunúsach"
+
+#: my-content-management.php:385
+msgid "Post excerpt (with auto paragraphs)"
+msgstr "Post sliocht (le míreanna uathoibríoch)"
+
+#: my-content-management.php:388
+msgid "Post excerpt (unmodified)"
+msgstr "Sliocht Post (gan athrú)"
+
+#: my-content-management.php:391
+msgid "Post content (with auto paragraphs and shortcodes processed)"
+msgstr "Post ábhar (le míreanna uathoibríoch agus shortcodes próiseáilte)"
+
+#: my-content-management.php:394
+msgid "Post content (unmodified)"
+msgstr "Ábhar an Phoist (gan athrú)"
+
+#: my-content-management.php:397
+msgid "Featured image as thumbnail."
+msgstr "Íomhá le feiceáil mar thumbnail."
+
+#: my-content-management.php:400
+msgid "Featured image at medium size."
+msgstr "Mór-íomhá ag méid mheán."
+
+#: my-content-management.php:403
+msgid "Featured image at large size."
+msgstr "Mór-íomhá ag méid mór."
+
+#: my-content-management.php:406
+msgid "Featured image at original size."
+msgstr "Mór-íomhá ag mhéid bunaidh."
+
+#: my-content-management.php:409
+msgid "Permalink URL for post"
+msgstr "Ciorcail URL do phost"
+
+#: my-content-management.php:412
+msgid "Post title linked to permalink URL"
+msgstr "Teideal Post a bhaineann le URL permalink"
+
+#: my-content-management.php:415
+msgid "Post title"
+msgstr "Post teideal"
+
+#: my-content-management.php:418
+msgid "Post shortlink"
+msgstr "Post shortlink"
+
+#: my-content-management.php:421
+msgid "Post last modified date"
+msgstr "Ciorcail URL do phost"
+
+#: my-content-management.php:424
+msgid "Post publication date"
+msgstr "Post dáta foilsithe"
+
+#: my-content-management.php:427
+msgid "Post author display name"
+msgstr "Iar-ainm taispeána údar"
+
+#: my-content-management.php:430
+msgid "List of taxonomy terms associated with post."
+msgstr "Liosta de na téarmaí tacsanomaíocht a bhaineann le post."
+
+#: my-content-management.php:434
+msgid "Any custom field can also be referenced via shortcode, using the same pattern with the name of the custom field: <code>{custom_field_name}</code>"
+msgstr "Is féidir aon réimse saincheaptha tagairt a dhéanamh freisin tríd an shortcode, ag baint úsáide as an patrún céanna le hainm an réimse saincheaptha: <code>{custom_field_name}</code>"
+
+#: my-content-management.php:440
+msgid "Enable Custom Post Types"
+msgstr "Cumasaigh Cineálacha Post Chustaim"
+
+#: my-content-management.php:449
+msgid "Enable Selected Post Types"
+msgstr "Cumasaigh Cineálacha Post Roghnaithe"
+
+#: my-content-management.php:460
+msgid "Get Plug-in Support"
+msgstr "Faigh Plug-in Tacaíochta"
+
+#: my-content-management.php:666
+msgid "The glossary extension to My Content Management is enabled."
+msgstr "Is é an síneadh gluais to My Bainistíochta Ábhar cumasaithe"
+
+#: my-content-management.php:668
+msgid "displays list of linked first characters represented in your Glossary. (Roman alphabet only.)"
+msgstr "taispeántais liosta de na carachtair atá nasctha chéad ionadaíocht i do Gluais. (Rómhánach aibítir amháin.)"
+
+#: my-content-management.php:669
+msgid "displays value of term attribute linked to glossary term with ID attribute."
+msgstr "taispeántais luach tréith téarma a bhaineann le téarma gluais le tréith ID."
+
+#: my-content-management.php:670 my-content-management.php:671
+msgid "Feature"
+msgstr "Gné"
+
+#: my-content-management.php:670
+msgid "Adds links throughout content for each term in your glossary."
+msgstr "Adds naisc ar fud ábhar do gach téarma i do ghluais."
+
+#: my-content-management.php:671
+msgid "Adds character headings to each section of your glossary list."
+msgstr "Adds ceannteidil carachtar do gach roinn de do liosta ghluais."
+
+#: my-content-management.php:673
+msgid "Added custom fields:"
+msgstr "Added réimsí saincheaptha:"
+
+#: my-content-management.php:677
+msgid "Template Manager"
+msgstr "Bainisteoir teimpléad"
+
+#: my-content-management.php:689 my-content-management.php:699
+#: my-content-management.php:709
+msgid "List Wrapper"
+msgstr "Wrapper Liosta"
+
+#: my-content-management.php:690 my-content-management.php:700
+#: my-content-management.php:710
+msgid "Item Wrapper"
+msgstr "Wrapper Mír"
+
+#: my-content-management.php:693
+msgid "Full Template"
+msgstr "Teimpléad Iomlán"
+
+#: my-content-management.php:703
+msgid "Excerpt Template"
+msgstr "Teimpléad sliocht"
+
+#: my-content-management.php:713
+msgid "List Template"
+msgstr "Teimpléad Liosta"
+
+#: my-content-management.php:717
+msgid "Save %s Templates"
+msgstr "Sábháil %s Teimpléid"
+
+#: my-content-management.php:721
+msgid "Naming for theme templates"
+msgstr "Ainmniú do teimpléid téama"
+
+#: my-content-management.php:722
+msgid "Theme template for this taxonomy:"
+msgstr "Teimpléad téama an taxonomy:"
+
+#: my-content-management.php:723
+msgid "Theme template for this custom post type:"
+msgstr "Teimpléad Téama don chineál seo poist saincheaptha:"
+
+#: my-content-management.php:724
+msgid "Theme template for archive pages with this post type:"
+msgstr "Teimpléad Téama leathanaigh cartlainne leis an gcineál bpost:"
+
+#: my-content-management.php:741
+msgid "No wrapper"
+msgstr "Níl fillteán"
+
+#: my-content-management.php:753
+msgid "Get Support"
+msgstr "Faigh Tacaíocht"
+
+#: my-content-management.php:754
+msgid "Report a bug"
+msgstr "Tuarascáil a bug"
+
+#: my-content-management.php:764
+msgid "Check out my other plug-ins"
+msgstr "Amharc ar mo eile breiseán-orlach"
+
+#: my-content-management.php:765
+msgid "Rate this plug-in"
+msgstr "Ráta an plug-in"
+
+#: my-content-management.php:802
+msgid "Donate"
+msgstr "Síntiúis"
+
+#: my-glossary-filter.php:78
+msgid "Back to Top"
+msgstr "Ar Ais go Barr"
+
+msgid "http://www.joedolson.com/articles/my-content-management/"
+msgstr "http://www.joedolson.com/articles/my-content-management/"
+
+msgid "Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc."
+msgstr "Cruthaigh sraith de chineálacha iar coitianta saincheaptha le haghaidh bainistíochta inneachair sínte: Ceisteanna Coitianta, Testimonials, liostaí daoine, liostaí téarma, etc"
+
+msgid "Joseph C Dolson"
+msgstr "Joseph C Dolson"
+
+msgid "http://www.joedolson.com"
+msgstr "http://www.joedolson.com"
