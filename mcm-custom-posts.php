@@ -209,7 +209,7 @@ function mcm_upload_field( $args ) {
 	$memory_limit = (int)(ini_get('memory_limit'));
 	$upload_mb = min($max_upload, $max_post, $memory_limit);
 	$label_format =
-		'<div class="mcm_text_field mcm_field"><label for="%1$s"><strong>%2$s</strong></label><br />'.
+		'<div class="mcm_text_field mcm_field"><input type="hidden" name="%1$s" id="%1$s" value="%3$s" /><label for="%1$s"><strong>%2$s</strong></label><br />'.
 		'<input style="width: 80%;" type="file" name="%1$s" id="%1$s" /><br />'.
 		sprintf( __( "Upload limit: %s MB",'my-content-management' ),$upload_mb );
 		if ( $description != '' ) { $label_format .= '<br /><em>'.$description.'</em>'; } 

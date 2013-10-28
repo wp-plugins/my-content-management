@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/articles/my-content-management/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.4.1
+Version: 1.4.2
 */
 /*  Copyright 2011-2012  Joe Dolson (email : joe@joedolson.com)
 
@@ -25,7 +25,7 @@ Version: 1.4.1
 */
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-$mcm_version = '1.4.1';
+$mcm_version = '1.4.2';
 // Enable internationalisation
 load_plugin_textdomain( 'my-content-management',false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
@@ -164,6 +164,7 @@ function mcm_replace_content( $content, $id=false ) {
 	}
 }
 
+
 function mcm_search_custom($atts) {
 	extract(shortcode_atts(array(
 				'type' => 'page'
@@ -177,11 +178,22 @@ function mcm_munger($atts) {
 			), $atts, 'email' ) );
 	return mcm_munge( $address );
 }
+
+function mcm_terms($atts,$content) {
+	extract( shortcode_atts( array(
+				'taxonomy'=>'',
+				'hide_empty'=>'false',
+				'show_count'=>'false'
+			), $atts, 'my_terms' ) );
+	return mcm_list_terms($taxonomy);
+}
+
 // Shortcodes 
 add_shortcode('my_content','mcm_show_posts');
 add_shortcode('custom_search','mcm_search_custom');
 add_shortcode('my_archive','mcm_show_archive'); 
 add_shortcode('email','mcm_munger');
+add_shortcode('my_terms','mcm_terms' );
 // Filters
 //add_filter('the_content', 'mcm_pre_process_shortcode', 7);
 add_filter('pre_get_posts','mcm_searchfilter');
@@ -191,6 +203,23 @@ add_filter( 'post_updated_messages', 'mcm_posttypes_messages');
 add_action( 'init', 'mcm_taxonomies', 0);
 add_action( 'init', 'mcm_posttypes' );
 add_action( 'admin_menu', 'mcm_add_custom_boxes' );
+
+function mcm_list_terms( $taxonomy, $hide_empty, $show_count ) {
+	$hide_empty = ( $hide_empty == 'true' ) ? true : false; 
+	$args = array( 'taxonomy' => $taxonomy, 'hide_empty'=>$hide_empty );
+	$terms = get_terms( $taxonomy , $args);
+	$count = count($terms); $i=0;
+	if ($count > 0) {
+		$term_list = "<ul class='mcm-term-archive $taxonomy'>";
+		foreach ($terms as $term) {
+			$i++;
+			$count = ( $show_count == 'true' ) ? " <span class='term-count mcm-$term->slug'>($term->count)</span>" : ''; 
+			$term_list .= '<li><a href="' . get_term_link( $term ) . '">' . $term->name . "</a>$count</li>";
+		}
+		$term_list .= "</ul>";
+		return $term_list;
+	}
+}
 
 //Theme support -- not having post thumbnails enabled can cause fatal errors when thumbnail is requested by info query.
 function mcm_grant_support() {

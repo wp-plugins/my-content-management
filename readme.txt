@@ -3,7 +3,7 @@ Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebars, content management
 Requires at least: 3.2.1
-Tested up to: 3.6.1
+Tested up to: 3.7.0
 License: GPLv2 or later
 Stable tag: 1.4.1
 
@@ -62,6 +62,11 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 <a href="http://www.joedolson.com/articles/translator-credits/">Translator Credits</a>
 
 == Changelog ==
+
+= 1.4.2 =
+
+* Add shortcode to produce list of term category links. [my_terms taxonomy='' show_count='true/false' hide_empty='true/false']
+* Bug fix in HTML file uploader (removed uploads on edit.)
 
 = 1.4.1 =
 
@@ -291,4 +296,4 @@ I removed the Glossary Filter plug-in from the My Content Management package in 
 
 == Upgrade Notice ==
 
- * 1.3.3 Important! Glossary Filter is no longer packaged with this plug-in. It must be downloaded separately.
+ * 1.4.2 I don't have a notice for 1.4.2. :)
