@@ -11,7 +11,7 @@
 .mcm-settings .postbox { margin: 10px 10px 0 0;	}
 .mcm-settings .meta-box-sortables { min-height: 0; }
 .mcm-settings td label { position: absolute; left: -999em; } 
-.mcm-settings td input { width: 100%; }
+.mcm-settings td input[type='text'] { width: 100%; }
 .mcm-settings tr.fade { background: #ff9; transition: background .5s ease-in-out; }
 .mcm-settings tr.fade:hover { background: #ffe; }
 .mcm-settings .up span, .mcm-settings .down span { position: absolute; left: -999em; }

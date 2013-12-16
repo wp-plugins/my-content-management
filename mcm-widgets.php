@@ -87,7 +87,7 @@ class mcm_posts_widget extends WP_Widget {
 		$post_type = isset( $instance['mcm_posts_widget_post_type'] ) ? esc_attr($instance['mcm_posts_widget_post_type']) : '';
 		$display = isset( $instance['display'] ) ? esc_attr($instance['display']) : '';
 		$count = isset( $instance['count'] ) ? (int) $instance['count'] : -1;
-		$direction = isset( $instance['direction'] ) ? esc_attr($instance['direction']) : '';
+		$direction = isset( $instance['direction'] ) ? esc_attr($instance['direction']) : 'asc';
 		$order = isset( $instance['order'] )? esc_attr($instance['order']) : '';
 		$title = isset( $instance['title'] ) ? esc_attr($instance['title']) : '';
 		$term = isset($instance['term']) ? esc_attr($instance['term']) : '';		
@@ -132,8 +132,8 @@ class mcm_posts_widget extends WP_Widget {
 		</p>
 		<p>
 		<label for="<?php echo $this->get_field_id('direction'); ?>"><?php _e('Order direction','my-content-management'); ?></label> <select id="<?php echo $this->get_field_id('direction'); ?>" name="<?php echo $this->get_field_name('direction'); ?>">
-		<option value='modified'<?php echo ($direction == 'asc')?' selected="selected"':''; ?>><?php _e('Ascending (A-Z)','my-content-management'); ?></option>
-		<option value='rand'<?php echo ($direction == 'desc')?' selected="selected"':''; ?>><?php _e('Descending (Z-A)','my-content-management'); ?></option>
+		<option value='asc'<?php echo ($direction == 'asc')?' selected="selected"':''; ?>><?php _e('Ascending (A-Z)','my-content-management'); ?></option>
+		<option value='desc'<?php echo ($direction == 'desc')?' selected="selected"':''; ?>><?php _e('Descending (Z-A)','my-content-management'); ?></option>
 		</select>
 		</p>
 		<p>

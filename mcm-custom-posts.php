@@ -137,11 +137,13 @@ function mcm_build_custom_box( $post, $fields ) {
 	}
 	mcm_echo_hidden($fields['args'][$id], $id );	
 	// Generate box contents
-	$i = 0;
-	foreach ( $fields['args'][$id] as $field ) {
-		echo mcm_field_html( $field );
-		$i++;
-	}
+	$i = 0;	
+		foreach ( $fields['args'][$id] as $key => $field ) {
+			if ( $key !== 'repeatable' ) {
+				echo mcm_field_html( $field );
+				$i++;
+			}
+		}
 	echo "<br class='clear' /></div>";
 }
 // this switch statement specifies different types of meta boxes
@@ -164,27 +166,13 @@ function mcm_field_html( $args ) {
 	}
 }
 
-function mcm_create_options( $choices, $selected, $type='select' ) {
-	$return = '';
-	if (is_array($choices) ) {
-		foreach($choices as $value ) {
-			$v = esc_attr($value);
-			if ( $type == 'select' ) {
-				$chosen = ( $v == $selected )?' selected="selected"':'';
-				$return .= "<option value='$value'$chosen>$value</option>";
-			} 
-		}
-	}
-	return $return;
-}
-
 function mcm_upload_field( $args ) {
 	global $post;
 	$description = $args[2];
 	// adjust data
 	$single = true;
 	$download = '';
-	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; } 	
+	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; }
 	$args[2] = get_post_meta($post->ID, $args[0], $single);
     if ( !empty($args[2]) && $args[2] != '0' ) {
 		if ( $single ) {
@@ -224,10 +212,10 @@ function mcm_chooser_field( $args ) {
 	// adjust data
 	$single = true;
 	$download = '';
-	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; } 
+	if ( isset( $args[4] ) && $args[4] == 'true' ) { $single = false; } 
 	$args[2] = get_post_meta($post->ID, $args[0], $single );
 	$attr = array( 'height' => 80, 'width'=> 80 );
-    if(!empty($args[2]) && $args[2] != '0') {
+    if( !empty($args[2]) && $args[2] != '0' ) {
 		if ( $single ) {
 			$download = wp_get_attachment_url( $args[2] );
 			$img = wp_get_attachment_image( $args[2], array( 80, 80 ), true, $attr );
@@ -248,7 +236,7 @@ function mcm_chooser_field( $args ) {
 	}
 	$label_format =
 		'<div class="mcm_chooser_field mcm_field field-holder"><label for="%1$s"><strong>%2$s</strong></label> '.
-		'<input type="hidden" name="%1$s" value="%3$d" class="textfield" id="%1$s" /> <a href="#" class="button textfield-field">'.$copy.'</a><br />';
+		'<input type="hidden" name="%1$s" value="" class="textfield" id="%1$s" /> <a href="#" class="button textfield-field">'.$copy.'</a><br />';
 		$label_format .= '<br /><div class="selected">'.$description.'</div>';
 		if ( $download != '' ) { $label_format .= $download; }
 		$label_format .= "</div>";
@@ -299,11 +287,24 @@ function mcm_select( $args ) {
 	$args[2] = get_post_meta($post->ID, $args[0], $single);
 	$label_format = '<p class="mcm_select mcm_field"><label for="%1$s"><strong>%2$s</strong></label><br />'.
 		'<select name="%1$s" id="%1$s">'.
-			mcm_create_options( $choices, $custom ).
+			mcm_create_options( $choices, $args[2] ).
 		'</select></p>';
 	return vsprintf( $label_format, $args );
 }
 
+function mcm_create_options( $choices, $selected, $type='select' ) {
+	$return = '';
+	if (is_array($choices) ) {
+		foreach($choices as $value ) {
+			$v = esc_attr($value);
+			if ( $type == 'select' ) {
+				$chosen = ( $v == $selected )?' selected="selected"':'';
+				$return .= "<option value='$value'$chosen>$value</option>";
+			} 
+		}
+	}
+	return $return;
+}
 
 function mcm_text_area( $args ) {
 	global $post;
@@ -404,17 +405,24 @@ function mcm_save_postdata( $post_id, $post ) {
 		}	
 		foreach ( $fields as $set => $field ) {
 			foreach ( $field as $key=>$value ) {
-				if ( in_array( $value[0], $these_fields ) && in_array( $set, $_POST['mcm_fieldsets'] ) ) {
-					if ( isset( $_POST[$value[0]] ) && ( !isset($value[4]) || $value[4] != 'true' ) ) {
-						update_post_meta( $post->ID, $value[0], $_POST[$value[0]] );
+				$custom_field_name = $value[0];
+				$custom_field_label = $value[1];
+				$custom_field_notes = $value[2];				
+				$custom_field_type = $value[3];
+				$custom_field_repeatable = $value[4];
+				$repeatable = ( isset( $custom_field_repeatable ) && $custom_field_repeatable == 'true' )?true:false;
+				
+				if ( in_array( $custom_field_name, $these_fields ) && in_array( $set, $_POST['mcm_fieldsets'] ) ) {
+					if ( isset( $_POST[$custom_field_name] ) && !$repeatable ) {
+						update_post_meta( $post->ID, $custom_field_name, $_POST[$custom_field_name] );
 					}
-					if ( isset( $_POST[$value[0]] ) && isset($value[4]) && $value[4] == 'true' ) {
-						if ( $_POST[$value[0]] != '' ) {
-							add_post_meta( $post->ID, $value[0], $_POST[$value[0]] );
+					if ( isset( $_POST[$custom_field_name] ) && $repeatable ) {
+						if ( $_POST[$custom_field_name] != '' ) {
+							add_post_meta( $post->ID, $custom_field_name, $_POST[$custom_field_name] );
 						}
 					}				
-					if(!empty($_FILES[$value[0]])) {
-						$file   = $_FILES[$value[0]];
+					if( !empty( $_FILES[$custom_field_name] ) ) {
+						$file   = $_FILES[$custom_field_name];
 						$upload = wp_handle_upload($file, array('test_form' => false));
 						if(!isset($upload['error']) && isset($upload['file'])) {
 							$filetype   = wp_check_filetype(basename($upload['file']), null);
@@ -430,18 +438,18 @@ function mcm_save_postdata( $post_id, $post ) {
 							);
 							$attach_id = wp_insert_attachment($attachment, $upload['file']);
 							$url = wp_get_attachment_url( $attach_id );
-							if ( !isset( $value[4] ) || $value[4] != 'true' ) {
-								update_post_meta( $post->ID, $value[0], $url );
-							} else if ( $value[4] == 'true' ) {
-								add_post_meta( $post->ID, $value[0], $url );
+							if ( !$repeatable ) {
+								update_post_meta( $post->ID, $custom_field_name, $url );
+							} else {							
+								add_post_meta( $post->ID, $custom_field_name, $url );
 							}
 						}
 					}
-					if ( empty( $_FILES[$value[0]]['name'] ) && !isset( $_POST[$value[0]] ) ) {
-						if ( mcm_is_repeatable( $value ) && mcm_has_value( $post->ID, $value[0] ) ) {
+					if ( empty( $_FILES[$custom_field_name]['name'] ) && !isset( $_POST[$custom_field_name] ) ) {
+						if ( mcm_is_repeatable( $value ) && mcm_has_value( $post->ID, $custom_field_name ) ) {
 							// do something here? ...
 						} else {
-							update_post_meta( $post->ID, $value[0], '' );
+							update_post_meta( $post->ID, $custom_field_name, '' );
 						}
 					}
 				}

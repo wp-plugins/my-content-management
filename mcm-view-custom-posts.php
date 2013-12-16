@@ -20,6 +20,25 @@ function mcm_get_single_post( $type, $id ) {
 	return mcm_get_show_posts( $type, 'full', 'all','','','','','','','','',$id,'','','','','','','' );
 }
 
+add_filter( 'mcm_custom_fields', 'mcm_process_custom_fields', 10, 2 );
+function mcm_process_custom_fields( $p, $custom_fields ) {
+	foreach ( $custom_fields as $key=>$value ) {
+		$cfield = array();
+		$is_email = ( stripos( $key, 'email' ) !== false )?true:false;
+		if ( count( $value ) <= 1 ) {
+			$p[$key] = ( $is_email )?apply_filters('mcm_munge',$value[0],$value[0], $custom ):$value[0];
+		} else {
+			foreach( $value as $val ) {
+				if ( $val != '' ) {
+					$cfield[] = ( $is_email )?apply_filters('mcm_munge',$val,$val, $custom ):$val;
+				}
+			}
+			$p[$key] = implode( apply_filters( 'mcm_repeatable_separator', ", ", $key ), $cfield );
+		}
+	}
+	return $p;
+}
+
 function mcm_get_show_posts(  $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id, $custom_wrapper, $custom, $operator, $year='', $month='', $week='', $day='' ) {
 global $mcm_templates, $mcm_types;
 $templates = $mcm_templates; $types = $mcm_types;
@@ -112,6 +131,19 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$tax_query['relation']='AND';
 			$args['tax_query'] = $tax_query; 
 		}
+		// if there's a single taxonomy and multiple terms
+		if ( strpos( $taxonomy, ',' ) === false && ( is_array( $term ) || strpos($term, ',' ) !== false ) ) {
+			if ( !is_array( $term ) ) { $terms = explode( ',', $term ); } else { $terms = $term; }
+			$i = 0;
+			$tax_query = array();
+			foreach ( $terms as $t ) {
+				$array = array( 'taxonomy' => $taxonomy, 'field' => 'slug', 'terms' => $terms[$i], 'operator'=>$operator );
+				$tax_query[] = $array;
+				$i++;
+			}
+			$tax_query['relation']='AND';
+			$args['tax_query'] = $tax_query;
+		}		
 
 		if ( $order == 'meta_value' || $order == 'meta_value_num' ) { $args['meta_key'] = $meta_key; }
 		
@@ -154,19 +186,8 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$p['postclass'] = $postclass;
 			$p['terms'] = ($taxonomy != 'all')?get_the_term_list( $id, $taxonomy,'',', ','' ):get_the_term_list( $id, "mcm_category_$primary", '', ', ', '' );
 			$custom_fields = get_post_custom();
-				foreach ( $custom_fields as $key=>$value ) {
-					$is_email = ( stripos( $key, 'email' ) !== false )?true:false;
-					if ( is_array( $value ) ) {
-						if ( is_array( $value[0] ) ) {
-							foreach( $value[0] as $val ) {
-								$cfield[] = ( $is_email )?apply_filters('mcm_munge',$val,$val, $custom ):$val;
-							}
-							$p[$key] = explode( ", ", $cfield );
-						} else {
-							$p[$key] = ( $is_email )?apply_filters('mcm_munge',$value[0],$value[0], $custom ):$value[0];
-						}
-					}
-				}
+			// use this filter to customize treatment of custom fields in MCM data array.
+			$p = apply_filters('mcm_custom_fields', $p, $custom_fields );
 			// use this filter to insert any additional custom template tags required		
 			$p = apply_filters('mcm_extend_posts', $p, $custom );
 			// This filter is used to insert alphabetical headings. You can probably find another use for it.
@@ -213,25 +234,9 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$p['postclass'] = $postclass;				
 			$p['terms'] = ($taxonomy != 'all')?get_the_term_list( $the_post->ID, $taxonomy,'',', ','' ):get_the_term_list( $id, "mcm_category_$primary", '', ', ', '' );
 			$custom_fields = get_post_custom( $the_post->ID );
-			foreach ( $custom_fields as $key=>$value ) {
-				$cfield = array();
-				$is_email = ( stripos( $key, 'email' ) !== false )?true:false;
-				if ( is_array( $value ) ) {
-					$value = maybe_unserialize($value);
-					if ( is_array( $value[0] ) ) {
-						// if the saved value is an array
-						foreach( $value[0] as $val ) {
-							$cfield[] = ( $is_email )?apply_filters( 'mcm_munge',$val,$val,$custom ):$val;
-						}
-					} else {
-						// if multiple values
-						foreach ( $value as $v ) {
-							$cfield[] =  ( $is_email )?apply_filters( 'mcm_munge',$v,$v,$custom ):$v;
-						}
-					}
-				}
-				$p[$key] = $cfield;
-			}		
+			// use this filter to customize treatment of custom fields in MCM data array.
+			$p = apply_filters('mcm_custom_fields', $p, $custom_fields );
+			// use this filter to insert any additional custom template tags required		
 			$p = apply_filters('mcm_extend_posts', $p, $custom );		
 			$this_post = mcm_run_template( $p, $display, $column, $wrapper );
 			$return .= apply_filters('mcm_filter_post',$this_post, $p, $custom );
@@ -243,21 +248,23 @@ $templates = $mcm_templates; $types = $mcm_types;
 	}
 	if ( $elem != '' ) { $front = "<$elem class='list-wrapper'>"; $back = "</$elem>"; } else { $elem = $unelem = $front = $back = '';}
 	
-	if ( $display != 'custom' ) {
-	$return = "
-		<div class='mcm_posts $primary $display'>
-		$front
-			$return
-		$back
-		</div>";
-	} else {
-		if ( $custom_wrapper != '' ) {
-			$return = "<$custom_wrapper class='mcm_posts $primary $display'>$return</$custom_wrapper>";
+	if ( $return ) {
+		if ( $display != 'custom'  ) {
+		$return = "
+			<div class='mcm_posts $primary $display'>
+			$front
+				$return
+			$back
+			</div>";
 		} else {
-			$return = $return;
+			if ( $custom_wrapper != '' ) {
+				$return = "<$custom_wrapper class='mcm_posts $primary $display'>$return</$custom_wrapper>";
+			} else {
+				$return = $return;
+			}
 		}
+		$return = str_replace("\r\n",'',$return);
 	}
-	$return = str_replace("\r\n",'',$return);		
 		if ( $cache != false ) { 
 			$time = (is_numeric($cache))?$cache:24;
 			set_transient( "mcm_$cache_key", $return, 60*60*$time );
@@ -267,12 +274,12 @@ $templates = $mcm_templates; $types = $mcm_types;
 }
 
 // A simple function to get data stored in a custom field
-function mcm_get_custom_field($field,$id='',$fallback=false ) {
+function mcm_get_custom_field( $field, $id='', $fallback=false ) {
 	global $post;
 	$id = ($id != '')?$id:$post->ID;
 	$custom_field = '';
-	$single =  ( mcm_is_repeatable( $field ) )?false:true;
-	$plaintext = ( mcm_is_richtext( $field ) )?false:true;
+	$single =  ( mcm_is_repeatable( $field ) ) ? false : true;
+	$richtext = ( mcm_is_richtext( $field ) ) ? true : false;
 	$meta = get_post_meta( $id, $field, $single );
 	if ( $single ) {
 		$custom_field = ( $meta )?$meta:$fallback;	
@@ -281,13 +288,13 @@ function mcm_get_custom_field($field,$id='',$fallback=false ) {
 			$custom_field .= ( $field )?$field:$fallback;
 		}
 	}
-	if ( !$plaintext ) {
+	if ( $richtext ) {
 		$custom_field = wpautop( $custom_field );
 	}
 	return $custom_field;
 }
 
-function mcm_custom_field( $field,$before='',$after='',$id='',$fallback=false ) {
+function mcm_custom_field( $field, $before='', $after='', $id='', $fallback=false ) {
 	$value = mcm_get_custom_field($field, $id, $fallback);
 	if ( $value ) {
 		if ( is_array( $value ) ) {
@@ -386,14 +393,16 @@ function mcm_simple_template( $array=array(), $template=false ) {
 				foreach ( $value as $val ) {
 					if ( strpos( $template, "{".$key."}" ) !== false ) {
 						if ( $richtext ) { $val = wpautop( $val ); }
+						if ( $is_chooser ) { $val = wp_get_attachment_url( $val ); }
 						$template = str_replace( "{".$key."}", $val, $template );
 					}
 				}
 			} else {
 				if ( strpos( $template, "{".$key."}" ) !== false ) {
 					if ( $richtext ) { $value = wpautop( $value ); }
+					if ( $is_chooser ) {  $value = wp_get_attachment_url( $value ); }					
 					$template = str_replace( "{".$key."}", $value, $template );
-				}			
+				}
 			}
 		}
 	}

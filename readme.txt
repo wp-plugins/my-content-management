@@ -3,7 +3,7 @@ Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebars, content management
 Requires at least: 3.2.1
-Tested up to: 3.7.0
+Tested up to: 3.8.0
 License: GPLv2 or later
 Stable tag: 1.4.2
 
@@ -62,6 +62,18 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 <a href="http://www.joedolson.com/articles/translator-credits/">Translator Credits</a>
 
 == Changelog ==
+
+= 1.4.3 =
+
+* 12/16/2013
+* Bug fix: Don't return wrapper divs and classes if no content.
+* Bug fix: formatting and HTML for default templates of new post types.
+* Bug fix: Display of saved information in post meta forms for select fields.
+* Bug fix: CSS - display of checkboxes in settings.
+* Bug fix: Fixed some miscellaneous odd behaviors when saving or updating custom field sets.
+* Bug fix: Some improper handling of arrays for custom fields. May impact custom templating.
+* Bug fix: Simple templates returned only attachment ID for attachment fields.
+* Bug fix: Widget sort order did not work.
 
 = 1.4.2 =
 
@@ -272,7 +284,7 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 2. Activate the plugin using the `Plugins` menu in WordPress
 3. Visit the settings page at Settings > My Content Management to enable your needed content types.
 4. Visit the appropriate custom post types sections to edit and create new content.
-5. Use built-in widgets or shortcodes to display content. (Advanced users can create custom theme templates for displays.)
+5. Use built-in widgets or shortcodes to display content or create custom theme files for display.
 
 == Frequently Asked Questions ==
 
@@ -296,4 +308,4 @@ I removed the Glossary Filter plug-in from the My Content Management package in 
 
 == Upgrade Notice ==
 
- * 1.4.2 I don't have a notice for 1.4.2. :)
+ * 1.4.4 Check templates referencing custom fields after upgrading; repeatable fields were not handled correctly in 1.4.3.
