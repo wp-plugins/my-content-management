@@ -105,11 +105,13 @@ $fields = $mcm_fields; $extras = $mcm_extras;
 		foreach ( $fields as $key=>$value ) {
 			if ( isset($extras[$key]) && is_array( $extras[$key][0] ) ) {
 				foreach ( $extras[$key][0] as $k ) {
-					mcm_add_custom_box( array($key=>$value),$k,$extras[$key][1] );
+					mcm_add_custom_box( array($key=>$value), $k, $extras[$key][1] );
 				} 
 			} else {
 				if ( isset( $extras[$key] ) ) {
-					mcm_add_custom_box( array($key=>$value),$extras[$key][0],$extras[$key][1] );
+					if ( !empty( $extras[$key][0] ) ) {
+						mcm_add_custom_box( array($key=>$value), $extras[$key][0], $extras[$key][1] );
+					}
 				}
 			}
 		}
@@ -120,7 +122,8 @@ $fields = $mcm_fields; $extras = $mcm_extras;
 function mcm_add_custom_box( $fields,$post_type='post',$location='side' ) {
     if ( function_exists( 'add_meta_box' ) ) {
         foreach ( array_keys( $fields ) as $field ) {
-			$id = sanitize_title($field);
+			$id = sanitize_title( $field );
+			$field = stripslashes( $field );
             add_meta_box( $id, $field, 'mcm_build_custom_box', $post_type, $location, 'default', $fields );
         }
     }
@@ -129,7 +132,7 @@ function mcm_add_custom_box( $fields,$post_type='post',$location='side' ) {
 function mcm_build_custom_box( $post, $fields ) {
 	static $nonce_flag = false;
 	// Run once
-	$id = $fields['title'];
+	$id = addslashes( $fields['title'] );
 	echo "<div class='mcm_post_fields'>";
 	if ( !$nonce_flag ) {
 		mcm_echo_nonce();
@@ -168,7 +171,8 @@ function mcm_field_html( $args ) {
 
 function mcm_upload_field( $args ) {
 	global $post;
-	$description = $args[2];
+	$args[1] = stripslashes( $args[1] );
+	$description = stripslashes( $args[2] );
 	// adjust data
 	$single = true;
 	$download = '';
@@ -208,7 +212,8 @@ function mcm_upload_field( $args ) {
 
 function mcm_chooser_field( $args ) {
 	global $post;
-	$description = $args[2];
+	$args[1] = stripslashes( $args[1] );
+	$description = stripslashes( $args[2] );	
 	// adjust data
 	$single = true;
 	$download = '';
@@ -244,6 +249,8 @@ function mcm_chooser_field( $args ) {
 }
 
 function mcm_text_field( $args, $type='text' ) {
+	$args[1] = stripslashes( $args[1] );
+	$description = stripslashes( $args[2] );
 	$types = array( 'color','date','number','tel','time','url' );
 	if ( $type == 'mcm_text_field' ) { $type = 'text'; } else { $type = ( in_array( $type, $types ) )?$type:'text'; }
 	global $post;
@@ -281,6 +288,7 @@ function mcm_text_field( $args, $type='text' ) {
 
 function mcm_select( $args ) {
 	global $post;
+	$args[1] = stripslashes( $args[1] );
 	$choices = $args[2];
 	$single = true;
 	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; } 	
@@ -309,8 +317,9 @@ function mcm_create_options( $choices, $selected, $type='select' ) {
 function mcm_text_area( $args ) {
 	global $post;
 	$name = $args[0];
+	$args[1] = stripslashes( $args[1] );
+	$description = stripslashes( $args[2] );	
 	$label = $args[1];
-	$description = $args[2];
 	// adjust data
 	$single = true;
 	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; }
@@ -345,7 +354,8 @@ function mcm_rich_text_area ( $args ) {
 	global $post;
 	// adjust data
 	$single = true;
-	$description = $args[2];
+	$args[1] = stripslashes( $args[1] );
+	$description = stripslashes( $args[2] );
 	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; } 	
 	$args[2] = get_post_meta($post->ID, $args[0], $single);
 	$meta = $args[2];
@@ -409,7 +419,7 @@ function mcm_save_postdata( $post_id, $post ) {
 				$custom_field_label = $value[1];
 				$custom_field_notes = $value[2];				
 				$custom_field_type = $value[3];
-				$custom_field_repeatable = $value[4];
+				$custom_field_repeatable = ( isset( $value[4] ) ) ? $value[4] : 'false';
 				$repeatable = ( isset( $custom_field_repeatable ) && $custom_field_repeatable == 'true' )?true:false;
 				
 				if ( in_array( $custom_field_name, $these_fields ) && in_array( $set, $_POST['mcm_fieldsets'] ) ) {

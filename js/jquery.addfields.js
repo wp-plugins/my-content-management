@@ -45,4 +45,12 @@ jQuery(document).ready(function($) {
 			row.insertAfter(row.next()).addClass('fade');
 		}
 	});
+	$('input[name=mcm_new_fieldset]').on('change',function() {
+		var regex = new RegExp( "(['])", 'g' );
+		if ( regex.exec($(this).val()) ) {
+			$('#warning').html( mcmWarning );
+		} else {
+			$('#warning').html( mcmOK );
+		}	
+	});
 });

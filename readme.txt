@@ -63,6 +63,13 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Changelog ==
 
+= 1.4.4 =
+
+* Bug fix: Eliminated some PHP notices.
+* Bug fix: Fixed non-assignment of custom fieldset bug.
+* Bug fix: Some issues with quotes in fieldset names.
+* Bug fix: missing stripslashes in form output.
+
 = 1.4.3 =
 
 * 12/16/2013

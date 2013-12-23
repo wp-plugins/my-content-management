@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/articles/my-content-management/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.4.3
+Version: 1.4.4
 */
 /*  Copyright 2011-2012  Joe Dolson (email : joe@joedolson.com)
 
@@ -25,7 +25,7 @@ Version: 1.4.3
 */
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-$mcm_version = '1.4.3';
+$mcm_version = '1.4.4';
 // Enable internationalisation
 load_plugin_textdomain( 'my-content-management',false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
@@ -445,6 +445,8 @@ function mcm_add_scripts() {
 	wp_register_script( 'addfields', plugins_url( 'js/jquery.addfields.js', __FILE__ ), array( 'jquery' ) );
 	wp_register_script( 'mcm.tabs', plugins_url( 'js/tabs.js', __FILE__ ), array( 'jquery' ) );
 	wp_enqueue_script( 'addfields' );
+	wp_localize_script( 'addfields', 'mcmWarning', __('Fieldset titles do not support quote characters.','my-content-management') );
+	wp_localize_script( 'addfields', 'mcmOK', __('Your Fieldset title is OK!','my-content-management') );
 	wp_enqueue_script( 'mcm.tabs' );
 	global $mcm_enabled;
 	$keys = $mcm_enabled;
@@ -1049,20 +1051,21 @@ function mcm_assign_custom_fields() {
 	<?php
 }
 
-function mcm_add_custom_field_support( $fieldset, $page ) {
+function mcm_add_custom_field_support( $fieldset, $post_type ) {
 	$option = get_option('mcm_options');
 	$array = $option['extras'][$fieldset][0];
 	if ( is_string($array) ) { $array = array( $array ); }
-	if ( !in_array( $page, $array ) ) { array_push( $array, $page ); }
+	if ( !in_array( $post_type, $array ) ) { array_push( $array, $post_type ); }
 	$option['extras'][$fieldset][0] = $array;
 	update_option( 'mcm_options', $option );
 }
 
-function mcm_delete_custom_field_support( $fieldset, $page ) {
+function mcm_delete_custom_field_support( $fieldset, $post_type ) {
+	$option = get_option('mcm_options');
 	$option = get_option('mcm_options');
 	$array = $option['extras'][$fieldset][0];
-	if ( is_string($array) ) { $array = array(); }
-	if ( in_array( $page, $array ) ) { $key = array_search( $page, $array ); unset( $array[$key] ); }
+	if ( !is_array($array) ) { $array = array(); }
+	if ( in_array( $post_type, $array ) ) { $key = array_search( $post_type, $array ); unset( $array[$key] ); }
 	$option['extras'][$fieldset][0] = $array;
 	update_option( 'mcm_options', $option );
 }
@@ -1072,12 +1075,11 @@ function mcm_fields( $show='assign',$post_type=false ) {
 		$nonce=$_REQUEST['_wpnonce'];
 		if (! wp_verify_nonce($nonce,'my-content-management-nonce') ) die("Security check failed");		
 		$extras = $_POST['mcm_field_extras'];
-		$page = $post_type;
 		foreach ( $extras as $key => $value ) {
 			if ( $value == 'on' ) {
-				mcm_add_custom_field_support( $key, $page );
+				mcm_add_custom_field_support( $key, $post_type );
 			} else {
-				mcm_delete_custom_field_support( $key, $page );
+				mcm_delete_custom_field_support( $key, $post_type );
 			}
 		}		
 		echo "<div class='updated fade'><p>".__('Custom fields for this post type updated','my-content-management')."</p></div>";
@@ -1090,7 +1092,7 @@ function mcm_fields( $show='assign',$post_type=false ) {
 		foreach ( $extras as $key=>$value ) {
 			$page = $post_type;
 			$checked_off = ' checked="checked"';
-			if ( is_string( $value[0] ) ) {
+			if ( !is_array( $value[0] ) ) {
 				$checked_on = ( $value[0] == $page )?' checked="checked"':'';
 			} else if ( in_array( $page, $value[0] ) ) {
 				$checked_on = ( in_array( $page, $value[0] ) )?' checked="checked"':'';
@@ -1099,13 +1101,15 @@ function mcm_fields( $show='assign',$post_type=false ) {
 				$checked_on = ''; 
 			}
 			$k = urlencode($key);
+			$legend = stripslashes( $key );
+			$key = sanitize_text_field( $key );
 			if ( $show == 'assign' ) {
-				$return .= "<li><fieldset><legend>$key</legend>
-				<input type='radio' value='off' name='mcm_field_extras[$key]' id='mcm_off_$page'$checked_off /> <label for='mcm_off_$page'>".__('Off','my-content-management')."</label> 
-				<input type='radio' value='on' name='mcm_field_extras[$key]' id='mcm_off_$page'$checked_on /> <label for='mcm_off_$page'>".__('On','my-content-management')." <small><a href='".admin_url("options-general.php?page=mcm_custom_fields&mcm_fields_edit=$k")."'>".__('Edit','my-content-management')."</a></small></label>
+				$return .= "<li><fieldset><legend>$legend</legend>
+				<input type='radio' value='off' name=\"mcm_field_extras[$key]\" id=\"mcm_off_$page\"$checked_off /> <label for='mcm_off_$page'>".__('Off','my-content-management')."</label> 
+				<input type='radio' value='on' name=\"mcm_field_extras[$key]\" id=\"mcm_off_$page\"$checked_on /> <label for='mcm_off_$page'>".__('On','my-content-management')." <small><a href='".admin_url("options-general.php?page=mcm_custom_fields&mcm_fields_edit=$k")."'>".__('Edit','my-content-management')."</a></small></label>
 				</fieldset></li>\n";
 			} else {
-				$return .= "<li><a href='".admin_url("options-general.php?page=mcm_custom_fields&mcm_fields_edit=$k")."'>".__('Edit','my-content-management')." $key</a></li>";
+				$return .= "<li><a href='".admin_url("options-general.php?page=mcm_custom_fields&mcm_fields_edit=$k")."'>".__('Edit','my-content-management')." $legend</a></li>";
 			}
 		}
 	}
@@ -1135,7 +1139,7 @@ function mcm_get_fieldset( $fieldset=false ) {
 			$label = $value->labels->name;
 			$post_types .= "<option value='$name'>$label</option>\n";
 		}
-		$fieldset_title = "<p><label for='mcm_new_fieldset'><strong>".__('New Fieldset Title','my-content-management')."</strong></label> <input type='text' id='mcm_new_fieldset' name='mcm_new_fieldset' /></p><p><label for='mcm_assign_to'><strong>".__('Attach to','my-content-management')."</strong></label><br /><select name='mcm_assign_to' id='mcm_assign_to' multiple='multiple'>$post_types</select></p>";
+		$fieldset_title = "<p><label for='mcm_new_fieldset'><strong>".__('New Fieldset Title','my-content-management')."</strong></label> <input type='text' id='mcm_new_fieldset' name='mcm_new_fieldset' /><span id='warning' aria-live='polite'></span></p><p><label for='mcm_assign_to'><strong>".__('Attach to','my-content-management')."</strong></label><br /><select name='mcm_assign_to' id='mcm_assign_to' multiple='multiple'>$post_types</select></p>";
 	} else {
 		$fieldset_title = '';
 	}
@@ -1258,7 +1262,10 @@ function mcm_update_custom_fieldset( $post ) {
 	if ( isset( $post['mcm_new_fieldset'] ) ) { $fieldset = $post['mcm_new_fieldset']; $added = __('added','my-content-management'); } else { $added = __('updated','my-content-management'); }
 	if ( !empty( $option['extras'][$fieldset] ) && isset( $post['mcm_new_fieldset'] ) ) { $fieldset = $fieldset.' (2)'; }
 	if ( !$fieldset ) { return __("No custom field set was defined.",'my-content-management'); } else { $fieldset = urldecode( $fieldset ); }
-	if ( isset( $post['mcm_new_fieldset'] ) ) { $mcm_assign_to = $post['mcm_assign_to']; $option['extras'][$fieldset] = array( $mcm_assign_to, 'side' ); }	
+	if ( isset( $post['mcm_new_fieldset'] ) ) { 
+		$mcm_assign_to = isset( $post['mcm_assign_to'] ) ? $post['mcm_assign_to'] : array(); 
+		$option['extras'][$fieldset] = array( $mcm_assign_to, 'side' ); 
+	}	
 		for ( $i=0;$i<$count;$i++ ) {
 			if ( in_array( $i, $delete ) ) { } else {
 				$repetition = ( isset( $repeatable[$i] ) )?'true':'';
@@ -1310,7 +1317,7 @@ function mcm_update_custom_fieldset( $post ) {
 	//print_r( $array );
 	//echo "</pre>";
 	update_option( 'mcm_options', $option );
-	return sprintf( __('You have %1$s the %2$s group of custom fields.', 'my-content-management' ), $added, $fieldset );
+	return sprintf( __('You have %1$s the %2$s group of custom fields.', 'my-content-management' ), $added, stripslashes($fieldset) );
 }
 
 // Add the administrative settings to the "Settings" menu.
@@ -1412,5 +1419,4 @@ function mcm_add_js() {
 
 add_action( 'wp_footer','mcm_add_js' );
 add_action( 'wp_head','mcm_add_styles' );
-
 add_filter('plugin_action_links', 'mcm_plugin_action', -10, 2);
