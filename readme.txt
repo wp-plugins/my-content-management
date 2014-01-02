@@ -63,6 +63,10 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Changelog ==
 
+= 1.4.5 =
+
+* Bug fix: media chooser erased data when used as a non-repeatable field.
+
 = 1.4.4 =
 
 * Bug fix: Eliminated some PHP notices.

@@ -121,10 +121,12 @@ $fields = $mcm_fields; $extras = $mcm_extras;
 
 function mcm_add_custom_box( $fields,$post_type='post',$location='side' ) {
     if ( function_exists( 'add_meta_box' ) ) {
+		$location = apply_filters( 'mcm_set_location', $location, $fields, $post_type );
+		$priority = apply_filters( 'mcm_set_priority', 'default', $fields, $post_type );
         foreach ( array_keys( $fields ) as $field ) {
 			$id = sanitize_title( $field );
 			$field = stripslashes( $field );
-            add_meta_box( $id, $field, 'mcm_build_custom_box', $post_type, $location, 'default', $fields );
+            add_meta_box( $id, $field, 'mcm_build_custom_box', $post_type, $location, $priority, $fields );
         }
     }
 }
@@ -222,11 +224,13 @@ function mcm_chooser_field( $args ) {
 	$attr = array( 'height' => 80, 'width'=> 80 );
     if( !empty($args[2]) && $args[2] != '0' ) {
 		if ( $single ) {
+			$value = '%3$s';
 			$download = wp_get_attachment_url( $args[2] );
 			$img = wp_get_attachment_image( $args[2], array( 80, 80 ), true, $attr );
 			$download = '<a href="'.$download.'">'.$img.'</a>';
 			$copy = __('Change Media','my-content-management');
 		} else {
+			$value = '';
 			$i = 0;
 			foreach ( $args[2] as $attachment ) {
 				$url = wp_get_attachment_url( $attachment );
@@ -241,7 +245,7 @@ function mcm_chooser_field( $args ) {
 	}
 	$label_format =
 		'<div class="mcm_chooser_field mcm_field field-holder"><label for="%1$s"><strong>%2$s</strong></label> '.
-		'<input type="hidden" name="%1$s" value="" class="textfield" id="%1$s" /> <a href="#" class="button textfield-field">'.$copy.'</a><br />';
+		'<input type="hidden" name="%1$s" value="'.$value.'" class="textfield" id="%1$s" /> <a href="#" class="button textfield-field">'.$copy.'</a><br />';
 		$label_format .= '<br /><div class="selected">'.$description.'</div>';
 		if ( $download != '' ) { $label_format .= $download; }
 		$label_format .= "</div>";
