@@ -5,22 +5,18 @@ Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebar
 Requires at least: 3.2.1
 Tested up to: 3.8.0
 License: GPLv2 or later
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 
 Creates common custom post types for advanced content management: FAQ, Testimonials, people (staff, contributors, etc.), and others!
 
 == Description ==
-My Content Management creates a suite of custom post types, each with an appropriate custom taxonomy and a set of commonly needed custom fields. The purpose of the plug-in is to provide a single common interface to create commonly needed extra content tools. 
+My Content Management creates a suite of custom post types, each with a custom taxonomy and a set of commonly needed custom fields. A single common interface to create popularly desired content tools. 
 
 In addition to the default custom post types and custom field groups, you can create new custom post types, create new groups of custom fields, and edit the post types and custom field groups that are built in.
 
-There's a [User's Guide available for purchase](http://www.joedolson.com/articles/my-content-management/guide/) offering 25+ pages of detailed information on how to set up, use, and customize My Content Management.
+[Purchase the User's Guide](http://www.joedolson.com/articles/my-content-management/guide/), which offers 25+ pages of detailed information on how to set up, use, and customize My Content Management.
 
-Almost every web site I work on requires some kind of special content: testimonials, frequently asked questions, lists of staff -- you name it. There are plug-ins available for almost all of these - but they're all different. Different interfaces, different ways to display information, different default styling for how they're shown on the page. 
-
-I wrote this plug-in so that I have all of these features available to me in a single installation: every one with the same interface, with common methods for displaying on a site. Each custom post type also includes a few commonly used custom fields available in templates. (e.g., a phone number field for listings of staff members.)
-
-There's no default styling outside of whatever your theme offers for the elements used. There is default HTML, but it can be 100% replaced through the included templating system, or by creating your own theme template documents to display these specific content types. 
+There's no default styling in My Content Management, so you won't have any problems with conflicts between the plug-in and your theme. There is default HTML, but it can be 100% replaced through the included templating system, or by creating your own theme template documents to display these specific content types. 
 
 All content can be displayed using the shortcode [my_content type='custom_post_type']. Other supported attributes include:
 
@@ -45,12 +41,12 @@ All content can be displayed using the shortcode [my_content type='custom_post_t
 
 A search form for any custom post type is accessible using the shortcode [custom_search type='custom_post_type']
 
-You can create a site map for a specific post type and taxonomy using the [my_archive type='custom_post_type' taxonomy='taxonomy'] shortcode. Other supported attributes include all those above, plus:
+Create a site map for a specific post type and taxonomy using the [my_archive type='custom_post_type' taxonomy='taxonomy'] shortcode. Other supported attributes include all those above, plus:
 
 * exclude (list of comma-separated taxonomy terms to exclude from the site map)
 * include (list of comma-separated taxonomy terms to show on the site map)
 
-The "id" attribute is not supported in the [my_archive] shortcode. (Because that would be silly.) The [my_archive] shortcode does support a "show_links" attribute which will turn on a navigation list to navigate to each displayed category.
+The "id" attribute is not supported in the [my_archive] shortcode. (That would be silly.) The [my_archive] shortcode does support a "show_links" attribute which will turn on a navigation list to navigate to each displayed category.
 
 Available languages (in order of completeness):
 Irish, Spanish, Dutch
