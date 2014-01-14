@@ -184,7 +184,7 @@ function mcm_terms($atts,$content) {
 				'hide_empty'=>'false',
 				'show_count'=>'false'
 			), $atts, 'my_terms' ) );
-	return mcm_list_terms($taxonomy);
+	return mcm_list_terms($taxonomy,$hide_empty,$show_count);
 }
 
 // Shortcodes 

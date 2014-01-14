@@ -59,6 +59,11 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Changelog ==
 
+= 1.4.6 =
+
+* Bug fix: Missing arguments in term list shortcode.
+* Bug fix: with repeatable fields, mcm_get_custom_field display incorrectly placed before/after.
+
 = 1.4.5 =
 
 * Bug fix: media chooser erased data when used as a non-repeatable field.

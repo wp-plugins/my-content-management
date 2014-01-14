@@ -274,7 +274,7 @@ $templates = $mcm_templates; $types = $mcm_types;
 }
 
 // A simple function to get data stored in a custom field
-function mcm_get_custom_field( $field, $id='', $fallback=false ) {
+function mcm_get_custom_field( $field, $id='', $fallback=false, $return = 'string' ) {
 	global $post;
 	$id = ($id != '')?$id:$post->ID;
 	$custom_field = '';
@@ -284,8 +284,12 @@ function mcm_get_custom_field( $field, $id='', $fallback=false ) {
 	if ( $single ) {
 		$custom_field = ( $meta )?$meta:$fallback;	
 	} else {
-		foreach( $meta as $field ) {
-			$custom_field .= ( $field )?$field:$fallback;
+		if ( $return == 'string' ) {
+			foreach( $meta as $field ) {
+				$custom_field .= ( $field )?$field:$fallback;
+			}
+		} else {
+			return $meta;
 		}
 	}
 	if ( $richtext ) {
@@ -295,7 +299,10 @@ function mcm_get_custom_field( $field, $id='', $fallback=false ) {
 }
 
 function mcm_custom_field( $field, $before='', $after='', $id='', $fallback=false ) {
-	$value = mcm_get_custom_field($field, $id, $fallback);
+	$single =  ( mcm_is_repeatable( $field ) ) ? false : true;
+	$return = ( $single ) ? 'string' : 'array';
+	
+	$value = mcm_get_custom_field( $field, $id, $fallback, $return );
 	if ( $value ) {
 		if ( is_array( $value ) ) {
 			foreach ( $value as $v ) {
