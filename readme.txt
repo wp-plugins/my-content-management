@@ -59,6 +59,13 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Changelog ==
 
+= 1.4.7 =
+
+* New filter: use mcm_archive_taxonomies to filter arguments for get_terms in archive shortcode.
+* Corrected some textdomain issues
+* Bug fix: PHP notice unassigned value in media uploader.
+* Add French translation.
+
 = 1.4.6 =
 
 * Bug fix: Missing arguments in term list shortcode.

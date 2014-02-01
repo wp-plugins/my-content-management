@@ -218,7 +218,7 @@ function mcm_chooser_field( $args ) {
 	$description = stripslashes( $args[2] );	
 	// adjust data
 	$single = true;
-	$download = '';
+	$download = $value = '';
 	if ( isset( $args[4] ) && $args[4] == 'true' ) { $single = false; } 
 	$args[2] = get_post_meta($post->ID, $args[0], $single );
 	$attr = array( 'height' => 80, 'width'=> 80 );

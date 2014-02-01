@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/articles/my-content-management/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.4.5
+Version: 1.4.7
 */
 /*  Copyright 2011-2012  Joe Dolson (email : joe@joedolson.com)
 
@@ -25,7 +25,7 @@ Version: 1.4.5
 */
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-$mcm_version = '1.4.5';
+$mcm_version = '1.4.7';
 // Enable internationalisation
 load_plugin_textdomain( 'my-content-management',false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
@@ -119,7 +119,8 @@ function mcm_show_archive($atts) {
 				'day' => ''
 			), $atts, 'my_archive' ) );
 			if ( !$type || !$taxonomy ) return;
-		$terms = get_terms( $taxonomy );
+		$args = apply_filters( 'mcm_archive_taxonomies', array(), $atts );
+		$terms = get_terms( $taxonomy, $args );
 		$output = '';
 		$linker = "<ul class='archive-links'>";
 		$exclude = explode(',',$exclude);
@@ -476,7 +477,7 @@ function mcm_settings_page() {
 				<div>
 				<?php mcm_enabler(); ?>
 				<p>
-					<input type='submit' value='<?php _e('Enable Selected Post Types','my-content-manager'); ?>' name='mcm_enabler' class='button-primary' /> <a href="<?php echo admin_url('options-general.php?page=my-content-management/my-content-management.php&mcm_add=new'); ?>"><?php _e('Add new post type','my-content-manager'); ?></a>
+					<input type='submit' value='<?php _e('Enable Selected Post Types','my-content-management'); ?>' name='mcm_enabler' class='button-primary' /> <a href="<?php echo admin_url('options-general.php?page=my-content-management/my-content-management.php&mcm_add=new'); ?>"><?php _e('Add new post type','my-content-management'); ?></a>
 				</p>
 				</div>
 			</form>
@@ -675,7 +676,7 @@ function mcm_updater() {
 				<div>";
 	$post_typing = "<div><input type='hidden' name='mcm_type' value='$type' /></div>";
 	$after = "<p>
-					<input type='submit' value='".sprintf( __('Edit type "%1$s"','my-content-manager'), $type )."' name='mcm_updater' class='button-primary' /> <a href='".admin_url('options-general.php?page=my-content-management/my-content-management.php&mcm_add=new')."'>".__('Add new post type','my-content-management')."</a>
+					<input type='submit' value='".sprintf( __('Edit type "%1$s"','my-content-management'), $type )."' name='mcm_updater' class='button-primary' /> <a href='".admin_url('options-general.php?page=my-content-management/my-content-management.php&mcm_add=new')."'>".__('Add new post type','my-content-management')."</a>
 				</p>
 				</div>
 			</form></div>";
@@ -746,7 +747,7 @@ function mcm_updater() {
 			}
 			$return .= "<p>
 					<input type='hidden' name='mcm_new' value='new' />
-					<input type='submit' value='".__('Add New Custom Post Type','my-content-manager')."' name='mcm_updater' class='button-primary' />
+					<input type='submit' value='".__('Add New Custom Post Type','my-content-management')."' name='mcm_updater' class='button-primary' />
 				</p>
 				</div>
 			</form></div>";
@@ -907,7 +908,7 @@ function mcm_template_setter() {
 				</p>
 				</fieldset>
 				<p>
-					<input type='submit' value='".sprintf( __('Update %s Templates','my-content-manager'), $label[2] )."' name='mcm_save_templates' class='button-primary' />
+					<input type='submit' value='".sprintf( __('Update %s Templates','my-content-management'), $label[2] )."' name='mcm_save_templates' class='button-primary' />
 				</p>
 				</div>
 				</form>
@@ -1025,7 +1026,7 @@ function mcm_assign_custom_fields() {
 				<div>
 				<?php mcm_fields( 'assign', $page ); ?>
 				<p>
-					<input type='submit' value='<?php _e('Update Assignments','my-content-manager'); ?>' name='mcm_custom_fields' class='button-primary' /> <a href="<?php echo admin_url("options-general.php?page=mcm_custom_fields&mcm_fields_add=new"); ?>"><?php _e('Add new custom field set','my-content-manager'); ?></a>
+					<input type='submit' value='<?php _e('Update Assignments','my-content-management'); ?>' name='mcm_custom_fields' class='button-primary' /> <a href="<?php echo admin_url("options-general.php?page=mcm_custom_fields&mcm_fields_add=new"); ?>"><?php _e('Add new custom field set','my-content-management'); ?></a>
 				</p>
 				</div>
 			</form>
@@ -1360,7 +1361,7 @@ function mcm_configure_custom_fields() {
 				<div>
 				<?php mcm_fields_updater(); ?>
 				<p>
-					<input type='submit' value='<?php _e('Update Custom Fieldsets','my-content-manager'); ?>' name='mcm_custom_fieldsets' class='button-primary' /> <a href="<?php echo admin_url("options-general.php?page=mcm_custom_fields&mcm_fields_add=new"); ?>"><?php _e('Add new custom field set','my-content-manager'); ?></a>
+					<input type='submit' value='<?php _e('Update Custom Fieldsets','my-content-management'); ?>' name='mcm_custom_fieldsets' class='button-primary' /> <a href="<?php echo admin_url("options-general.php?page=mcm_custom_fields&mcm_fields_add=new"); ?>"><?php _e('Add new custom field set','my-content-management'); ?></a>
 				</p>
 				</div>
 			</form>
