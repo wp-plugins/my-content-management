@@ -62,13 +62,6 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$types[] = $t;
 		}
 	}
-	$primary = $types[0];
-		if ( !in_array($primary,$keys,true) && !in_array('mcm_'.$primary,$keys,true ) ) {
-			$wrapper = ( $template != '' )?$template:'mcm_people';
-			$mcm = false;
-		} else {
-			$wrapper = ( $template != '' )?$template:$primary;
-		}
 	if ($taxonomy != 'all') {
 		$taxonomies = explode( ',', $taxonomy );
 		$taxes = array();
@@ -86,6 +79,13 @@ $templates = $mcm_templates; $types = $mcm_types;
 			}
 		}
 	}
+	$primary = $types[0];
+	if ( !in_array($primary,$keys,true) && !in_array('mcm_'.$primary,$keys,true ) ) {
+		$wrapper = ( $template != '' )?$template:'mcm_people';
+		$mcm = false;
+	} else {
+		$wrapper = ( $template != '' )?$template:$primary;
+	}	
 	// get wrapper element
 	if ( $display == 'custom' ) {
 		$elem = '';
@@ -315,7 +315,14 @@ function mcm_custom_field( $field, $before='', $after='', $id='', $fallback=fals
 }
 
 function mcm_run_template( $post, $display, $column, $type ) {
-global $mcm_templates; $templates = $mcm_templates;
+global $mcm_templates, $mcm_types; $templates = $mcm_templates;
+	$post_type = get_post_type( $post['id'] );
+	$keys = array_keys($mcm_types);
+	if ( !in_array( $post_type,$keys,true ) ) {
+		$type = $type;
+	} else {
+		$type = $post_type;
+	}
 	$return = '';
 	$post['column'] = $column;
 	$postclass = $post['postclass'];
