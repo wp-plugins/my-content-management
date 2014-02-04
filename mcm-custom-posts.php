@@ -13,7 +13,7 @@ function mcm_posttypes() {
 			$labels = array(
 				'name' => $value[3],
 				'singular_name' => $value[2],
-				'add_new' => _x('Add New', $key, 'my-content-management' ),
+				'add_new' => __('Add New', 'my-content-management' ),
 				'add_new_item' => sprintf( __('Add New %s', 'my-content-management' ), $value[2] ),
 				'edit_item' => sprintf( __('Edit %s','my-content-management' ), $value[2] ),
 				'new_item' => sprintf( __('New %s','my-content-management' ), $value[2] ),
