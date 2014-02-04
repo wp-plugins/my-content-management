@@ -426,7 +426,7 @@ $plugins_string
 		<input type='checkbox' name='has_purchased' id='has_purchased' value='on' /> <label for='has_purchased'>".__('I have <a href="http://www.joedolson.com/articles/my-content-management/guide/">purchased the User\'s Guide</a>, but could not find an answer to this question.','my-content-management')."</label>
 		</p>		
 		<p>
-		<label for='support_request'>Support Request:</label><br /><textarea name='support_request' required aria-required='true' id='support_request' cols='80' rows='10'>".stripslashes($request)."</textarea>
+		<label for='support_request'>".__('Support Request:',$textdomain)."</label><br /><textarea name='support_request' required aria-required='true' id='support_request' cols='80' rows='10'>".stripslashes($request)."</textarea>
 		</p>
 		<p>
 		<input type='submit' value='".__('Send Support Request',$textdomain )."' name='mc_support' class='button-primary' />
@@ -878,7 +878,7 @@ function mcm_template_setter() {
 				<div><input type='hidden' name='mcm_post_type' value='$value' /></div>
 				<div>
 				<fieldset>
-				<legend>Full</legend>
+				<legend>".__('Full','my-content-management')."</legend>
 				<p class='wrappers'>
 					<label for='mcm_full_list_wrapper_$value'>".__('List Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][list][full]' id='mcm_full_list_wrapper_$value'>".mcm_option_list( $list, $template['wrapper']['list']['full'] )."</select><br />
 					<label for='mcm_full_item_wrapper_$value'>".__('Item Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][item][full]' id='mcm_full_itemwrapper_$value'>".mcm_option_list( $item, $template['wrapper']['item']['full'] )."</select>
@@ -888,7 +888,7 @@ function mcm_template_setter() {
 				</p>
 				</fieldset>
 				<fieldset>
-				<legend>Excerpt</legend>
+				<legend>".__('Excerpt','my-content-management')."</legend>
 				<p class='wrappers'>
 					<label for='mcm_excerpt_list_wrapper_$value'>".__('List Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][list][excerpt]' id='mcm_excerpt_list_wrapper_$value'>".mcm_option_list( $list, $template['wrapper']['list']['excerpt'] )."</select><br />
 					<label for='mcm_excerpt_item_wrapper_$value'>".__('Item Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][item][excerpt]' id='mcm_excerpt_item_wrapper_$value'>".mcm_option_list( $item, $template['wrapper']['item']['excerpt'] )."</select>
@@ -898,7 +898,7 @@ function mcm_template_setter() {
 				</p>
 				</fieldset>
 				<fieldset>
-				<legend>List</legend>
+				<legend>".__('List','my-content-management')."</legend>
 				<p class='wrappers'>
 					<label for='mcm_list_list_wrapper_$value'>".__('List Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][list][list]' id='mcm_list_list_wrapper_$value'>".mcm_option_list( $list, $template['wrapper']['list']['list'] )."</select><br />
 					<label for='mcm_list_item_wrapper_$value'>".__('Item Wrapper','my-content-management')."</label> <select name='templates[$value][wrapper][item][list]' id='mcm_list_item_wrapper_$value'>".mcm_option_list( $item, $template['wrapper']['item']['list'] )."</select>

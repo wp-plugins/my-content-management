@@ -64,6 +64,9 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 * New filter: use mcm_archive_taxonomies to filter arguments for get_terms in archive shortcode.
 * Corrected some textdomain issues
 * Bug fix: PHP notice unassigned value in media uploader.
+* Bug fix: PHP notice undefined array key
+* Bug fix: Not possible to remove media selected in chooser if field is not repeatable.
+* Bug fix: URL missing in preview text string.
 * Bug fix: When displaying multiple content types in a single shortcode, picks up appropriate templates for each different type of content.
 * Add French translation.
 

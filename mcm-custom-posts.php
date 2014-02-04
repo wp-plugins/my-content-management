@@ -11,16 +11,16 @@ function mcm_posttypes() {
 		foreach ( $enabled as $key ) {
 			$value =& $types[$key];		
 			$labels = array(
-				'name' => _x($value[3], 'post type general name'),
-				'singular_name' => _x($value[2], 'post type singular name'),
-				'add_new' => _x('Add New', $key),
-				'add_new_item' => __('Add New '.$value[2]),
-				'edit_item' => __('Edit '.$value[2]),
-				'new_item' => __('New '.$value[2]),
-				'view_item' => __('View '.$value[2]),
-				'search_items' => __('Search '.$value[3]),
-				'not_found' =>  __('No '.$value[1].' found'),
-				'not_found_in_trash' => __('No '.$value[1].' found in Trash'), 
+				'name' => $value[3],
+				'singular_name' => $value[2],
+				'add_new' => _x('Add New', $key, 'my-content-management' ),
+				'add_new_item' => sprintf( __('Add New %s', 'my-content-management' ), $value[2] ),
+				'edit_item' => sprintf( __('Edit %s','my-content-management' ), $value[2] ),
+				'new_item' => sprintf( __('New %s','my-content-management' ), $value[2] ),
+				'view_item' => sprintf( __('View  %s','my-content-management' ), $value[2] ),
+				'search_items' => sprintf( __('Search %s','my-content-management' ), $value[3] ),
+				'not_found' =>  sprintf( __('No %s found','my-content-management'), $value[1] ),
+				'not_found_in_trash' => sprintf( __('No %s found in Trash','my-content-management' ), $value[1] ), 
 				'parent_item_colon' => ''
 			);
 			$raw = $value[4];
@@ -59,7 +59,7 @@ function mcm_posttypes_messages( $messages ) {
 			$value = $types[$key];
 			$messages[$key] = array(
 				0 => '', // Unused. Messages start at index 1.
-				1 => sprintf( __('%1$s Listing updated. <a href="%2$s">View %1$s listing</a>','my-content-management'), $value[2], esc_url( get_permalink($post_ID) ) ),
+				1 => sprintf( __('%1$s Listing updated. <a href="%2$s">View %1$s listing</a>','my-content-management'), $value[2], esc_url( get_permalink( $post_ID ) ) ),
 				2 => __('Custom field updated.','my-content-management'),
 				3 => __('Custom field deleted.','my-content-management'),
 				4 => sprintf( __('%s listing updated.','my-content-management'), $value[2] ),
@@ -70,7 +70,7 @@ function mcm_posttypes_messages( $messages ) {
 				8 => sprintf( __('%1$s listing submitted. <a target="_blank" href="%2$s">Preview %3$s listing</a>','my-content-management'), $value[2], esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ), $value[0] ),
 				9 => sprintf( __('%1$s listing scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview %3$s item</a>','my-content-management'),
 				  $value[2], date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ), esc_url( get_permalink($post_ID) ), $value[0] ),
-				10 => sprintf( __('%1$s draft updated. <a target="_blank" href="%s">Preview %3$s listing</a>','my-content-management'), $value[2], esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ), $value[0] ),
+				10 => sprintf( __('%1$s draft updated. <a target="_blank" href="%2$s">Preview %3$s listing</a>','my-content-management'), $value[2], esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ), $value[0] ),
 			);
 		}
 	}
@@ -225,9 +225,9 @@ function mcm_chooser_field( $args ) {
     if( !empty($args[2]) && $args[2] != '0' ) {
 		if ( $single ) {
 			$value = '%3$s';
-			$download = wp_get_attachment_url( $args[2] );
+			$url = wp_get_attachment_url( $args[2] );
 			$img = wp_get_attachment_image( $args[2], array( 80, 80 ), true, $attr );
-			$download = '<a href="'.$download.'">'.$img.'</a>';
+			$download .= '<div class="mcm-chooser-image"><a href="'.$url.'">'.$img.'</a><span class="mcm-delete"><input type="checkbox" id="del-'.$args[0].$i.'" name="mcm_delete['.$args[0].'][]" value="'.$args[2].'" /> <label for="del-'.$args[0].$i.'">'.__('Delete','my-content-management').'</label></span></div>';
 			$copy = __('Change Media','my-content-management');
 		} else {
 			$value = '';
@@ -390,7 +390,7 @@ function mcm_save_postdata( $post_id, $post ) {
 	if ( isset( $_POST['mcm_nonce_name'] ) ) {
 		if ( ! wp_verify_nonce( $_POST['mcm_nonce_name'], plugin_basename(__FILE__) ) ) {
 			return $post->ID;
-		}
+		}		
 		// Is the user allowed to edit the post or page?
 		if ( 'page' == $_POST['post_type'] ) {
 			if ( ! current_user_can( 'edit_page', $post->ID )) {
@@ -407,16 +407,6 @@ function mcm_save_postdata( $post_id, $post ) {
 		} else {
 			return;
 		}
-		// OK, we're authenticated: we need to find and save the data
-		if ( isset( $_POST['mcm_delete'] ) ) {
-			foreach ( $_POST['mcm_delete'] as $data=>$deletion ) {
-				foreach ( $deletion as $delete ) {
-					if ( $delete != '' ) {
-						delete_post_meta( $post->ID, $data, $delete );
-					}
-				}
-			}
-		}	
 		foreach ( $fields as $set => $field ) {
 			foreach ( $field as $key=>$value ) {
 				$custom_field_name = $value[0];
@@ -469,6 +459,15 @@ function mcm_save_postdata( $post_id, $post ) {
 				}
 			}
 		}
+		if ( isset( $_POST['mcm_delete'] ) ) {
+			foreach ( $_POST['mcm_delete'] as $data=>$deletion ) {
+				foreach ( $deletion as $delete ) {
+					if ( $delete != '' ) {
+						delete_post_meta( $post->ID, $data, $delete );
+					}
+				}
+			}
+		}		
 	}
 }
 
@@ -479,7 +478,7 @@ function mcm_is_repeatable( $value ) {
 		}
 	} else {
 		$options = get_option( 'mcm_options' );
-		$mcm_fields = $options['simplified'];
+		$mcm_fields = isset( $options['simplified'] ) ? $options['simplified'] : array() ;
 		if ( is_array( $mcm_fields ) ) {		
 			foreach ( $mcm_fields as $set ) {
 				if ( isset( $set['repetition'] ) && $set['repetition'] == 'true' ) { return true; }
@@ -499,7 +498,7 @@ function mcm_is_richtext( $value ) {
 		}
 	} else {
 		$options = get_option( 'mcm_options' );
-		$mcm_fields = $options['simplified'];
+		$mcm_fields = isset( $options['simplified'] ) ? $options['simplified'] : array() ;
 		if ( is_array( $mcm_fields ) ) {
 			foreach ( $mcm_fields as $set ) {
 				if ( isset( $set['type'] ) && $set['type'] == 'richtext' && isset( $set['key'] ) && $set['key'] == $value ) { return true; }
