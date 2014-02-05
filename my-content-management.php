@@ -975,16 +975,15 @@ function mcm_show_support_box() {
 }
 
 add_action( 'admin_menu','mcm_add_fields_pages');
-
 function mcm_add_fields_pages() {
     if ( function_exists( 'add_submenu_page' ) ) {
 		$post_types = get_post_types('','object');
-		$submenu_page = add_submenu_page( "edit.php", __("Posts > My Content Management > Custom Fields", 'my-content-management'), __("Custom Fields",'my-content-management'), 'manage_options', "post_fields", 'mcm_assign_custom_fields' );
+		$submenu_page = add_submenu_page( "edit.php", __( "Posts > My Content Management > Custom Fields", 'my-content-management' ), __( "Custom Fields",'my-content-management' ), 'manage_options', "post_fields", 'mcm_assign_custom_fields' );
 		add_action( 'admin_head-'. $submenu_page, 'mcm_styles' );		
 		foreach ( $post_types as $type ) {
 			$name = $type->name;
 			$label = $type->labels->name;
-			$submenu_page = add_submenu_page( "edit.php?post_type=$name", sprintf( __("%s > My Content Management > Custom Fields",'my-content-management'),$label ), __( "Custom Fields", 'my-content-management' ), 'manage_options', $name."_fields", 'mcm_assign_custom_fields' );
+			$submenu_page = add_submenu_page( "edit.php?post_type=$name", sprintf( __( "%s > My Content Management > Custom Fields",'my-content-management' ),$label ), __( "Custom Fields", 'my-content-management' ), 'manage_options', $name."_fields", 'mcm_assign_custom_fields' );
 			add_action( 'admin_head-'. $submenu_page, 'mcm_styles' );
 		}
     }

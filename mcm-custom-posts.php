@@ -89,7 +89,7 @@ function mcm_taxonomies() {
 				array( $key ),	// object type = post, page, link, or custom post-type
 				array(
 					'hierarchical' => true,
-					'label' => "$value[2] Categories",	// the human-readable taxonomy name
+					'label' => sprintf( __( "%s Categories", 'my-content-management' ), $value[2] ),	// the human-readable taxonomy name
 					'query_var' => true,	// enable taxonomy-specific querying
 					'rewrite' => array( 'slug' => "$cat_key-category" ),	// pretty permalinks for your taxonomy?
 				)
