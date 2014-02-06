@@ -66,9 +66,9 @@ function mcm_posttypes_messages( $messages ) {
 				/* translators: %s: date and time of the revision */
 				5 => isset($_GET['revision']) ? sprintf( __('%1$s restored to revision from %2$ss','my-content-management'), $value[2], wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
 				6 => sprintf( __('%1$s published. <a href="%2$s">View %3$s listing</a>','my-content-management'), $value[2], esc_url( get_permalink($post_ID) ), $value[0] ),
-				7 => sprintf( __('Product listing saved.','my-content-management'), $value[2] ),
+				7 => sprintf( __('%s listing saved.','my-content-management'), $value[2] ),
 				8 => sprintf( __('%1$s listing submitted. <a target="_blank" href="%2$s">Preview %3$s listing</a>','my-content-management'), $value[2], esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ), $value[0] ),
-				9 => sprintf( __('%1$s listing scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview %3$s item</a>','my-content-management'),
+				9 => sprintf( __('%1$s listing scheduled for: <strong>%2$s</strong>. <a target="_blank" href="%3$s">Preview %4$s</a>','my-content-management'),
 				  $value[2], date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ), esc_url( get_permalink($post_ID) ), $value[0] ),
 				10 => sprintf( __('%1$s draft updated. <a target="_blank" href="%2$s">Preview %3$s listing</a>','my-content-management'), $value[2], esc_url( add_query_arg( 'preview', 'true', get_permalink($post_ID) ) ), $value[0] ),
 			);
