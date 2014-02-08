@@ -69,6 +69,7 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 * Bug fix: URL missing in preview text string.
 * Bug fix: When displaying multiple content types in a single shortcode, picks up appropriate templates for each different type of content.
 * Bug fix: Incorrect sprintf arguments for scheduled posts notice.
+* Bug fix: Resolve outstanding issue with menu position collisions.
 * Add French translation.
 
 = 1.4.6 =

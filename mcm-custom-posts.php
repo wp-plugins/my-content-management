@@ -6,7 +6,6 @@ global $mcm_types,$mcm_fields,$mcm_extras,$mcm_enabled,$mcm_templates,$default_m
 function mcm_posttypes() {
 	global $mcm_types, $mcm_enabled;
 	$types = $mcm_types; $enabled = $mcm_enabled;
-	$i = 0;
 	if ( is_array( $enabled ) ) {
 		foreach ( $enabled as $key ) {
 			$value =& $types[$key];		
@@ -38,7 +37,6 @@ function mcm_posttypes() {
 				'query_var' => true,
 				'rewrite' => array('slug'=>$slug,'with_front'=>false),
 				'hierarchical' => $raw['hierarchical'],
-				'menu_position' => 30+$i,
 				'has_archive' => true,
 				'supports' => $raw['supports'],
 				'map_meta_cap'=>true,
@@ -46,7 +44,6 @@ function mcm_posttypes() {
 				'taxonomies'=>array( 'post_tag' )
 			); 
 			register_post_type($key,$args);
-			$i++;
 		}
 	}
 }
