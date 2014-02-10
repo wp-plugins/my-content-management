@@ -1,6 +1,5 @@
-.mcm-settings legend { font-weight: 700; f ont-size: 1.1em;}
-.wrappers { width: 16em; float: left; padding-top: 1em; }
-.wrappers label { display: block; float: left; width: 7em; padding: 5px 0 0;}
+.mcm-settings legend { font-weight: 700; font-size: 1.1em; }
+.mcm-settings textarea { width: 100%; }
 .extra_fields{ float: right; padding: 10px; width: 200px; }
 .mcm_edit_post_type { -moz-column-count: 2; -webkit-column-count: 2; column-count: 2; background: #fefefe; padding: 15px; border: 1px solid #ddd; -moz-border-radius: 5px; height: 22em;}
 .mcm_edit_post_type p { line-height: 1.2; margin: 4px 0!important;}

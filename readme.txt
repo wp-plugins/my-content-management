@@ -2,10 +2,10 @@
 Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebars, content management
-Requires at least: 3.2.1
-Tested up to: 3.8.0
+Requires at least: 3.4.2
+Tested up to: 3.8.1
 License: GPLv2 or later
-Stable tag: 1.4.6
+Stable tag: 1.4.7
 
 Creates common custom post types for advanced content management: FAQ, Testimonials, people (staff, contributors, etc.), and others!
 
@@ -49,7 +49,7 @@ Create a site map for a specific post type and taxonomy using the [my_archive ty
 The "id" attribute is not supported in the [my_archive] shortcode. (That would be silly.) The [my_archive] shortcode does support a "show_links" attribute which will turn on a navigation list to navigate to each displayed category.
 
 Available languages (in order of completeness):
-Irish, Spanish, Dutch
+French, Irish, Spanish, Dutch
 
 Visit the [My Content Management translations site](http://translate.joedolson.com/projects/my-content-management/) to check the progress of a translation.
 
@@ -70,6 +70,8 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 * Bug fix: When displaying multiple content types in a single shortcode, picks up appropriate templates for each different type of content.
 * Bug fix: Incorrect sprintf arguments for scheduled posts notice.
 * Bug fix: Resolve outstanding issue with menu position collisions.
+* Deprecated support for WP 3.2 and WP 3.3.
+* Minor UI change.
 * Add French translation.
 
 = 1.4.6 =
