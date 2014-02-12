@@ -339,4 +339,4 @@ I removed the Glossary Filter plug-in from the My Content Management package in 
 
 == Upgrade Notice ==
 
- * 1.4.4 Check templates referencing custom fields after upgrading; repeatable fields were not handled correctly in 1.4.3.
+ * 1.4.8: Bug fix; custom templates overridden by post type templates.
