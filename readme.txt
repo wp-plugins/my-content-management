@@ -59,6 +59,10 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Changelog ==
 
+= 1.4.8 =
+
+* Bug fix: type checking to use current post type's preferred template overrode custom template settings.
+
 = 1.4.7 =
 
 * New filter: use mcm_archive_taxonomies to filter arguments for get_terms in archive shortcode.

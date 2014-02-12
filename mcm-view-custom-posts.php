@@ -318,10 +318,12 @@ function mcm_run_template( $post, $display, $column, $type ) {
 global $mcm_templates, $mcm_types; $templates = $mcm_templates;
 	$post_type = get_post_type( $post['id'] );
 	$keys = array_keys($mcm_types);
-	if ( !in_array( $post_type,$keys,true ) ) {
-		$type = $type;
-	} else {
-		$type = $post_type;
+	if ( $display != 'custom' ) {
+		if ( !in_array( $post_type,$keys,true ) ) {
+			$type = $type;
+		} else {
+			$type = $post_type;
+		}
 	}
 	$return = '';
 	$post['column'] = $column;
