@@ -59,6 +59,11 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Changelog ==
 
+= 1.4.9 =
+
+* Added {slug} template tag.
+* Added filter to target custom field sets to specific posts or sets of posts.
+
 = 1.4.8 =
 
 * Bug fix: type checking to use current post type's preferred template overrode custom template settings.

@@ -123,7 +123,9 @@ function mcm_add_custom_box( $fields,$post_type='post',$location='side' ) {
         foreach ( array_keys( $fields ) as $field ) {
 			$id = sanitize_title( $field );
 			$field = stripslashes( $field );
-            add_meta_box( $id, $field, 'mcm_build_custom_box', $post_type, $location, $priority, $fields );
+			if ( apply_filters( 'mcm_filter_meta_box', true, $post_type, $id ) ) {
+				add_meta_box( $id, $field, 'mcm_build_custom_box', $post_type, $location, $priority, $fields );
+			}
         }
     }
 }
