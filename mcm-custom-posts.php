@@ -226,7 +226,7 @@ function mcm_chooser_field( $args ) {
 			$value = '%3$s';
 			$url = wp_get_attachment_url( $args[2] );
 			$img = wp_get_attachment_image( $args[2], array( 80, 80 ), true, $attr );
-			$download .= '<div class="mcm-chooser-image"><a href="'.$url.'">'.$img.'</a><span class="mcm-delete"><input type="checkbox" id="del-'.$args[0].$i.'" name="mcm_delete['.$args[0].'][]" value="'.$args[2].'" /> <label for="del-'.$args[0].$i.'">'.__('Delete','my-content-management').'</label></span></div>';
+			$download .= '<div class="mcm-chooser-image"><a href="'.$url.'">'.$img.'</a><span class="mcm-delete"><input type="checkbox" id="del-'.$args[0].$i.'" name="mcm_delete['.$args[0].'][]" value="'.$args[2].'" /> <label for="del-'.$args[0].'">'.__('Delete','my-content-management').'</label></span></div>';
 			$copy = __('Change Media','my-content-management');
 		} else {
 			$value = '';
