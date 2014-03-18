@@ -116,7 +116,7 @@ $fields = $mcm_fields; $extras = $mcm_extras;
 }
 
 
-function mcm_add_custom_box( $fields,$post_type='post',$location='side' ) {
+function mcm_add_custom_box( $fields, $post_type='post',$location='side' ) {
     if ( function_exists( 'add_meta_box' ) ) {
 		$location = apply_filters( 'mcm_set_location', $location, $fields, $post_type );
 		$priority = apply_filters( 'mcm_set_priority', 'default', $fields, $post_type );
@@ -375,15 +375,13 @@ function mcm_rich_text_area ( $args ) {
 add_action( 'save_post', 'mcm_save_postdata', 1, 2 );
 function mcm_save_postdata( $post_id, $post ) {
 	if ( 
-		empty($_POST) || 
+		empty( $_POST ) || 
 		( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) || 
-		wp_is_post_revision($post_id) || 
-		isset($_POST['_inline_edit']) 
+		wp_is_post_revision( $post_id ) || 
+		isset( $_POST['_inline_edit'] ) 
 		) { return; }
-
 	global $mcm_fields;
 	$fields = $mcm_fields;
-
 	// verify this came from our screen and with proper authorization,
 	// because save_post can be triggered at other times
 	if ( isset( $_POST['mcm_nonce_name'] ) ) {
@@ -428,7 +426,7 @@ function mcm_save_postdata( $post_id, $post ) {
 						$file   = $_FILES[$custom_field_name];
 						$upload = wp_handle_upload($file, array('test_form' => false));
 						if(!isset($upload['error']) && isset($upload['file'])) {
-							$filetype   = wp_check_filetype(basename($upload['file']), null);
+							$filetype   = wp_check_filetype( basename( $upload['file'] ), null );
 							$title      = $file['name'];
 							$ext        = strrchr($title, '.');
 							$title      = ($ext !== false) ? substr($title, 0, -strlen($ext)) : $title;

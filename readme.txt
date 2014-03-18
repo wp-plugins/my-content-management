@@ -63,6 +63,9 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 * Added {slug} template tag.
 * Added filter to target custom field sets to specific posts or sets of posts.
+* Support any custom post type in search form
+* Support any custom post type in custom post list widget
+* Add custom template in widgets (required for non-MCM custom post types)
 
 = 1.4.8 =
 

@@ -22,8 +22,6 @@ class mcm_search_widget extends WP_Widget {
 	}
 
 	function form($instance) {
-		global $mcm_enabled;
-		$enabled = $mcm_enabled;
 		$post_type = isset( $instance['mcm_widget_post_type'] ) ? esc_attr($instance['mcm_widget_post_type']) : '';
 		$title = isset( $instance['title'] ) ? esc_attr($instance['title']) : '';
 	?>
@@ -34,11 +32,15 @@ class mcm_search_widget extends WP_Widget {
 		<p>
 		<label for="<?php echo $this->get_field_id('mcm_widget_post_type'); ?>"><?php _e('Post type to search','my-content-management'); ?></label> <select id="<?php echo $this->get_field_id('mcm_widget_post_type'); ?>" name="<?php echo $this->get_field_name('mcm_widget_post_type'); ?>">
 	<?php
-		foreach( $enabled as $v ) {
-			$display = ucfirst( str_replace( 'mcm_','',$v ) );
-			$selected = ($post_type == $v)?' selected="selected"':'';
-			echo "<option value='$v'$selected>$display</option>";
+		$posts = get_post_types( array( 'public'=>'true' ) ,'object' );
+		$post_types = '';
+		foreach ( $posts as $v ) {
+			$name = $v->name;
+			$label = $v->labels->name;
+			$selected = ($post_type == $name)?' selected="selected"':'';			
+			$post_types .= "<option value='$name'$selected>$label</option>\n";
 		}
+		echo $post_types;		
 	?>
 		</select>
 		</p>	
@@ -62,35 +64,54 @@ class mcm_posts_widget extends WP_Widget {
 	}
 
 	function widget($args, $instance) {
+		global $mcm_types;
+		$types = array_keys( $mcm_types );
 		extract($args);
 		$the_title = apply_filters('widget_title',$instance['title']);
 		$widget_title = empty($the_title) ? '' : $the_title;
 		$widget_title = ($widget_title!='') ? $before_title . $widget_title . $after_title : '';		
-		$post_type = $instance['mcm_posts_widget_post_type'];	
-		$display = ( $instance['display'] == '' )?'list':$instance['display'];
+		$post_type = $instance['mcm_posts_widget_post_type'];
+		if ( in_array( $post_type, $types ) ) {
+			$display = ( $instance['display'] == '' ) ? 'list' : $instance['display'];
+		} else {
+			$display = 'custom';
+		}
 		$count = ( $instance['count'] == '' )?-1:(int) $instance['count'];
+		$template = ( $instance['template'] == '' ) ? '' : $instance['template'];
+		$wrapper = ( $instance['wrapper'] == '' ) ? '' : $instance['wrapper'];
 		$order = ( $instance['order'] == '' )?'menu_order':$instance['order'];
 		$direction = ( $instance['direction'] == '' )?'asc':$instance['direction'];
 		$term = ( !isset( $instance['term'] ) )?'':$instance['term'];
-		//  $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id. $custom_wrapper, $custom
 		$taxonomy = str_replace( 'mcm_','mcm_category_',$post_type );
-		$custom = mcm_get_show_posts( $post_type, $display, $taxonomy, $term, $count, $order, $direction, '', '', false, false, false, 'div', '','IN' );
+		if ( $post_type == 'avl-video' ) { $taxonomy = 'avl_category_avl-video'; }
+		if ( $post_type == 'post' ) { $taxonomy = 'category'; }
+		if ( $post_type == 'page' ) { $taxonomy = ''; }
+		if ( $display = 'custom' ) {
+			$wrapper = "<ul>";
+			$template = "<li>{link_title}</li>";
+			$unwrapper = "</ul>";
+		} else {
+			$template = $wrapper = $unwrapper = '';
+		}
+		$custom = mcm_get_show_posts( $post_type, $display, $taxonomy, $term, $count, $order, $direction, '', $template, false, false, false, 'div', '','IN' );
 		echo $before_widget;
 		echo $widget_title;
+		echo $wrapper;
 		echo $custom;
+		echo $unwrapper;
 		echo $after_widget;
 	}
 
 	function form($instance) {
-		global $mcm_enabled;
-		$enabled = $mcm_enabled;
 		$post_type = isset( $instance['mcm_posts_widget_post_type'] ) ? esc_attr($instance['mcm_posts_widget_post_type']) : '';
 		$display = isset( $instance['display'] ) ? esc_attr($instance['display']) : '';
 		$count = isset( $instance['count'] ) ? (int) $instance['count'] : -1;
 		$direction = isset( $instance['direction'] ) ? esc_attr($instance['direction']) : 'asc';
 		$order = isset( $instance['order'] )? esc_attr($instance['order']) : '';
 		$title = isset( $instance['title'] ) ? esc_attr($instance['title']) : '';
-		$term = isset($instance['term']) ? esc_attr($instance['term']) : '';		
+		$term = isset($instance['term']) ? esc_attr($instance['term']) : '';
+		$template = isset( $instance['template'] ) ? esc_attr( $instance['template'] ) : '';
+		$wrapper = isset( $instance['wrapper'] ) ? esc_attr( $instance['wrapper'] ) : '';
 	?>
 		<p>
 		<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title','my-content-management'); ?>:</label><br />
@@ -99,11 +120,15 @@ class mcm_posts_widget extends WP_Widget {
 		<p>
 		<label for="<?php echo $this->get_field_id('mcm_posts_widget_post_type'); ?>"><?php _e('Post type to list','my-content-management'); ?></label> <select id="<?php echo $this->get_field_id('mcm_posts_widget_post_type'); ?>" name="<?php echo $this->get_field_name('mcm_posts_widget_post_type'); ?>">
 	<?php
-		foreach( $enabled as $v ) {
-			$dis = ucfirst( str_replace( 'mcm_','',$v ) );
-			$selected = ($post_type == $v)?' selected="selected"':'';
-			echo "<option value='$v'$selected>$dis</option>";
+		$posts = get_post_types( array( 'public'=>'true' ) ,'object' );
+		$post_types = '';
+		foreach ( $posts as $v ) {
+			$name = $v->name;
+			$label = $v->labels->name;
+			$selected = ( $post_type == $name )?' selected="selected"' : '';			
+			$post_types .= "<option value='$name'$selected>$label</option>\n";
 		}
+		echo $post_types;
 	?>
 		</select>
 		</p>	
@@ -112,6 +137,7 @@ class mcm_posts_widget extends WP_Widget {
 		<option value='list'<?php echo ($display == 'list')?' selected="selected"':''; ?>><?php _e('List','my-content-management'); ?></option>
 		<option value='excerpt'<?php echo ($display == 'excerpt')?' selected="selected"':''; ?>><?php _e('Excerpt','my-content-management'); ?></option>
 		<option value='full'<?php echo ($display == 'full')?' selected="selected"':''; ?>><?php _e('Full','my-content-management'); ?></option>
+		<option value='custom'<?php echo ($display == 'custom')?' selected="selected"':''; ?>><?php _e('Custom','my-content-management'); ?></option>
 		</select>
 		</p>
 		<p>
@@ -139,19 +165,37 @@ class mcm_posts_widget extends WP_Widget {
 		<p>
 		<label for="<?php echo $this->get_field_id('term'); ?>"><?php _e('Category (single term or comma-separated list)','my-content-management'); ?>:</label><br />
 		<input class="widefat" type="text" id="<?php echo $this->get_field_id('term'); ?>" name="<?php echo $this->get_field_name('term'); ?>" value="<?php echo $term; ?>"/>
-		</p>		
+		</p>
+		<fieldset>
+		<legend><?php _e( 'Custom Templating','my-content-management' ); ?></legend>
+		<p>
+		<label for="<?php echo $this->get_field_id('wrapper'); ?>"><?php _e('Wrapper','my-content-management'); ?>:</label><br />
+		<select id="<?php echo $this->get_field_id('wrapper'); ?>" name="<?php echo $this->get_field_name('wrapper'); ?>">
+			<option value=''><?php _e( 'None','my-content-management' ); ?></option>
+			<option value='ul'><?php _e( 'Unordered list','my-content-management' ); ?></option>
+			<option value='ol'><?php _e( 'Ordered list','my-content-management' ); ?></option>
+			<option value='div'><?php _e( 'Div','my-content-management' ); ?></option>			
+		</select>
+		</p>
+		<p>
+		<label for="<?php echo $this->get_field_id('template'); ?>"><?php _e( 'Template','my-content-management' ); ?>:</label><br />
+		<textarea class="widefat" id="<?php echo $this->get_field_id('template'); ?>" cols='40' rows='4' name="<?php echo $this->get_field_name('template'); ?>"><?php echo $template; ?></textarea>
+		</p>
+		</fieldset>
 	<?php
 	}
 
 	function update($new_instance,$old_instance) {
 		$instance = $old_instance;
-		$instance['mcm_posts_widget_post_type'] = strip_tags($new_instance['mcm_posts_widget_post_type']);
-		$instance['display'] = strip_tags($new_instance['display']);
-		$instance['order'] = strip_tags($new_instance['order']);
-		$instance['direction'] = strip_tags($new_instance['direction']);
+		$instance['mcm_posts_widget_post_type'] = strip_tags( $new_instance['mcm_posts_widget_post_type'] );
+		$instance['display'] = strip_tags( $new_instance['display'] );
+		$instance['order'] = strip_tags( $new_instance['order'] );
+		$instance['direction'] = strip_tags( $new_instance['direction'] );
 		$instance['count'] = ( $new_instance['count']== '' )?-1:(int) $new_instance['count'];
-		$instance['title'] = strip_tags($new_instance['title']);
-		$instance['term'] = strip_tags($new_instance['term']);		
+		$instance['title'] = strip_tags( $new_instance['title'] );
+		$instance['term'] = strip_tags( $new_instance['term'] );
+		$instance['wrapper'] = esc_attr( $new_instance['wrapper'] );
+		$instance['template'] = $new_instance['template'];
 		return $instance;		
 	}
 }

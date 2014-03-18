@@ -26,11 +26,11 @@ function mcm_process_custom_fields( $p, $custom_fields ) {
 		$cfield = array();
 		$is_email = ( stripos( $key, 'email' ) !== false )?true:false;
 		if ( count( $value ) <= 1 ) {
-			$p[$key] = ( $is_email )?apply_filters('mcm_munge',$value[0],$value[0], $custom ):$value[0];
+			$p[$key] = ( $is_email ) ? apply_filters( 'mcm_munge',$value[0] ) : $value[0];
 		} else {
 			foreach( $value as $val ) {
 				if ( $val != '' ) {
-					$cfield[] = ( $is_email )?apply_filters('mcm_munge',$val,$val, $custom ):$val;
+					$cfield[] = ( $is_email )?apply_filters( 'mcm_munge',$val ):$val;
 				}
 			}
 			$p[$key] = implode( apply_filters( 'mcm_repeatable_separator', ", ", $key ), $cfield );
@@ -56,12 +56,13 @@ $templates = $mcm_templates; $types = $mcm_types;
 	$post_types = explode( ',', $type );
 	$types = array();
 	foreach ( $post_types as $t ) {
-		if ( !in_array($t,$keys,true) && in_array('mcm_'.$t,$keys,true ) ) { // second argument negative in tot
+		if ( !in_array( $t,$keys,true ) && in_array( 'mcm_'.$t,$keys,true ) ) {
 			$types[] = 'mcm_'.$t;
 		} else {
 			$types[] = $t;
 		}
 	}
+
 	if ($taxonomy != 'all') {
 		$taxonomies = explode( ',', $taxonomy );
 		$taxes = array();
@@ -93,7 +94,7 @@ $templates = $mcm_templates; $types = $mcm_types;
 	} else {
 		$elem = ( isset($templates[$wrapper]['wrapper']['list'][$display]) )?$templates[$wrapper]['wrapper']['list'][$display]:'div';	
 	}
-	$wrapper = trim($wrapper);
+	$wrapper = trim( $wrapper );
 	$column = 'odd';
 	$return = '';
 	
@@ -241,14 +242,14 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$p = apply_filters('mcm_custom_fields', $p, $custom_fields );
 			// use this filter to insert any additional custom template tags required		
 			$p = apply_filters('mcm_extend_posts', $p, $custom );		
-			$this_post = mcm_run_template( $p, $display, $column, $wrapper );
-			$return .= apply_filters('mcm_filter_post',$this_post, $p, $custom );
+			$this_post = mcm_run_template( $p, $display, $column, $wrapper );			$return .= apply_filters('mcm_filter_post',$this_post, $p, $custom );
 			switch ($column) {
 				case 'odd':	$column = 'even';	break;
 				case 'even': $column = 'odd';	break;
 			}
 		}
 	}
+	
 	if ( $elem != '' ) { $front = "<$elem class='list-wrapper'>"; $back = "</$elem>"; } else { $elem = $unelem = $front = $back = '';}
 	
 	if ( $return ) {
@@ -304,7 +305,6 @@ function mcm_get_custom_field( $field, $id='', $fallback=false, $return = 'strin
 function mcm_custom_field( $field, $before='', $after='', $id='', $fallback=false ) {
 	$single =  ( mcm_is_repeatable( $field ) ) ? false : true;
 	$return = ( $single ) ? 'string' : 'array';
-	
 	$value = mcm_get_custom_field( $field, $id, $fallback, $return );
 	if ( $value ) {
 		if ( is_array( $value ) ) {
@@ -478,7 +478,7 @@ function mcm_draw_template( $array=array(), $template='' ) {
 	}
 	return stripslashes( trim( mc_clean_template($template) ) );			
 }
-//needs testing JCD
+
 function mcm_is_chooser( $key ) {
 	// determine whether a given key is a media chooser data type
 	global $mcm_fields;
@@ -511,7 +511,9 @@ function mc_clean_template( $template ) {
 
 function mcm_search_form( $post_type ) {
 // no arguments
-	if (strpos($post_type,'mcm_') === 0 ) { $post_type = $post_type; } else { $post_type = 'mcm_'.$post_type; }
+	global $mcm_types;
+	$keys = array_keys( $mcm_types );
+	if ( in_array('mcm_'.$post_type,$keys,true ) ) { $post_type = 'mcm_'.$post_type; } else { $post_type = $post_type; } 
 	$nonce = "<input type='hidden' name='_wpnonce' value='".wp_create_nonce('mcm-nonce')."' />";
 	$return = "
 	<div class='search_container'>
@@ -537,6 +539,7 @@ function mcm_searchfilter($query) {
 		return $query;
 	}
 }
+
 add_filter( 'mcm_munge','mcm_munge', 10, 3 );
 function mcm_munge($address) {
     $address = strtolower($address);

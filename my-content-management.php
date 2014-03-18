@@ -948,7 +948,7 @@ function mcm_show_support_box() {
 		</div>
 		<div class="resources">
 		<p>
-		<a href="https://twitter.com/intent/tweet?screen_name=joedolson&text=My%20Content%20Management%20is%20awesome!" class="twitter-mention-button" data-size="large" data-related="joedolson">Tweet to @joedolson</a>
+		<a href="https://twitter.com/intent/follow?screen_name=joedolson" class="twitter-follow-button" data-size="small" data-related="joedolson">Follow @joedolson</a>
 		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 		</p>		
 		<ul>
