@@ -348,4 +348,4 @@ I removed the Glossary Filter plug-in from the My Content Management package in 
 
 == Upgrade Notice ==
 
- * 1.4.8: Bug fix; custom templates overridden by post type templates.
+ * 1.4.9: Bug fix; widget improvements.
