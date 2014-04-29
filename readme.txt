@@ -5,14 +5,14 @@ Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebar
 Requires at least: 3.4.2
 Tested up to: 3.9
 License: GPLv2 or later
-Stable tag: 1.4.8
+Stable tag: 1.4.9
 
 Creates common custom post types for advanced content management: FAQ, Testimonials, people (staff, contributors, etc.), and others!
 
 == Description ==
-My Content Management creates a suite of custom post types, each with a custom taxonomy and a set of commonly needed custom fields. A single common interface to create popularly desired content tools. 
+My Content Management creates a set of custom post types, each with a custom taxonomy and a set of commonly needed custom fields. A single common interface to create popularly desired content tools. 
 
-In addition to the default custom post types and custom field groups, you can create new custom post types, create new groups of custom fields, and edit the post types and custom field groups that are built in.
+In addition to the default post types and field groups, you can create new custom post types, create new groups of custom fields, and edit the post types and custom field groups that are built in.
 
 [Purchase the User's Guide](http://www.joedolson.com/articles/my-content-management/guide/), which offers 25+ pages of detailed information on how to set up, use, and customize My Content Management.
 
