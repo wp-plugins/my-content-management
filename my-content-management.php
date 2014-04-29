@@ -7,7 +7,7 @@ Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
 Version: 1.4.8
 */
-/*  Copyright 2011-2012  Joe Dolson (email : joe@joedolson.com)
+/*  Copyright 2011-2014  Joe Dolson (email : joe@joedolson.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -532,6 +532,9 @@ function mcm_settings_page() {
 			<dt><code>{id}</code></dt>
 			<dd><?php _e('Post ID','my-content-management'); ?></dd>
 
+			<dt><code>{slug}</code></dt>
+			<dd><?php _e('Post Slug','my-content-management'); ?></dd>
+
 			<dt><code>{excerpt}</code></dt>
 			<dd><?php _e('Post excerpt (with auto paragraphs)','my-content-management'); ?></dd>
 
@@ -974,14 +977,16 @@ function mcm_show_support_box() {
 add_action( 'admin_menu','mcm_add_fields_pages');
 function mcm_add_fields_pages() {
     if ( function_exists( 'add_submenu_page' ) ) {
-		$post_types = get_post_types('','object');
+		$post_types = get_post_types( '','object' );
 		$submenu_page = add_submenu_page( "edit.php", __( "Posts > My Content Management > Custom Fields", 'my-content-management' ), __( "Custom Fields",'my-content-management' ), 'manage_options', "post_fields", 'mcm_assign_custom_fields' );
 		add_action( 'admin_head-'. $submenu_page, 'mcm_styles' );		
 		foreach ( $post_types as $type ) {
 			$name = $type->name;
-			$label = $type->labels->name;
-			$submenu_page = add_submenu_page( "edit.php?post_type=$name", sprintf( __( "%s > My Content Management > Custom Fields",'my-content-management' ),$label ), __( "Custom Fields", 'my-content-management' ), 'manage_options', $name."_fields", 'mcm_assign_custom_fields' );
+			if ( $name != 'acf' ) {
+				$label = $type->labels->name;
+				$submenu_page = add_submenu_page( "edit.php?post_type=$name", sprintf( __( "%s > My Content Management > Custom Fields",'my-content-management' ),$label ), __( "Custom Fields", 'my-content-management' ), 'manage_options', $name."_fields", 'mcm_assign_custom_fields' );
 			add_action( 'admin_head-'. $submenu_page, 'mcm_styles' );
+			}
 		}
     }
 }

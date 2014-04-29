@@ -8,42 +8,44 @@ function mcm_posttypes() {
 	$types = $mcm_types; $enabled = $mcm_enabled;
 	if ( is_array( $enabled ) ) {
 		foreach ( $enabled as $key ) {
-			$value =& $types[$key];		
-			$labels = array(
-				'name' => $value[3],
-				'singular_name' => $value[2],
-				'add_new' => __('Add New', 'my-content-management' ),
-				'add_new_item' => sprintf( __('Add New %s', 'my-content-management' ), $value[2] ),
-				'edit_item' => sprintf( __('Edit %s','my-content-management' ), $value[2] ),
-				'new_item' => sprintf( __('New %s','my-content-management' ), $value[2] ),
-				'view_item' => sprintf( __('View  %s','my-content-management' ), $value[2] ),
-				'search_items' => sprintf( __('Search %s','my-content-management' ), $value[3] ),
-				'not_found' =>  sprintf( __('No %s found','my-content-management'), $value[1] ),
-				'not_found_in_trash' => sprintf( __('No %s found in Trash','my-content-management' ), $value[1] ), 
-				'parent_item_colon' => ''
-			);
-			$raw = $value[4];
-			$slug = ( !isset($raw['slug']) || $raw['slug'] == '' )?$key:$raw['slug'];
-			$icon = ($raw['menu_icon']==null)?plugins_url('images',__FILE__)."/$key.png":$raw['menu_icon'];
-			$args = array(
-				'labels' => $labels,
-				'public' => $raw['public'],
-				'publicly_queryable' => $raw['publicly_queryable'],
-				'exclude_from_search'=> $raw['exclude_from_search'],
-				'show_ui' => $raw['show_ui'],
-				'show_in_menu' => $raw['show_in_menu'],
-				'show_ui' => $raw['show_ui'], 
-				'menu_icon' => ($icon=='')?plugins_url('images',__FILE__)."/mcm_resources.png":$icon,
-				'query_var' => true,
-				'rewrite' => array('slug'=>$slug,'with_front'=>false),
-				'hierarchical' => $raw['hierarchical'],
-				'has_archive' => true,
-				'supports' => $raw['supports'],
-				'map_meta_cap'=>true,
-				'capability_type'=>'post', // capability type is post type
-				'taxonomies'=>array( 'post_tag' )
-			); 
-			register_post_type($key,$args);
+			$value =& $types[$key];	
+			if ( is_array( $value ) && !empty( $value ) ) {
+				$labels = array(
+					'name' => $value[3],
+					'singular_name' => $value[2],
+					'add_new' => __('Add New', 'my-content-management' ),
+					'add_new_item' => sprintf( __('Add New %s', 'my-content-management' ), $value[2] ),
+					'edit_item' => sprintf( __('Edit %s','my-content-management' ), $value[2] ),
+					'new_item' => sprintf( __('New %s','my-content-management' ), $value[2] ),
+					'view_item' => sprintf( __('View  %s','my-content-management' ), $value[2] ),
+					'search_items' => sprintf( __('Search %s','my-content-management' ), $value[3] ),
+					'not_found' =>  sprintf( __('No %s found','my-content-management'), $value[1] ),
+					'not_found_in_trash' => sprintf( __('No %s found in Trash','my-content-management' ), $value[1] ), 
+					'parent_item_colon' => ''
+				);
+				$raw = $value[4];
+				$slug = ( !isset($raw['slug']) || $raw['slug'] == '' )?$key:$raw['slug'];
+				$icon = ($raw['menu_icon']==null)?plugins_url('images',__FILE__)."/$key.png":$raw['menu_icon'];
+				$args = array(
+					'labels' => $labels,
+					'public' => $raw['public'],
+					'publicly_queryable' => $raw['publicly_queryable'],
+					'exclude_from_search'=> $raw['exclude_from_search'],
+					'show_ui' => $raw['show_ui'],
+					'show_in_menu' => $raw['show_in_menu'],
+					'show_ui' => $raw['show_ui'], 
+					'menu_icon' => ($icon=='')?plugins_url('images',__FILE__)."/mcm_resources.png":$icon,
+					'query_var' => true,
+					'rewrite' => array('slug'=>$slug,'with_front'=>false),
+					'hierarchical' => $raw['hierarchical'],
+					'has_archive' => true,
+					'supports' => $raw['supports'],
+					'map_meta_cap'=>true,
+					'capability_type'=>'post', // capability type is post type
+					'taxonomies'=>array( 'post_tag' )
+				); 
+				register_post_type($key,$args);
+			}
 		}
 	}
 }
@@ -80,17 +82,19 @@ function mcm_taxonomies() {
 	if ( is_array( $enabled ) ) {
 		foreach ( $enabled as $key ) {
 			$value =& $types[$key];
-			$cat_key = str_replace( 'mcm_','', $key );
-			register_taxonomy(
-				"mcm_category_$cat_key",	// internal name = machine-readable taxonomy name
-				array( $key ),	// object type = post, page, link, or custom post-type
-				array(
-					'hierarchical' => true,
-					'label' => sprintf( __( "%s Categories", 'my-content-management' ), $value[2] ),	// the human-readable taxonomy name
-					'query_var' => true,	// enable taxonomy-specific querying
-					'rewrite' => array( 'slug' => "$cat_key-category" ),	// pretty permalinks for your taxonomy?
-				)
-			);
+			if ( is_array( $value ) && !empty( $value ) ) {		
+				$cat_key = str_replace( 'mcm_','', $key );
+				register_taxonomy(
+					"mcm_category_$cat_key",	// internal name = machine-readable taxonomy name
+					array( $key ),	// object type = post, page, link, or custom post-type
+					array(
+						'hierarchical' => true,
+						'label' => sprintf( __( "%s Categories", 'my-content-management' ), $value[2] ),	// the human-readable taxonomy name
+						'query_var' => true,	// enable taxonomy-specific querying
+						'rewrite' => array( 'slug' => "$cat_key-category" ),	// pretty permalinks for your taxonomy?
+					)
+				);
+			}
 		}
 	}
 }

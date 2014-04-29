@@ -3,7 +3,7 @@ Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebars, content management
 Requires at least: 3.4.2
-Tested up to: 3.8.1
+Tested up to: 3.9
 License: GPLv2 or later
 Stable tag: 1.4.8
 
@@ -66,6 +66,7 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 * Support any custom post type in search form
 * Support any custom post type in custom post list widget
 * Add custom template in widgets (required for non-MCM custom post types)
+* Bug fix: My Content Management conflicted with Advanced Custom Fields.
 
 = 1.4.8 =
 
