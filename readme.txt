@@ -59,6 +59,10 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Changelog ==
 
+= 1.4.10 =
+
+* Bug fix: variable assignment instead of comparison in widget templating.
+
 = 1.4.9 =
 
 * Added {slug} template tag.
