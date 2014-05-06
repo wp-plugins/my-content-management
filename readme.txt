@@ -5,7 +5,7 @@ Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebar
 Requires at least: 3.4.2
 Tested up to: 3.9
 License: GPLv2 or later
-Stable tag: 1.4.9
+Stable tag: 1.4.10
 
 Creates common custom post types for advanced content management: FAQ, Testimonials, people (staff, contributors, etc.), and others!
 
@@ -352,4 +352,4 @@ I removed the Glossary Filter plug-in from the My Content Management package in 
 
 == Upgrade Notice ==
 
- * 1.4.9: Bug fix; widget improvements.
+ * 1.4.10: Bug fix in widget
