@@ -5,7 +5,7 @@ Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebar
 Requires at least: 3.4.2
 Tested up to: 3.9
 License: GPLv2 or later
-Stable tag: 1.4.10
+Stable tag: 1.4.11
 
 Creates common custom post types for advanced content management: FAQ, Testimonials, people (staff, contributors, etc.), and others!
 
