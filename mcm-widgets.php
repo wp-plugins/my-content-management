@@ -86,7 +86,7 @@ class mcm_posts_widget extends WP_Widget {
 		if ( $post_type == 'avl-video' ) { $taxonomy = 'avl_category_avl-video'; }
 		if ( $post_type == 'post' ) { $taxonomy = 'category'; }
 		if ( $post_type == 'page' ) { $taxonomy = ''; }
-		if ( $display = 'custom' ) {
+		if ( $display == 'custom' ) {
 			$wrapper = "<ul>";
 			$template = "<li>{link_title}</li>";
 			$unwrapper = "</ul>";

@@ -59,6 +59,10 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Changelog ==
 
+= 1.4.11 =
+
+* Bug fix: You know that bug "fixed" in 1.4.10? It's <em>actually</em> in this release.
+
 = 1.4.10 =
 
 * Bug fix: variable assignment instead of comparison in widget templating.
@@ -352,4 +356,4 @@ I removed the Glossary Filter plug-in from the My Content Management package in 
 
 == Upgrade Notice ==
 
- * 1.4.10: Bug fix in widget
+* 1.4.11: Bug fix in widget
