@@ -59,6 +59,14 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Changelog ==
 
+= 1.5.0 =
+
+* Feature: repeatable field groups [todo]
+* Feature: related posts by post type
+* Filter: filter value of submitted post data with 'mcm_filter_saved_data' [needs testing]
+* Feature: when using HTML5 date fields, date is saved as a timestamp, allowing sorting by custom dates. [needs testing]
+* Bug fix: use reply-to header in support messages
+
 = 1.4.11 =
 
 * Bug fix: You know that bug "fixed" in 1.4.10? It's <em>actually</em> in this release.

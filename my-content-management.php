@@ -146,6 +146,27 @@ function mcm_show_archive($atts) {
 	return $linker . $output;
 }
 
+// save date data as a timestamp
+add_filter( 'mcm_filter_saved_data', 'mcm_transform_date_data', 10, 2 );
+function mcm_transform_date_data( $data, $type ) {
+	if ( $type != 'date' ) { 
+		return $data;
+	} else {
+		$data = strtotime( $data );
+	}
+	return $data;
+}
+
+// reverse date data to display formatted
+add_filter( 'mcm_filter_output_data', 'mcm_reverse_date_data', 10, 2 );
+function mcm_reverse_date_data( $data, $key ) {
+	if ( $data['type'] == 'date' && is_numeric( $data[0] ) ) {
+		$value = date_i18n( get_option( 'date_format' ), $data[0] );
+		$data[0] = $value;
+	}
+	return $data;
+}
+
 // filter to auto replace content with full template
 add_filter( 'the_content','mcm_replace_content', 10, 2 );
 function mcm_replace_content( $content, $id=false ) {
@@ -392,7 +413,13 @@ $plugins_string
 		$has_read_faq = ( $_POST['has_read_faq'] == 'on')?"Read FAQ":true; // has no faq, for now.
 		$subject = "My Content Management support request. $has_donated $has_purchased";
 		$message = $request ."\n\n". $data;
-		$from = "From: \"$current_user->display_name\" <$current_user->user_email>\r\n";
+		// Get the site domain and get rid of www. from pluggable.php
+		$sitename = strtolower( $_SERVER['SERVER_NAME'] );
+		if ( substr( $sitename, 0, 4 ) == 'www.' ) {
+				$sitename = substr( $sitename, 4 );
+		}
+		$from_email = 'wordpress@' . $sitename;		
+		$from = "From: \"$current_user->display_name\" <$from_email>\r\nReply-to: \"$current_user->display_name\" <$current_user->user_email>\r\n";
 
 		if ( !$has_read_faq ) {
 			echo "<div class='message error'><p>".__('Please read the FAQ and other Help documents before making a support request.',$textdomain )."</p></div>";

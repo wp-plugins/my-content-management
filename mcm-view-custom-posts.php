@@ -17,15 +17,16 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 function mcm_get_single_post( $type, $id ) {
-	return mcm_get_show_posts( $type, 'full', 'all','','','','','','','','',$id,'','','','','','','' );
+	return mcm_get_show_posts( $type, 'full', 'all', '', '', '', '', '', '', '', '', $id, '', '', '', '', '', '', '' );
 }
 
 add_filter( 'mcm_custom_fields', 'mcm_process_custom_fields', 10, 2 );
 function mcm_process_custom_fields( $p, $custom_fields ) {
 	foreach ( $custom_fields as $key=>$value ) {
 		$cfield = array();
-		$is_email = ( stripos( $key, 'email' ) !== false )?true:false;
+		$is_email = ( stripos( $key, 'email' ) !== false ) ? true : false;
 		if ( count( $value ) <= 1 ) {
+			$value = apply_filters( 'mcm_filter_output_data', $value, $key );
 			$p[$key] = ( $is_email ) ? apply_filters( 'mcm_munge',$value[0] ) : $value[0];
 		} else {
 			foreach( $value as $val ) {
@@ -39,7 +40,7 @@ function mcm_process_custom_fields( $p, $custom_fields ) {
 	return $p;
 }
 
-function mcm_get_show_posts(  $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id, $custom_wrapper, $custom, $operator, $year='', $month='', $week='', $day='' ) {
+function mcm_get_show_posts( $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id, $custom_wrapper, $custom, $operator, $year='', $month='', $week='', $day='' ) {
 global $mcm_templates, $mcm_types;
 $templates = $mcm_templates; $types = $mcm_types;
 	$the_cache = false;

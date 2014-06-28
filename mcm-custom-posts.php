@@ -419,11 +419,13 @@ function mcm_save_postdata( $post_id, $post ) {
 				
 				if ( in_array( $custom_field_name, $these_fields ) && in_array( $set, $_POST['mcm_fieldsets'] ) ) {
 					if ( isset( $_POST[$custom_field_name] ) && !$repeatable ) {
-						update_post_meta( $post->ID, $custom_field_name, $_POST[$custom_field_name] );
+						$this_value = apply_filters( 'mcm_filter_saved_data', $_POST[$custom_field_name], $custom_field_name, $custom_field_type );
+						update_post_meta( $post->ID, $custom_field_name, $this_value );
 					}
 					if ( isset( $_POST[$custom_field_name] ) && $repeatable ) {
 						if ( $_POST[$custom_field_name] != '' ) {
-							add_post_meta( $post->ID, $custom_field_name, $_POST[$custom_field_name] );
+							$this_value = apply_filters( 'mcm_filter_saved_data', $_POST[$custom_field_name], $custom_field_name, $custom_field_type );
+							add_post_meta( $post->ID, $custom_field_name, $this_value );
 						}
 					}				
 					if( !empty( $_FILES[$custom_field_name] ) ) {
