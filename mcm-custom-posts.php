@@ -269,6 +269,7 @@ function mcm_text_field( $args, $type='text' ) {
 	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; }
 	$meta = get_post_meta($post->ID, $name, $single);
 	$value = ( $single ) ? $meta : '';
+	if ( $type == 'date' ) { $value = date( 'Y-m-d', $value ); }
 	$output = "<div class='mcm_text_field mcm_field'>";
 		$output .=
 		'<p>

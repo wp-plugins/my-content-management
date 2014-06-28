@@ -147,8 +147,8 @@ function mcm_show_archive($atts) {
 }
 
 // save date data as a timestamp
-add_filter( 'mcm_filter_saved_data', 'mcm_transform_date_data', 10, 2 );
-function mcm_transform_date_data( $data, $type ) {
+add_filter( 'mcm_filter_saved_data', 'mcm_transform_date_data', 10, 3 );
+function mcm_transform_date_data( $data, $field, $type ) {
 	if ( $type != 'date' ) { 
 		return $data;
 	} else {
