@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 $mcm_version = '1.4.11';
 // Enable internationalisation
-load_plugin_textdomain( 'my-content-management',false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
+load_plugin_textdomain( 'my-content-management', false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
 include(dirname(__FILE__).'/mcm-custom-posts.php' );
 include(dirname(__FILE__).'/mcm-view-custom-posts.php' );
@@ -333,9 +333,8 @@ function mcm_plugin_update_message() {
 
 
 function mcm_get_support_form() {
-global $current_user, $mcm_version;
-$textdomain = 'my-content-management';
-get_currentuserinfo();
+	global $current_user, $mcm_version;
+	get_currentuserinfo();
 	// send fields for My Content Management
 	$version = $mcm_version;
 	// send fields for all plugins
@@ -348,22 +347,13 @@ get_currentuserinfo();
 	$php_version = phpversion();
 
 	// theme data
-	if ( function_exists( 'wp_get_theme' ) ) {
 	$theme = wp_get_theme();
-		$theme_name = $theme->Name;
-		$theme_uri = $theme->ThemeURI;
-		$theme_parent = $theme->Template;
-		$theme_version = $theme->Version;	
-	} else {
-	$theme_path = get_stylesheet_directory().'/style.css';	
-	$theme = get_theme_data($theme_path);
-		$theme_name = $theme['Name'];
-		$theme_uri = $theme['URI'];
-		$theme_parent = $theme['Template'];
-		$theme_version = $theme['Version'];
-	}
-	// plugin data
+	$theme_name = $theme->Name;
+	$theme_uri = $theme->ThemeURI;
+	$theme_parent = $theme->Template;
+	$theme_version = $theme->Version;	
 
+	// plugin data
 	$plugins = get_plugins();
 	$plugins_string = '';
 
@@ -422,13 +412,13 @@ $plugins_string
 		$from = "From: \"$current_user->display_name\" <$from_email>\r\nReply-to: \"$current_user->display_name\" <$current_user->user_email>\r\n";
 
 		if ( !$has_read_faq ) {
-			echo "<div class='message error'><p>".__('Please read the FAQ and other Help documents before making a support request.',$textdomain )."</p></div>";
+			echo "<div class='message error'><p>".__('Please read the FAQ and other Help documents before making a support request.','my-content-management' )."</p></div>";
 		} else {
 			wp_mail( "plugins@joedolson.com",$subject,$message,$from );
 			if ( $has_donated == 'Donor' || $has_purchased == 'Purchaser' ) {
-				echo "<div class='message updated'><p>".__('Thank you for supporting the continuing development of this plug-in! I\'ll get back to you as soon as I can.',$textdomain )."</p></div>";		
+				echo "<div class='message updated'><p>".__('Thank you for supporting the continuing development of this plug-in! I\'ll get back to you as soon as I can.','my-content-management' )."</p></div>";		
 			} else {
-				echo "<div class='message updated'><p>".__('I\'ll get back to you as soon as I can, after dealing with any support requests from plug-in supporters.',$textdomain )."</p></div>";				
+				echo "<div class='message updated'><p>".__('I\'ll get back to you as soon as I can, after dealing with any support requests from plug-in supporters.','my-content-management' )."</p></div>";				
 			}
 		}
 	}
@@ -438,28 +428,28 @@ $plugins_string
 		<div><input type='hidden' name='_wpnonce' value='".wp_create_nonce('my-content-management-nonce')."' /></div>
 		<div>
 		<p>".
-		__('Please note: I do keep records of donations, but if your donation came from somebody other than your account at this web site, please note this in your message.',$textdomain )
+		__('Please note: I do keep records of donations, but if your donation came from somebody other than your account at this web site, please note this in your message.','my-content-management' )
 		."</p>
 		<p>
 		<code>".__('From:','my-content-management')." \"$current_user->display_name\" &lt;$current_user->user_email&gt;</code> &larr; ".__('Can\'t get email at this address? Provide a different one below.','my-content-management')."
 		</p>
 		<!--<p>
-		<input type='checkbox' name='has_read_faq' id='has_read_faq' value='on' /> <label for='has_read_faq'>".__('I have read <a href="http://www.joedolson.com/articles/my-content-management/">the FAQ for this plug-in</a>.',$textdomain )." <span>(required)</span></label>
+		<input type='checkbox' name='has_read_faq' id='has_read_faq' value='on' /> <label for='has_read_faq'>".__('I have read <a href="http://www.joedolson.com/articles/my-content-management/">the FAQ for this plug-in</a>.','my-content-management' )." <span>(required)</span></label>
 		</p>-->
 		<p>
-		<input type='checkbox' name='has_donated' id='has_donated' value='on' /> <label for='has_donated'>".__('I have <a href="http://www.joedolson.com/donate.php">made a donation to help support this plug-in</a>.',$textdomain )."</label>
+		<input type='checkbox' name='has_donated' id='has_donated' value='on' /> <label for='has_donated'>".__('I have <a href="http://www.joedolson.com/donate.php">made a donation to help support this plug-in</a>.','my-content-management' )."</label>
 		</p>
 		<p>
 		<input type='checkbox' name='has_purchased' id='has_purchased' value='on' /> <label for='has_purchased'>".__('I have <a href="http://www.joedolson.com/articles/my-content-management/guide/">purchased the User\'s Guide</a>, but could not find an answer to this question.','my-content-management')."</label>
 		</p>		
 		<p>
-		<label for='support_request'>".__('Support Request:',$textdomain)."</label><br /><textarea name='support_request' required aria-required='true' id='support_request' cols='80' rows='10'>".stripslashes($request)."</textarea>
+		<label for='support_request'>".__('Support Request:','my-content-management')."</label><br /><textarea name='support_request' required aria-required='true' id='support_request' cols='80' rows='10'>".stripslashes($request)."</textarea>
 		</p>
 		<p>
-		<input type='submit' value='".__('Send Support Request',$textdomain )."' name='mc_support' class='button-primary' />
+		<input type='submit' value='".__('Send Support Request','my-content-management' )."' name='mc_support' class='button-primary' />
 		</p>
 		<p>".
-		__('The following additional information will be sent with your support request:',$textdomain )
+		__('The following additional information will be sent with your support request:','my-content-management' )
 		."</p>
 		<div class='mc_support'>
 		".wpautop($data)."
@@ -1282,20 +1272,24 @@ function mcm_update_custom_fieldset( $post ) {
 	$types = $post['mcm_field_type'];
 	$options = $post['mcm_field_options'];
 	$repeatable = ( isset( $post['mcm_field_repeatable'] ) ) ? $post['mcm_field_repeatable'] : false;
-	$last_label = end($labels);
+	$last_label = end( $labels );
 	$count = count( $labels );
 	$count = ( !$last_label ) ? $count - 1 : $count;
 	$delete_count = count( $delete );
 	// ID fieldset
-	$fieldset = ( isset($_GET['mcm_fields_edit']) )?$_GET['mcm_fields_edit']:false;
+	$fieldset = ( isset( $_GET['mcm_fields_edit'] ) ) ? $_GET['mcm_fields_edit'] : false;
 	if ( isset( $post['mcm_new_fieldset'] ) ) { $fieldset = $post['mcm_new_fieldset']; $added = __('added','my-content-management'); } else { $added = __('updated','my-content-management'); }
 	if ( !empty( $option['extras'][$fieldset] ) && isset( $post['mcm_new_fieldset'] ) ) { $fieldset = $fieldset.' (2)'; }
-	if ( !$fieldset ) { return __("No custom field set was defined.",'my-content-management'); } else { $fieldset = urldecode( $fieldset ); }
+	if ( !$fieldset ) { 
+		return __( "No custom field set was defined.",'my-content-management' ); 
+	} else { 
+		$fieldset = urldecode( $fieldset ); 
+	}
 	if ( isset( $post['mcm_new_fieldset'] ) ) { 
 		$mcm_assign_to = isset( $post['mcm_assign_to'] ) ? $post['mcm_assign_to'] : array(); 
 		$option['extras'][$fieldset] = array( $mcm_assign_to, 'side' ); 
 	}	
-		for ( $i=0;$i<$count;$i++ ) {
+		for ( $i=0; $i<$count; $i++ ) {
 			if ( in_array( $i, $delete ) ) { } else {
 				$repetition = ( isset( $repeatable[$i] ) )?'true':'';
 				if ( $keys[$i] != '' ) {
@@ -1325,16 +1319,11 @@ function mcm_update_custom_fieldset( $post ) {
 				}
 			}
 		}
-	//echo "<pre style='float: left;width:45%'>";
-	//print_r( $option['fields'][$fieldset] );
-	//echo "</pre>";
-	//if ( isset( $post['repeatable'] ) ) { $option['fields'][$fieldset]['repeatable'] = 'true'; }
-	// update simple array of fields.
 	$simple = ( isset( $option['simplified'] ) ) ? $option['simplified'] : array();
 	$simplified = (array) $simplified + (array) $simple;
 	$option['simplified'] = $simplified;
 	
-	if ( $count == $delete_count || $delete_count > $count || ( $count == 2 &&!isset( $post['mcm_new_fieldset'] ) ) ) { 
+	if ( $count == $delete_count || $delete_count > $count || ( $count == 1 && !isset( $post['mcm_new_fieldset'] ) ) ) { 
 		// if all fields are deleted, remove set.	
 		unset( $option['fields'][$fieldset] ); 
 		unset( $option['extras'][$fieldset] );
@@ -1342,9 +1331,6 @@ function mcm_update_custom_fieldset( $post ) {
 	} else {
 		$option['fields'][$fieldset] = $array;	
 	}
-	//echo "<pre style='margin-left: 400px'>";
-	//print_r( $array );
-	//echo "</pre>";
 	update_option( 'mcm_options', $option );
 	return sprintf( __('You have %1$s the %2$s group of custom fields.', 'my-content-management' ), $added, stripslashes($fieldset) );
 }

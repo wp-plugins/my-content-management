@@ -62,10 +62,17 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 = 1.5.0 =
 
 * Feature: repeatable field groups [todo]
-* Feature: related posts by post type
-* Filter: filter value of submitted post data with 'mcm_filter_saved_data' [needs testing]
-* Feature: when using HTML5 date fields, date is saved as a timestamp, allowing sorting by custom dates. [needs testing]
+* Feature: related posts by post type [todo]
+
+Done
+
+* Filter: filter value of submitted post data with 'mcm_filter_saved_data' --> NEED DOCS
+* Filter: filter value of output post data with 'mcm_filter_output_data' --> NEED DOCS
+* Feature: when using HTML5 date fields, date is saved as a timestamp, allowing sorting by custom dates. --> NEED DOCS
 * Bug fix: use reply-to header in support messages
+* Bug fix: When editing fieldsets with only 2 fields, possible to inadvertently delete fieldset.
+* Bug fix: Support form textdomains cannot be passed as variables
+* Translation: updated Irish [need to add to svn]
 
 = 1.4.11 =
 
