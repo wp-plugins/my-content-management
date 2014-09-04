@@ -269,7 +269,7 @@ function mcm_text_field( $args, $type='text' ) {
 	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; }
 	$meta = get_post_meta($post->ID, $name, $single);
 	$value = ( $single ) ? $meta : '';
-	if ( $type == 'date' ) { $value = date( 'Y-m-d', $value ); }
+	if ( $type == 'date' && $single ) { $value = ( is_numeric( $value ) ) ? date( 'Y-m-d', $value ) : date( 'Y-m-d', strtotime( $value ) ); }
 	$output = "<div class='mcm_text_field mcm_field'>";
 		$output .=
 		'<p>
@@ -281,7 +281,8 @@ function mcm_text_field( $args, $type='text' ) {
 			$output .= "<ul>";
 			foreach ( $meta as $field ) {
 				if ( $field != '' ) {
-					$field = htmlentities($field);				
+					$field = htmlentities($field);
+					if ( $type == 'date' ) { $field = ( is_numeric( $field ) ) ? date( 'Y-m-d', $field ) : date( 'Y-m-d', strtotime( $field ) ); }
 					$output .=
 					'<li><span class="mcm-delete"><input type="checkbox" id="del-'.$name.$i.'" name="mcm_delete['.$name.'][]" value="'.$field.'" /> <label for="del-'.$name.$i.'">'.__('Delete','my-content-management').'</label></span> '.$field.'</li>';
 					$i++;

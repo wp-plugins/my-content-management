@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: My Content Management
-Plugin URI: http://www.joedolson.com/articles/my-content-management/
+Plugin URI: http://www.joedolson.com/my-content-management/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
@@ -434,13 +434,13 @@ $plugins_string
 		<code>".__('From:','my-content-management')." \"$current_user->display_name\" &lt;$current_user->user_email&gt;</code> &larr; ".__('Can\'t get email at this address? Provide a different one below.','my-content-management')."
 		</p>
 		<!--<p>
-		<input type='checkbox' name='has_read_faq' id='has_read_faq' value='on' /> <label for='has_read_faq'>".__('I have read <a href="http://www.joedolson.com/articles/my-content-management/">the FAQ for this plug-in</a>.','my-content-management' )." <span>(required)</span></label>
+		<input type='checkbox' name='has_read_faq' id='has_read_faq' value='on' /> <label for='has_read_faq'>".__('I have read <a href="http://www.joedolson.com/my-content-management/">the FAQ for this plug-in</a>.','my-content-management' )." <span>(required)</span></label>
 		</p>-->
 		<p>
 		<input type='checkbox' name='has_donated' id='has_donated' value='on' /> <label for='has_donated'>".__('I have <a href="http://www.joedolson.com/donate.php">made a donation to help support this plug-in</a>.','my-content-management' )."</label>
 		</p>
 		<p>
-		<input type='checkbox' name='has_purchased' id='has_purchased' value='on' /> <label for='has_purchased'>".__('I have <a href="http://www.joedolson.com/articles/my-content-management/guide/">purchased the User\'s Guide</a>, but could not find an answer to this question.','my-content-management')."</label>
+		<input type='checkbox' name='has_purchased' id='has_purchased' value='on' /> <label for='has_purchased'>".__('I have <a href="http://www.joedolson.com/my-content-management/guide/">purchased the User\'s Guide</a>, but could not find an answer to this question.','my-content-management')."</label>
 		</p>		
 		<p>
 		<label for='support_request'>".__('Support Request:','my-content-management')."</label><br /><textarea name='support_request' required aria-required='true' id='support_request' cols='80' rows='10'>".stripslashes($request)."</textarea>
@@ -964,7 +964,7 @@ function mcm_show_support_box() {
 ?>
 	<div id="support">
 		<div class="buy">
-		<a href="http://www.joedolson.com/articles/my-content-management/guide/" rel="external"><?php _e("Need Help? <strong>Buy the User's Guide</strong>",'my-content-management'); ?></a>
+		<a href="http://www.joedolson.com/my-content-management/guide/" rel="external"><?php _e("Need Help? <strong>Buy the User's Guide</strong>",'my-content-management'); ?></a>
 		</div>
 		<div class="resources">
 		<p>
@@ -1158,7 +1158,7 @@ function mcm_get_fieldset( $fieldset=false ) {
 			$label = $value->labels->name;
 			$post_types .= "<option value='$name'>$label</option>\n";
 		}
-		$fieldset_title = "<p><label for='mcm_new_fieldset'><strong>".__('New Fieldset Title','my-content-management')."</strong></label> <input type='text' id='mcm_new_fieldset' name='mcm_new_fieldset' /><span id='warning' aria-live='polite'></span></p><p><label for='mcm_assign_to'><strong>".__('Attach to','my-content-management')."</strong></label><br /><select name='mcm_assign_to' id='mcm_assign_to' multiple='multiple'>$post_types</select></p>";
+		$fieldset_title = "<p><label for='mcm_new_fieldset'><strong>".__('New Fieldset Title','my-content-management')."</strong></label> <input type='text' id='mcm_new_fieldset' name='mcm_new_fieldset' /><span id='warning' aria-live='assertive'></span></p><p><label for='mcm_assign_to'><strong>".__('Attach to','my-content-management')."</strong></label><br /><select name='mcm_assign_to' id='mcm_assign_to' multiple='multiple'>$post_types</select></p>";
 	} else {
 		$fieldset_title = '';
 	}

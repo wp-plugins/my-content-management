@@ -2,8 +2,8 @@
 Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebars, content management
-Requires at least: 3.4.2
-Tested up to: 3.9.1
+Requires at least: 3.7.0
+Tested up to: 4.0
 License: GPLv2 or later
 Stable tag: 1.4.12
 
@@ -14,7 +14,7 @@ My Content Management creates a set of custom post types, each with a custom tax
 
 In addition to the default post types and field groups, you can create new custom post types, create new groups of custom fields, and edit the post types and custom field groups that are built in.
 
-[Purchase the User's Guide](http://www.joedolson.com/articles/my-content-management/guide/), which offers 25+ pages of detailed information on how to set up, use, and customize My Content Management.
+[Purchase the User's Guide](http://www.joedolson.com/my-content-management/guide/), which offers 25+ pages of detailed information on how to set up, use, and customize My Content Management.
 
 There's no default styling in My Content Management, so you won't have any problems with conflicts between the plug-in and your theme. There is default HTML, but it can be 100% replaced through the included templating system, or by creating your own theme template documents to display these specific content types. 
 
@@ -55,7 +55,7 @@ Visit the [My Content Management translations site](http://translate.joedolson.c
 
 Translating my plug-ins is always appreciated. Visit <a href="http://translate.joedolson.com">my translations site</a> to start getting your language into shape!
 
-<a href="http://www.joedolson.com/articles/translator-credits/">Translator Credits</a>
+<a href="http://www.joedolson.com/translator-credits/">Translator Credits</a>
 
 == Changelog ==
 
@@ -63,6 +63,11 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 * Feature: repeatable field groups [todo]
 * Feature: related posts by post type [todo]
+
+= 1.4.13 =
+
+* Bug fix: Date format bug if value not a timestamp
+* Bug fix: date format bug if date field is repeatable
 
 = 1.4.12 =
 
@@ -357,7 +362,7 @@ All of the  major WordPress features are types of posts: Posts are the main one,
 
 = I don't really get how to use this plug-in. =
 
-Well, there really isn't just one way to use this plug-in. There are many, many different ways to use it. I'd recommend buying the [User's Guide](http://www.joedolson.com/articles/my-content-management/guide/), which will walk you through many of the ways you can use this plug-in. Also, your purchase will help support me! Bonus!
+Well, there really isn't just one way to use this plug-in. There are many, many different ways to use it. I'd recommend buying the [User's Guide](http://www.joedolson.com/my-content-management/guide/), which will walk you through many of the ways you can use this plug-in. Also, your purchase will help support me! Bonus!
 
 = OMG! What happened to my Glossary page! =
 
