@@ -6,7 +6,7 @@ Requires at least: 3.7.0
 Tested up to: 4.0
 License: GPLv2 or later
 Text domain: my-content-management
-Stable tag: 1.4.13
+Stable tag: 1.4.14
 
 Creates common custom post types for advanced content management: FAQ, Testimonials, people (staff, contributors, etc.), and others!
 
