@@ -5,6 +5,7 @@ Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebar
 Requires at least: 3.7.0
 Tested up to: 4.0
 License: GPLv2 or later
+Text domain: my-content-management
 Stable tag: 1.4.13
 
 Creates common custom post types for advanced content management: FAQ, Testimonials, people (staff, contributors, etc.), and others!
@@ -49,7 +50,7 @@ Create a site map for a specific post type and taxonomy using the [my_archive ty
 The "id" attribute is not supported in the [my_archive] shortcode. (That would be silly.) The [my_archive] shortcode does support a "show_links" attribute which will turn on a navigation list to navigate to each displayed category.
 
 Available languages (in order of completeness):
-French, Irish, Spanish, Dutch
+French, Irish, Spanish, Dutch, German, Punjabi
 
 Visit the [My Content Management translations site](http://translate.joedolson.com/projects/my-content-management/) to check the progress of a translation.
 
@@ -63,6 +64,12 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 * Feature: repeatable field groups [todo]
 * Feature: related posts by post type [todo]
+
+= 1.4.14 =
+
+* Bug fix: PHP notice with date formatting
+* Bug fix: Fieldsets with only one custom field were deleted without warning on edit.
+* Added: German & Punjabi partial translations
 
 = 1.4.13 =
 

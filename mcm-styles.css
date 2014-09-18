@@ -24,3 +24,6 @@
 .mcm-settings .tabs a { display: inline-block; padding: 4px 8px; border-radius: 4px 4px 0 0; border: 1px solid #ccc; background: #f3f3f3; }
 .mcm-settings .tabs a.active { border-bottom: 1px solid #fefefe; background: #fefefe; }
 .mcm-settings .wptab { background: #fff; border: 1px solid #ddd; padding: 0 10px; }
+
+.mcm-notice { border-left: 4px solid #dd3d36; background: #f8f8f8; box-shadow: 0 1px 1px 0 rgba( 0,0,0,.1 ); padding: 1px 12px; margin: 8px 0; }
+.mcm-notice p { margin: .5em 0; padding: 2px; }

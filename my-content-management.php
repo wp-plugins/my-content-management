@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/my-content-management/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.4.13
+Version: 1.4.14
 */
 /*  Copyright 2011-2014  Joe Dolson (email : joe@joedolson.com)
 
@@ -25,7 +25,7 @@ Version: 1.4.13
 */
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-$mcm_version = '1.4.13';
+$mcm_version = '1.4.14';
 // Enable internationalisation
 load_plugin_textdomain( 'my-content-management', false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
@@ -160,7 +160,7 @@ function mcm_transform_date_data( $data, $field, $type ) {
 // reverse date data to display formatted
 add_filter( 'mcm_filter_output_data', 'mcm_reverse_date_data', 10, 2 );
 function mcm_reverse_date_data( $data, $key ) {
-	if ( $data['type'] == 'date' && is_numeric( $data[0] ) ) {
+	if ( isset( $data['type'] ) && $data['type'] == 'date' && is_numeric( $data[0] ) ) {
 		$value = date_i18n( get_option( 'date_format' ), $data[0] );
 		$data[0] = $value;
 	}
@@ -721,8 +721,7 @@ function mcm_updater() {
 				if ( is_bool( $value ) ) {
 					$checked = ($value == true)?' checked="checked"':'';
 					$return .= "<p><input type='checkbox' name='${type}[$key]' value='1' id='$key'$checked /> <label for='$key'>".ucwords(str_replace('_',' ',$key))."</label></p>";				
-				} else 
-				if ( is_array( $value ) ) {
+				} else if ( is_array( $value ) ) {
 					$return .= "<p><label for='$key'>".ucwords(str_replace('_',' ',$key))."</label><br /><select multiple='multiple' name='${type}[${key}][]' id='$key'>";
 					$supports = array( 'title','editor','author','thumbnail','excerpt','trackbacks','custom-fields','comments','revisions','page-attributes','post-formats' );
 					foreach ( $supports as $s ) {
@@ -1182,45 +1181,49 @@ function mcm_get_fieldset( $fieldset=false ) {
 			'email'=>__('Email / HTML5','my-content-management')
 			);	
 	if ( $fieldset && isset( $option['fields'][$fieldset] ) ) {
-		foreach ( $fields as $key=>$value ) {
-			if ( is_array( $value[2] ) ) {
-				$choices = esc_attr( stripslashes( implode( ', ', $value[2] ) ) );
-			} else {
-				$choices = esc_attr(stripslashes($value[2]));
+		if ( count( $fields ) > 0 ) {
+			foreach ( $fields as $key=>$value ) {
+				if ( is_array( $value[2] ) ) {
+					$choices = esc_attr( stripslashes( implode( ', ', $value[2] ) ) );
+				} else {
+					$choices = esc_attr(stripslashes($value[2]));
+				}
+				$field_type_select = '';
+				foreach ( $field_types as $k => $v ) {
+					$selected = ( $value[3] == $k  || ( $k == 'text' && $value[3] == 'mcm_text_field' ) )?' selected="selected"':'';
+					$field_type_select .= "<option value='$k'$selected>$v</option>\n";
+				}
+				if ( $value[3] == 'select' ) { $labeled = __("Options",'my-content-management'); } else { $labeled = __("Additional Text",'my-content-management'); }
+				if ( isset( $value[4] ) && $value[4] == 'true' ) { $repeatability = " checked='checked'"; } else { $repeatability = ''; }
+				$form .= "
+				<tr class='mcm_custom_fields_form $odd'>
+					<td>
+						<a href='#' class='up'><span>Move Up</span></a> <a href='#' class='down'><span>Move Down</span></a>
+					</td>		
+					<td>
+						<input type='hidden' name='mcm_field_key[]'  value='$value[0]' />
+						<label for='mcm_field_label$key'>".__('Label','my-content-management')."</label> <input type='text' name='mcm_field_label[]' id='mcm_field_label$key' value='".esc_attr(stripslashes($value[1]))."' /><br /><small>{<code>$value[0]</code>}</small>
+					</td>
+					<td>
+						<label for='mcm_field_type$key'>".__('Type','my-content-management')."</label> 
+							<select name='mcm_field_type[]' id='mcm_field_type$key'>
+							$field_type_select
+							</select>
+					</td>
+					<td>
+						<label for='mcm_field_options$key'>$labeled</label> <input type='text' name='mcm_field_options[]' id='mcm_field_options$key' value='$choices' />
+					</td>
+					<td>
+						<label for='mcm_field_repeatable$key'>".__('Repeatable','my-content-management')."</label> <input type='checkbox' name='mcm_field_repeatable[$key]' id='mcm_field_repeatable$key' class='mcm-repeatable' value='true'$repeatability />
+					</td>			
+					<td>
+						<label for='mcm_field_delete$key'>".__('Delete','my-content-management')."</label> <input type='checkbox' name='mcm_field_delete[$key]' id='mcm_field_delete$key' class='mcm-delete' value='delete' />
+					</td>
+				</tr>";		
+				$odd = ( $odd == 'odd' ) ? 'even' : 'odd';
 			}
-			$field_type_select = '';
-			foreach ( $field_types as $k => $v ) {
-				$selected = ( $value[3] == $k  || ( $k == 'text' && $value[3] == 'mcm_text_field' ) )?' selected="selected"':'';
-				$field_type_select .= "<option value='$k'$selected>$v</option>\n";
-			}
-			if ( $value[3] == 'select' ) { $labeled = __("Options",'my-content-management'); } else { $labeled = __("Additional Text",'my-content-management'); }
-			if ( isset( $value[4] ) && $value[4] == 'true' ) { $repeatability = " checked='checked'"; } else { $repeatability = ''; }
-			$form .= "
-			<tr class='mcm_custom_fields_form $odd'>
-				<td>
-					<a href='#' class='up'><span>Move Up</span></a> <a href='#' class='down'><span>Move Down</span></a>
-				</td>		
-				<td>
-					<input type='hidden' name='mcm_field_key[]'  value='$value[0]' />
-					<label for='mcm_field_label$key'>".__('Label','my-content-management')."</label> <input type='text' name='mcm_field_label[]' id='mcm_field_label$key' value='".esc_attr(stripslashes($value[1]))."' /><br /><small>{<code>$value[0]</code>}</small>
-				</td>
-				<td>
-					<label for='mcm_field_type$key'>".__('Type','my-content-management')."</label> 
-						<select name='mcm_field_type[]' id='mcm_field_type$key'>
-						$field_type_select
-						</select>
-				</td>
-				<td>
-					<label for='mcm_field_options$key'>$labeled</label> <input type='text' name='mcm_field_options[]' id='mcm_field_options$key' value='$choices' />
-				</td>
-				<td>
-					<label for='mcm_field_repeatable$key'>".__('Repeatable','my-content-management')."</label> <input type='checkbox' name='mcm_field_repeatable[$key]' id='mcm_field_repeatable$key' class='mcm-repeatable' value='true'$repeatability />
-				</td>			
-				<td>
-					<label for='mcm_field_delete$key'>".__('Delete','my-content-management')."</label> <input type='checkbox' name='mcm_field_delete[$key]' id='mcm_field_delete$key' class='mcm-delete' value='delete' />
-				</td>
-			</tr>";		
-			$odd = ( $odd == 'odd' ) ? 'even' : 'odd';
+		} else {
+			echo "<div class='mcm-notice'><p>".sprintf( __( 'This fieldset has no fields defined. Do you want to %s?', 'my-content-management' ), "<input type='submit' class='button-primary' name='mcm_custom_fieldsets' value='".__( 'Delete the Fieldset','my-content-management' )."' />" )."</p></div>";
 		}
 	} else if ( $fieldset && !isset( $option['fields'][$fieldset] ) ) {
 		echo "<div class='updated error'><p>".__('There is no field set by that name','my-content-management')."</p></div>";
@@ -1272,9 +1275,7 @@ function mcm_update_custom_fieldset( $post ) {
 	$types = $post['mcm_field_type'];
 	$options = $post['mcm_field_options'];
 	$repeatable = ( isset( $post['mcm_field_repeatable'] ) ) ? $post['mcm_field_repeatable'] : false;
-	$last_label = end( $labels );
 	$count = count( $labels );
-	$count = ( !$last_label ) ? $count - 1 : $count;
 	$delete_count = count( $delete );
 	// ID fieldset
 	$fieldset = ( isset( $_GET['mcm_fields_edit'] ) ) ? $_GET['mcm_fields_edit'] : false;
@@ -1322,7 +1323,7 @@ function mcm_update_custom_fieldset( $post ) {
 	$simple = ( isset( $option['simplified'] ) ) ? $option['simplified'] : array();
 	$simplified = (array) $simplified + (array) $simple;
 	$option['simplified'] = $simplified;
-	
+	// $count == 1 argument means any fieldset with only one value is automatically unset
 	if ( $count == $delete_count || $delete_count > $count || ( $count == 1 && !isset( $post['mcm_new_fieldset'] ) ) ) { 
 		// if all fields are deleted, remove set.	
 		unset( $option['fields'][$fieldset] ); 
