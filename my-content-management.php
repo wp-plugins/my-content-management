@@ -36,13 +36,6 @@ include(dirname(__FILE__).'/mcm-widgets.php' );
 if ( !get_option( 'mcm_version' ) ) {  mcm_install_plugin(); }
 if ( version_compare( get_option('mcm_version'), $mcm_version, '<' ) ) { mcm_upgrade_plugin(); }
 
-function mcm_is_plugin_installed($plugin_dir) {
-	require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-	$plugins = get_plugins($plugin_dir);
-	if ($plugins) return true;
-	return false;
-}
-
 // eventually, options. For now, not.
 $mcm_options = get_option('mcm_options');
 $mcm_enabled = $mcm_options['enabled'];
@@ -842,7 +835,7 @@ function mcm_template_setter() {
 			if ( isset($types[$value] ) ) {
 				$pointer = array();
 				$display_value = str_replace('mcm_','',$value);
-				$template = (isset($templates[$value]))?$templates[$value]:$default;
+				$template = ( isset( $templates[$value] ) ) ? $templates[$value] : $default;
 				$label = $types[$value];
 				$extra_fields = array();
 				foreach ( $extras as $k=>$v ) {

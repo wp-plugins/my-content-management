@@ -271,7 +271,7 @@ $templates = $mcm_templates; $types = $mcm_types;
 		$return = str_replace("\r\n",'',$return);
 	}
 		if ( $cache != false ) { 
-			$time = (is_numeric($cache))?$cache:24;
+			$time = (is_numeric($cache ) ) ? $cache:24;
 			set_transient( "mcm_$cache_key", $return, 60*60*$time );
 		} 
 	}

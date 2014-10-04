@@ -22,8 +22,8 @@ class mcm_search_widget extends WP_Widget {
 	}
 
 	function form($instance) {
-		$post_type = isset( $instance['mcm_widget_post_type'] ) ? esc_attr($instance['mcm_widget_post_type']) : '';
-		$title = isset( $instance['title'] ) ? esc_attr($instance['title']) : '';
+		$post_type = isset( $instance['mcm_widget_post_type'] ) ? esc_attr( $instance['mcm_widget_post_type']) : '';
+		$title = isset( $instance['title'] ) ? esc_attr( $instance['title']) : '';
 	?>
 		<p>
 		<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title','my-content-management'); ?>:</label><br />
@@ -103,13 +103,13 @@ class mcm_posts_widget extends WP_Widget {
 	}
 
 	function form($instance) {
-		$post_type = isset( $instance['mcm_posts_widget_post_type'] ) ? esc_attr($instance['mcm_posts_widget_post_type']) : '';
-		$display = isset( $instance['display'] ) ? esc_attr($instance['display']) : '';
+		$post_type = isset( $instance['mcm_posts_widget_post_type'] ) ? esc_attr( $instance['mcm_posts_widget_post_type']) : '';
+		$display = isset( $instance['display'] ) ? esc_attr( $instance['display']) : '';
 		$count = isset( $instance['count'] ) ? (int) $instance['count'] : -1;
-		$direction = isset( $instance['direction'] ) ? esc_attr($instance['direction']) : 'asc';
-		$order = isset( $instance['order'] )? esc_attr($instance['order']) : '';
-		$title = isset( $instance['title'] ) ? esc_attr($instance['title']) : '';
-		$term = isset($instance['term']) ? esc_attr($instance['term']) : '';
+		$direction = isset( $instance['direction'] ) ? esc_attr( $instance['direction']) : 'asc';
+		$order = isset( $instance['order'] )? esc_attr( $instance['order']) : '';
+		$title = isset( $instance['title'] ) ? esc_attr( $instance['title']) : '';
+		$term = isset($instance['term']) ? esc_attr( $instance['term']) : '';
 		$template = isset( $instance['template'] ) ? esc_attr( $instance['template'] ) : '';
 		$wrapper = isset( $instance['wrapper'] ) ? esc_attr( $instance['wrapper'] ) : '';
 	?>

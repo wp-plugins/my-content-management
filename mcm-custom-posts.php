@@ -247,26 +247,30 @@ function mcm_chooser_field( $args ) {
 		$copy = __('Choose Media','my-content-management');
 	}
 	$label_format =
-		'<div class="mcm_chooser_field mcm_field field-holder"><label for="%1$s"><strong>%2$s</strong></label> '.
-		'<input type="hidden" name="%1$s" value="'.$value.'" class="textfield" id="%1$s" /> <a href="#" class="button textfield-field">'.$copy.'</a><br />';
-		$label_format .= '<br /><div class="selected">'.$description.'</div>';
-		if ( $download != '' ) { $label_format .= $download; }
-		$label_format .= "</div>";
-		return vsprintf( $label_format, $args );
+	'<div class="mcm_chooser_field mcm_field field-holder"><label for="%1$s"><strong>%2$s</strong></label> '.
+	'<input type="hidden" name="%1$s" value="'.$value.'" class="textfield" id="%1$s" /> <a href="#" class="button textfield-field">'.$copy.'</a><br />';
+	$label_format .= '<br /><div class="selected">'.$description.'</div>';
+	if ( $download != '' ) { $label_format .= $download; }
+	$label_format .= "</div>";
+	return vsprintf( $label_format, $args );
 }
 
 function mcm_text_field( $args, $type='text' ) {
 	$args[1] = stripslashes( $args[1] );
 	$description = stripslashes( $args[2] );
 	$types = array( 'color','date','number','tel','time','url' );
-	if ( $type == 'mcm_text_field' ) { $type = 'text'; } else { $type = ( in_array( $type, $types ) )?$type:'text'; }
+	if ( $type == 'mcm_text_field' ) { 
+		$type = 'text'; 
+	} else { 
+		$type = ( in_array( $type, $types ) ) ? $type : 'text'; 
+	}
 	global $post;
 	$name = $args[0];
 	$label = $args[1];
 	$description = $args[2];
 	// adjust data
 	$single = true;
-	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; }
+	if ( isset( $args[4] ) && $args[4] == 'true' ) { $single = false; }
 	$meta = get_post_meta($post->ID, $name, $single);
 	$value = ( $single ) ? $meta : '';
 	if ( $type == 'date' && $single ) { $value = ( is_numeric( $value ) ) ? date( 'Y-m-d', $value ) : date( 'Y-m-d', strtotime( $value ) ); }
@@ -313,7 +317,7 @@ function mcm_create_options( $choices, $selected, $type='select' ) {
 	$return = '';
 	if (is_array($choices) ) {
 		foreach($choices as $value ) {
-			$v = esc_attr($value);
+			$v = esc_attr( $value);
 			if ( $type == 'select' ) {
 				$chosen = ( $v == $selected )?' selected="selected"':'';
 				$return .= "<option value='$value'$chosen>$value</option>";
