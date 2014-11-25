@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/my-content-management/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.4.14
+Version: 1.4.15
 */
 /*  Copyright 2011-2014  Joe Dolson (email : joe@joedolson.com)
 
@@ -25,7 +25,7 @@ Version: 1.4.14
 */
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-$mcm_version = '1.4.14';
+$mcm_version = '1.4.15';
 // Enable internationalisation
 load_plugin_textdomain( 'my-content-management', false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
@@ -48,7 +48,7 @@ add_action( 'admin_enqueue_scripts', 'mcm_enqueue_admin_scripts' );
 function mcm_enqueue_admin_scripts() {
 	$screen = get_current_screen();
 	if ( $screen->base == 'post' ) {
-		if( function_exists('wp_enqueue_media') && !did_action( 'wp_enqueue_media' ) ) {
+		if ( function_exists('wp_enqueue_media') && !did_action( 'wp_enqueue_media' ) ) {
 			wp_enqueue_media();
 		}
 		wp_enqueue_script( 'mcm-admin-script', plugins_url( 'js/uploader.js', __FILE__ ), array( 'jquery' ) );
@@ -461,7 +461,11 @@ function mcm_add_scripts() {
 	wp_enqueue_script( 'mcm.tabs' );
 	global $mcm_enabled;
 	$keys = $mcm_enabled;
-	$mcm_selected = $keys[0].'-container';
+	if ( is_array( $keys ) && !empty( $keys ) ) {
+		$mcm_selected = $keys[0].'-container';
+	} else {
+		$mcm_selected = '';
+	}
 	wp_localize_script( 'mcm.tabs', 'firstItem', $mcm_selected );
 }
 
@@ -469,7 +473,7 @@ function mcm_add_scripts() {
 function mcm_settings_page() {
 	global $mcm_enabled;
 	$enabled = $mcm_enabled;
-	$enabled = ( isset( $_POST['mcm_enabler'] ) ) ? $_POST['mcm_posttypes'] : $enabled;
+	$enabled = ( isset( $_POST['mcm_enabler'] ) && isset( $_POST['mcm_posttypes'] ) ) ? $_POST['mcm_posttypes'] : $enabled;
 	?>
 	<div class='wrap mcm-settings'>
 	<div id="icon-index" class="icon32"><br /></div>
@@ -612,7 +616,7 @@ function mcm_enabler() {
 	if ( isset($_POST['mcm_enabler']) ) {
 		$nonce=$_REQUEST['_wpnonce'];
 		if (! wp_verify_nonce($nonce,'my-content-management-nonce') ) die("Security check failed");		
-		$enable = $_POST['mcm_posttypes'];
+		$enable = isset( $_POST['mcm_posttypes'] ) ? $_POST['mcm_posttypes'] : array();
 		$option = get_option('mcm_options');
 		$option['enabled'] = $enable;
 		update_option('mcm_options',$option);
@@ -961,7 +965,7 @@ function mcm_show_support_box() {
 		<div class="resources">
 		<p>
 		<a href="https://twitter.com/intent/follow?screen_name=joedolson" class="twitter-follow-button" data-size="small" data-related="joedolson">Follow @joedolson</a>
-		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if (!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 		</p>		
 		<ul>
 			<li><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
@@ -1140,10 +1144,25 @@ function mcm_fields_updater() {
 	}
 }
 
+function mcm_post_type_relation( $key, $choices ) {
+	$post_types = get_post_types( array( 'public'=>'true' ), 'names' );
+	$list = $output = '';
+	foreach ( $post_types as $types ) {
+		if ( $choices == $types ) {
+			$selected = " selected='selected'";
+		} else {
+			$selected = '';
+		}
+		$list .= "<option value='$types'$selected>$types</option>";
+	}
+	$output .= "<select id='mcm_field_options$key' name='mcm_field_options[]'>$list</select>";
+	return $output;
+}
+
 function mcm_get_fieldset( $fieldset=false ) {
 	$option = get_option( 'mcm_options' );
 	if ( !$fieldset ) {
-		$posts = get_post_types(array( 'public'=>'true' ) ,'object');
+		$posts = get_post_types( array( 'public'=>'true' ) ,'object' );
 		$post_types = '';
 		foreach ( $posts as $value ) {
 			$name = $value->name;
@@ -1171,8 +1190,9 @@ function mcm_get_fieldset( $fieldset=false ) {
 			'tel'=>__('Telephone / HTML5','my-content-management'),
 			'time'=>__('Time / HTML5','my-content-management'),
 			'url'=>__('URL / HTML5','my-content-management'),
-			'email'=>__('Email / HTML5','my-content-management')
-			);	
+			'email'=>__('Email / HTML5','my-content-management'),
+			'post-relation'=>__( 'Related Posts', 'my-content-management' )
+		);	
 	if ( $fieldset && isset( $option['fields'][$fieldset] ) ) {
 		if ( count( $fields ) > 0 ) {
 			foreach ( $fields as $key=>$value ) {
@@ -1186,7 +1206,16 @@ function mcm_get_fieldset( $fieldset=false ) {
 					$selected = ( $value[3] == $k  || ( $k == 'text' && $value[3] == 'mcm_text_field' ) )?' selected="selected"':'';
 					$field_type_select .= "<option value='$k'$selected>$v</option>\n";
 				}
-				if ( $value[3] == 'select' ) { $labeled = __("Options",'my-content-management'); } else { $labeled = __("Additional Text",'my-content-management'); }
+				if ( $value[3] == 'select' ) { 
+					$labeled = __( "Options",'my-content-management' ); 
+					$choice_field = "<input type='text' name='mcm_field_options[]' id='mcm_field_options$key' value='$choices' />";
+				} else if ( $value[3] == 'post-relation' ) { 
+					$labeled = __( "Related post type", 'my-content-management' );
+					$choice_field = mcm_post_type_relation( $key, $choices );
+				} else {
+					$labeled = __( "Additional Text",'my-content-management' ); 
+					$choice_field = "<input type='text' name='mcm_field_options[]' id='mcm_field_options$key' value='$choices' />";
+				}
 				if ( isset( $value[4] ) && $value[4] == 'true' ) { $repeatability = " checked='checked'"; } else { $repeatability = ''; }
 				$form .= "
 				<tr class='mcm_custom_fields_form $odd'>
@@ -1204,7 +1233,7 @@ function mcm_get_fieldset( $fieldset=false ) {
 							</select>
 					</td>
 					<td>
-						<label for='mcm_field_options$key'>$labeled</label> <input type='text' name='mcm_field_options[]' id='mcm_field_options$key' value='$choices' />
+						<label for='mcm_field_options$key'>$labeled</label> $choice_field
 					</td>
 					<td>
 						<label for='mcm_field_repeatable$key'>".__('Repeatable','my-content-management')."</label> <input type='checkbox' name='mcm_field_repeatable[$key]' id='mcm_field_repeatable$key' class='mcm-repeatable' value='true'$repeatability />

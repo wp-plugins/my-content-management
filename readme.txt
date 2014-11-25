@@ -63,11 +63,12 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 = 1.5.0 =
 
 * Feature: repeatable field groups [todo]
-* Feature: related posts by post type [todo]
 
 = 1.4.15 =
 
 * Deleted obsolete function 
+* Fixed various PHP notices
+* Feature: related posts input field
 
 = 1.4.14 =
 

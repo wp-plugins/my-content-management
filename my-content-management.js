@@ -3,7 +3,7 @@ jQuery(document).ready(function($) {
    $('.mcm_faq dt a').click(function(e) {
 	 e.preventDefault();
 	$target = $(this).parent().next();
-	if(!$target.hasClass('active')){
+	if (!$target.hasClass('active')){
 		allPanels.removeClass('active').slideUp('fast');
 		$target.addClass('active').slideDown('fast');
 	} 

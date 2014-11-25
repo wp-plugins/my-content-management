@@ -169,6 +169,8 @@ function mcm_field_html( $args ) {
 			return mcm_chooser_field( $args );
 		case 'richtext':
 			return mcm_rich_text_area( $args );
+		case 'post-relation':
+			return mcm_post_relation( $args );
 		default:
 			return mcm_text_field( $args, $args[3] );
 	}
@@ -225,7 +227,7 @@ function mcm_chooser_field( $args ) {
 	if ( isset( $args[4] ) && $args[4] == 'true' ) { $single = false; } 
 	$args[2] = get_post_meta($post->ID, $args[0], $single );
 	$attr = array( 'height' => 80, 'width'=> 80 );
-    if( !empty($args[2]) && $args[2] != '0' ) {
+    if ( !empty($args[2]) && $args[2] != '0' ) {
 		if ( $single ) {
 			$value = '%3$s';
 			$url = wp_get_attachment_url( $args[2] );
@@ -311,6 +313,31 @@ function mcm_select( $args ) {
 			mcm_create_options( $choices, $args[2] ).
 		'</select></p>';
 	return vsprintf( $label_format, $args );
+}
+
+
+function mcm_post_relation( $args ) {
+	global $post;
+	$args[1] = stripslashes( $args[1] );
+	$post_type = $args[2];
+	$single = true;
+	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; } 	
+	$args[2] = get_post_meta($post->ID, $args[0], $single);
+	$label_format = '<p class="mcm_post-relation mcm_field"><label for="%1$s"><strong>%2$s</strong></label><br />'.
+		'<select name="%1$s" id="%1$s">'.
+			mcm_choose_posts( $post_type, $args[2] ).
+		'</select></p>';
+	return vsprintf( $label_format, $args );
+}
+
+function mcm_choose_posts( $type, $chosen=false ) {
+	$posts = get_posts( array( 'post_type' => $type, 'posts_per_page' => -1 ) );
+	$select = '';
+	foreach ( $posts as $post ) {
+		$selected = ( $chosen && ( $post->ID == $chosen ) ) ? " selected='selected'" : '';
+		$select .= "<option value='$post->ID'$selected>$post->post_title</option>\n";
+	}
+	return $select;
 }
 
 function mcm_create_options( $choices, $selected, $type='select' ) {
@@ -434,10 +461,10 @@ function mcm_save_postdata( $post_id, $post ) {
 							add_post_meta( $post->ID, $custom_field_name, $this_value );
 						}
 					}				
-					if( !empty( $_FILES[$custom_field_name] ) ) {
+					if ( !empty( $_FILES[$custom_field_name] ) ) {
 						$file   = $_FILES[$custom_field_name];
 						$upload = wp_handle_upload($file, array('test_form' => false));
-						if(!isset($upload['error']) && isset($upload['file'])) {
+						if (!isset($upload['error']) && isset($upload['file'])) {
 							$filetype   = wp_check_filetype( basename( $upload['file'] ), null );
 							$title      = $file['name'];
 							$ext        = strrchr($title, '.');

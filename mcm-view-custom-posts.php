@@ -195,7 +195,7 @@ $templates = $mcm_templates; $types = $mcm_types;
 			// use this filter to insert any additional custom template tags required		
 			$p = apply_filters('mcm_extend_posts', $p, $custom );
 			// This filter is used to insert alphabetical headings. You can probably find another use for it.
-			$return = apply_filters('mcm_filter_posts',$return, $p, $last_term, $elem, $type, $first, $last_post, $custom );
+			$return = apply_filters( 'mcm_filter_posts',$return, $p, $last_term, $elem, $type, $first, $last_post, $custom );
 			$first = false;
 			$last_term = get_the_title();
 			$last_post = $p;
