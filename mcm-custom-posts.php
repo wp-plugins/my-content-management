@@ -33,7 +33,6 @@ function mcm_posttypes() {
 					'exclude_from_search'=> $raw['exclude_from_search'],
 					'show_ui' => $raw['show_ui'],
 					'show_in_menu' => $raw['show_in_menu'],
-					'show_ui' => $raw['show_ui'], 
 					'menu_icon' => ($icon=='')?plugins_url('images',__FILE__)."/mcm_resources.png":$icon,
 					'query_var' => true,
 					'rewrite' => array('slug'=>$slug,'with_front'=>false),
@@ -171,6 +170,8 @@ function mcm_field_html( $args ) {
 			return mcm_rich_text_area( $args );
 		case 'post-relation':
 			return mcm_post_relation( $args );
+		case 'user-relation':
+			return mcm_user_relation( $args );			
 		default:
 			return mcm_text_field( $args, $args[3] );
 	}
@@ -318,20 +319,50 @@ function mcm_select( $args ) {
 
 function mcm_post_relation( $args ) {
 	global $post;
+	$title = '';
 	$args[1] = stripslashes( $args[1] );
 	$post_type = $args[2];
 	$single = true;
 	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; } 	
-	$args[2] = get_post_meta($post->ID, $args[0], $single);
-	$label_format = '<p class="mcm_post-relation mcm_field"><label for="%1$s"><strong>%2$s</strong></label><br />'.
-		'<select name="%1$s" id="%1$s">'.
-			mcm_choose_posts( $post_type, $args[2] ).
-		'</select></p>';
+	$args[2] = get_post_meta( $post->ID, $args[0], $single );
+	if ( is_numeric( $args[2] ) ) {
+		$title = '(' . get_the_title( $args[2] ) . ')';
+	}
+	$label_format = '<p class="mcm_post-relation mcm_field"><label for="%1$s"><strong>%2$s</strong> <span id="mcm_selected_post_relation" aria-live="assertive">'.$title.'</span></label><br />'.
+		'<input type="text" class="mcm-autocomplete-posts" value="%3$s" name="%1$s" id="%1$s" data-value="'.$post_type.'" aria-describedby="mcm_selected_post_relation" />'.
+		//'<select name="%1$s" id="%1$s">
+		//	<option value=""> -- </option>'.
+		//	mcm_choose_posts( $post_type, $args[2] ).
+		//'</select></p>';
+		'</p>';
+	return vsprintf( $label_format, $args );
+}
+
+function mcm_user_relation( $args ) {
+	global $post;
+	$user_login = '';
+	$args[1] = stripslashes( $args[1] );
+	$user_role = $args[2];
+	$single = true;
+	if ( isset( $args[4] ) && $args[4] == 'true' ) {  $single = false; } 	
+	$args[2] = get_post_meta( $post->ID, $args[0], $single );
+	if ( is_numeric( $args[2] ) ) {
+		$user = get_userdata( $args[2] );
+		$user_login = '(' . $user->user_login . ')';
+	}
+	$label_format = '<p class="mcm_user-relation mcm_field"><label for="%1$s"><strong>%2$s</strong> <span id="mcm_selected_user_login" aria-live="assertive">'.$user_login.'</span></label><br />'.
+	'<input type="text" class="mcm-autocomplete-users" value="%3$s" name="%1$s" id="%1$s" data-value="'.$user_role.'" aria-describedby="mcm_selected_user_login" />'.
+		//'<select name="%1$s" id="%1$s">
+		//	<option value=""> -- </option>'.
+		//	mcm_choose_users( $user_role, $args[2] ).
+		//'</select></p>';
+		'</p>';
 	return vsprintf( $label_format, $args );
 }
 
 function mcm_choose_posts( $type, $chosen=false ) {
-	$posts = get_posts( array( 'post_type' => $type, 'posts_per_page' => -1 ) );
+	$args = apply_filters( 'mcm_post_relations', array( 'post_type' => $type, 'posts_per_page' => -1, 'orderby'=>'title', 'order'=>'ASC' ), $type );
+	$posts = get_posts( $args );
 	$select = '';
 	foreach ( $posts as $post ) {
 		$selected = ( $chosen && ( $post->ID == $chosen ) ) ? " selected='selected'" : '';
@@ -340,14 +371,26 @@ function mcm_choose_posts( $type, $chosen=false ) {
 	return $select;
 }
 
+function mcm_choose_users( $type, $chosen=false ) {
+	$args = apply_filters( 'mcm_user_relations', array( 'role' => $type, 'fields'=>array( 'ID','user_login' ) ), $type );
+	$users = get_users( $args );
+	$select = '';
+	foreach ( $users as $user ) {
+		$selected = ( $chosen && ( $user->ID == $chosen ) ) ? " selected='selected'" : '';
+		$select .= "<option value='$user->ID'$selected>$user->user_login</option>\n";
+	}
+	return $select;
+}
+
 function mcm_create_options( $choices, $selected, $type='select' ) {
 	$return = '';
 	if (is_array($choices) ) {
 		foreach($choices as $value ) {
-			$v = esc_attr( $value);
+			$v = esc_attr( sanitize_title( $value ) );
+			$display = stripslashes( $value );
 			if ( $type == 'select' ) {
 				$chosen = ( $v == $selected )?' selected="selected"':'';
-				$return .= "<option value='$value'$chosen>$value</option>";
+				$return .= "<option value='$v'$chosen>$display</option>";
 			} 
 		}
 	}

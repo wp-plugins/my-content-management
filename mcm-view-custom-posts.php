@@ -17,7 +17,13 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 function mcm_get_single_post( $type, $id ) {
-	return mcm_get_show_posts( $type, 'full', 'all', '', '', '', '', '', '', '', '', $id, '', '', '', '', '', '', '' );
+	$args = array( 
+				'type'=>$type,
+				'display'=>'full',
+				'taxonomy'=>'all',
+				'id'=>$id
+			);
+	return mcm_get_show_posts( $args );
 }
 
 add_filter( 'mcm_custom_fields', 'mcm_process_custom_fields', 10, 2 );
@@ -40,9 +46,39 @@ function mcm_process_custom_fields( $p, $custom_fields ) {
 	return $p;
 }
 
-function mcm_get_show_posts( $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id, $custom_wrapper, $custom, $operator, $year='', $month='', $week='', $day='' ) {
-global $mcm_templates, $mcm_types;
-$templates = $mcm_templates; $types = $mcm_types;
+
+/**
+ * 
+ * $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id, $custom_wrapper, $custom, $operator, $year='', $month='', $week='', $day='' 
+*/
+function mcm_get_show_posts( $atts ) {
+	$defaults = array( 
+					'type'			=> '',
+					'display'		=> '',
+					'taxonomy'		=> '',
+					'term'			=> '',
+					'count'			=> '',
+					'order'			=> '',
+					'direction'		=> '',
+					'meta_key'		=> '',
+					'template'		=> '',
+					'cache'			=> '',
+					'offset'		=> '',
+					'id'			=> '',
+					'custom_wrapper'=> '',
+					'custom'		=> '',
+					'operator'		=> '',
+					'year'			=> '',
+					'month'			=> '',
+					'week'			=> '',
+					'day'			=> ''
+				);
+	$atts = wp_parse_args( $atts, $defaults );
+	foreach ( $atts as $key => $att ) {
+		${$key} = $att;
+	}
+	global $mcm_templates, $mcm_types;
+	$templates = $mcm_templates; $types = $mcm_types;
 	$the_cache = false;
 	if ( $cache != false ) {
 		$cache_key = md5( $type . $display . $taxonomy . $term . $count . $order . $direction . $meta_key . $template . $offset . $id . $year . $month . $week . $day);
@@ -83,10 +119,10 @@ $templates = $mcm_templates; $types = $mcm_types;
 	}
 	$primary = $types[0];
 	if ( !in_array($primary,$keys,true) && !in_array('mcm_'.$primary,$keys,true ) ) {
-		$wrapper = ( $template != '' )?$template:'mcm_people';
+		$wrapper = ( $template != '' ) ? $template : 'mcm_people';
 		$mcm = false;
 	} else {
-		$wrapper = ( $template != '' )?$template:$primary;
+		$wrapper = ( $template != '' ) ? $template : $primary;
 	}	
 	// get wrapper element
 	if ( $display == 'custom' ) {
@@ -152,9 +188,10 @@ $templates = $mcm_templates; $types = $mcm_types;
 		$debug = false;
 		if ( $debug ) {
 			echo "<pre>";
-			print_r($args);
+			print_r( $args );
 			echo "</pre>";
 		}
+		$args = apply_filters( 'mcm_pre_query_args', $args, $atts );
 		$loop = new WP_Query( $args );
 		$last_term = false;
 		$last_post = false;
@@ -223,9 +260,10 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$p['content_raw'] = $the_post->post_content;
 			$sizes = get_intermediate_image_sizes();
 			foreach ( $sizes as $size ) {
-				$p[$size] = get_the_post_thumbnail( $the_post->ID, $size, array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
+				$class = sanitize_title( 'mcm-' . $size );
+				$p[$size] = get_the_post_thumbnail( $the_post->ID, $size, array( 'class'=>$class, 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
 			}
-			$p['full'] = get_the_post_thumbnail( $the_post->ID, 'full', array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
+			$p['full'] = get_the_post_thumbnail( $the_post->ID, 'full', array( 'class'=>'mcm-full', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
 			$p['permalink'] = get_permalink( $the_post->ID );
 			$p['link_title'] = "<a href='".get_permalink( $the_post->ID )."'>".$the_post->post_title."</a>";				
 			$p['title'] = $the_post->post_title;
@@ -243,7 +281,8 @@ $templates = $mcm_templates; $types = $mcm_types;
 			$p = apply_filters('mcm_custom_fields', $p, $custom_fields );
 			// use this filter to insert any additional custom template tags required		
 			$p = apply_filters('mcm_extend_posts', $p, $custom );		
-			$this_post = mcm_run_template( $p, $display, $column, $wrapper );			$return .= apply_filters('mcm_filter_post',$this_post, $p, $custom );
+			$this_post = mcm_run_template( $p, $display, $column, $wrapper );			
+			$return .= apply_filters('mcm_filter_post',$this_post, $p, $custom );
 			switch ($column) {
 				case 'odd':	$column = 'even';	break;
 				case 'even': $column = 'odd';	break;
@@ -434,13 +473,12 @@ function mcm_draw_template( $array=array(), $template='' ) {
 	$defaults = mcm_default_fields();
 	$fallback = $before = $after = $size = $output = '';
 	$template = mcm_simple_template( $array, $template );
-	foreach ($array as $key=>$value) {
+	foreach ( $array as $key=>$value ) {
 		if ( !in_array( $key, $defaults ) ) {
 			$is_chooser = mcm_is_chooser( $key );
-			$richtext = ( mcm_is_richtext( $key ) )?true:false;
+			$richtext = ( mcm_is_richtext( $key ) ) ? true : false;
 		} else {
-			$is_chooser = false;
-			$richtext = false;
+			$is_chooser = $richtext = false;
 		}
 		if ( !is_object($value) ) {
 			if ( strpos( $template, "{".$key ) !== false ) { // only check for tag parts that exist
@@ -481,7 +519,19 @@ function mcm_draw_template( $array=array(), $template='' ) {
 }
 
 function mcm_is_chooser( $key ) {
-	// determine whether a given key is a media chooser data type
+	return mcm_is_type( $key, 'chooser' );
+}
+
+function mcm_is_post_relation( $key ) {
+	return mcm_is_type( $key, 'post-relation' );
+}
+	
+function mcm_is_user_relation( $key ) {
+	return mcm_is_type( $key, 'user-relation' );
+}
+
+function mcm_is_type( $key, $type ) {
+	// determine whether a given key is a specific data type
 	global $mcm_fields;
 	$check = $found = false;
 	foreach ( $mcm_fields as $k=>$v ) {
@@ -490,7 +540,7 @@ function mcm_is_chooser( $key ) {
 				$found = true;
 			}
 			if ( $found ) {
-				$check = ( $field[3] == 'chooser' )?true:false;
+				$check = ( $field[3] == $type ) ? true : false;
 				return $check;
 			}
 		}

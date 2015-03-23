@@ -51,13 +51,67 @@ function mcm_enqueue_admin_scripts() {
 		if ( function_exists('wp_enqueue_media') && !did_action( 'wp_enqueue_media' ) ) {
 			wp_enqueue_media();
 		}
+		wp_enqueue_style( 'mcm-posts', plugins_url( 'mcm-post.css', __FILE__ ) );		
 		wp_enqueue_script( 'mcm-admin-script', plugins_url( 'js/uploader.js', __FILE__ ), array( 'jquery' ) );
 		wp_localize_script( 'mcm-admin-script', 'thumbHeight', get_option( 'thumbnail_size_h' ) );
+		wp_enqueue_script( 'jquery-ui-autocomplete' );
+		wp_enqueue_script( 'mcm.autocomplete', plugins_url( 'js/autocomplete.js', __FILE__ ), array( 'jquery', 'jquery-ui-autocomplete' ) );
+		wp_localize_script( 'mcm.autocomplete', 'mcm_post_ajax_action', 'mcm_post_lookup' );		
+		wp_localize_script( 'mcm.autocomplete', 'mcm_user_ajax_action', 'mcm_user_lookup' );		
+		wp_localize_script( 'mcm.autocomplete', ' mcm_i18n', array( 'selected' => __( 'Selected', 'my-content-management' ) ) );		
 	}
 }
+
+
+add_action( 'wp_ajax_mcm_post_lookup', 'mcm_post_lookup' );
+add_action( 'wp_ajax_mcm_user_lookup', 'mcm_user_lookup' );
+function mcm_post_lookup() {
+	if ( isset( $_REQUEST['term'] ) ) {
+		$args = array(
+			's'         => $_REQUEST['term']
+		);
+		if ( isset( $_REQUEST['post_type'] ) && $_REQUEST['post_type'] != '' ) {
+			$args['post_type'] = $_REQUEST['post_type'];
+		}
+		$posts       = get_posts( apply_filters( 'mcm_filter_posts_autocomplete', $args ) );
+		$suggestions = array();
+		foreach ( $posts as $post ) {
+			setup_postdata( $post );
+			$suggestion          = array();
+			$suggestion['value'] = esc_html( $post->post_title );
+			$suggestion['id']    = $post->ID;
+			$suggestions[]       = $suggestion;
+		}
+
+		echo $_GET["callback"] . "(" . json_encode( $suggestions ) . ")";
+		exit;
+	}
+}
+
+function mcm_user_lookup() {
+	if ( isset( $_REQUEST['term'] ) ) {
+		$args = array();
+		if ( isset( $_REQUEST['role'] ) && $_REQUEST['role'] != '' ) {
+			$args['role'] = $_REQUEST['role'];
+		}
+		$args = apply_filters( 'mcm_filter_user_autocomplete', $args );
+		$users = get_users( $args );
+		$suggestions = array();
+		foreach ( $users as $user ) {
+			$suggestion          = array();
+			$suggestion['value'] = esc_html( $user->user_login );
+			$suggestion['id']    = $user->ID;
+			$suggestions[]       = $suggestion;
+		};
+
+		echo $_GET["callback"] . "(" . json_encode( $suggestions ) . ")";
+		exit;
+	}
+}
+
 //Shortcode
-function mcm_show_posts($atts) {
-	extract(shortcode_atts(array(
+function mcm_show_posts( $atts ) {
+	$args =shortcode_atts( array(
 				'type' => 'page',
 				'display' => 'excerpt',
 				'taxonomy' => 'all',
@@ -77,11 +131,11 @@ function mcm_show_posts($atts) {
 				'id' => false,
 				'custom_wrapper'=>'div',
 				'custom' => false
-			), $atts, 'my_content' ));
+			), $atts, 'my_content' );
 			if ( isset( $_GET['mcm'] ) && isset( $_GET['mcm_value'] ) ) {
-				${$_GET['mcm']} = sanitize_text_field($_GET['mcm_value']);
+				$args[ $_GET['mcm'] ] = sanitize_text_field( $_GET['mcm_value'] );
 			}
-	return mcm_get_show_posts( $type, $display, $taxonomy, $term, $count, $order, $direction, $meta_key, $template, $cache, $offset, $id, $custom_wrapper, $custom, $operator, $year, $month, $week, $day );
+	return mcm_get_show_posts( $args );
 }
 
 add_action('post_edit_form_tag', 'mcm_post_edit_form_tag');
@@ -160,6 +214,13 @@ function mcm_reverse_date_data( $data, $key ) {
 	return $data;
 }
 
+add_action('template_include', 'mcm_get_current_template', 1000);
+function mcm_get_current_template( $template ) {
+    $GLOBALS['current_theme_template'] = basename( $template );
+
+    return $template;
+}
+
 // filter to auto replace content with full template
 add_filter( 'the_content','mcm_replace_content', 10, 2 );
 function mcm_replace_content( $content, $id=false ) {
@@ -171,8 +232,8 @@ function mcm_replace_content( $content, $id=false ) {
 	$enabled = $mcm_options['enabled'];
 	if ( $enabled && is_singular( $enabled ) ) {
 		$id = get_the_ID();
-		$template = mcm_get_single_post( $post_type, $id );
-		return $template;
+		$custom = mcm_get_single_post( $post_type, $id );
+		return $custom;
 	} else {
 		return $content;
 	}
@@ -468,7 +529,6 @@ function mcm_add_scripts() {
 	}
 	wp_localize_script( 'mcm.tabs', 'firstItem', $mcm_selected );
 }
-
 
 function mcm_settings_page() {
 	global $mcm_enabled;
@@ -990,7 +1050,7 @@ function mcm_show_support_box() {
 add_action( 'admin_menu','mcm_add_fields_pages');
 function mcm_add_fields_pages() {
     if ( function_exists( 'add_submenu_page' ) ) {
-		$post_types = get_post_types( '','object' );
+		$post_types = get_post_types( array( 'public'=>true, 'show_ui'=>true ),'object' );
 		$submenu_page = add_submenu_page( "edit.php", __( "Posts > My Content Management > Custom Fields", 'my-content-management' ), __( "Custom Fields",'my-content-management' ), 'manage_options', "post_fields", 'mcm_assign_custom_fields' );
 		add_action( 'admin_head-'. $submenu_page, 'mcm_styles' );		
 		foreach ( $post_types as $type ) {
@@ -998,28 +1058,10 @@ function mcm_add_fields_pages() {
 			if ( $name != 'acf' ) {
 				$label = $type->labels->name;
 				$submenu_page = add_submenu_page( "edit.php?post_type=$name", sprintf( __( "%s > My Content Management > Custom Fields",'my-content-management' ),$label ), __( "Custom Fields", 'my-content-management' ), 'manage_options', $name."_fields", 'mcm_assign_custom_fields' );
-			add_action( 'admin_head-'. $submenu_page, 'mcm_styles' );
+				add_action( 'admin_head-'. $submenu_page, 'mcm_styles' );
 			}
 		}
     }
-}
-
-add_action( 'admin_head', 'mcm_admin_style' );
-function mcm_admin_style() {
-?>
-<style type='text/css'>
-#normal-sortables .mcm_field { float: left; width:50%; }
-#normal-sortables .mcm_post_fields .wp-editor-wrap { float: none; clear: both; }
-.mcm_post_fields .mcm-chooser-image { display: inline-block; position: relative; }
-.mcm_post_fields .mcm-delete { display: inline-block; background-color: rgba( 255, 255, 255, .7 ); padding: 2px; outline: 1px solid #fff; line-height: 1; }
-.mcm_post_fields .mcm-delete:hover { background-color: #fff; outline: 1px solid #933; }
-.mcm_post_fields .mcm-delete input { margin-left: 2px; margin-top: -1px;}
-.mcm_post_fields .mcm-chooser-image .mcm-delete { position: absolute; left: 0; width: 100%; padding: 2px 0; }
-.mcm_rich_text_area em { display: block; margin-bottom: 10px; }
-.mcm_rich_text_area { margin-bottom : 10px;}
-.mcm_post_fields .block:nth-of-type(even) { background: #fff;}
-</style>
-<?php
 }
 
 function mcm_assign_custom_fields() {
@@ -1155,7 +1197,39 @@ function mcm_post_type_relation( $key, $choices ) {
 		}
 		$list .= "<option value='$types'$selected>$types</option>";
 	}
-	$output .= "<select id='mcm_field_options$key' name='mcm_field_options[]'>$list</select>";
+	$output .= "
+	<select id='mcm_field_options$key' name='mcm_field_options[]'>
+		<option value=''> -- </option>
+		$list
+	</select>";
+	return $output;
+}
+
+/* Clone of wp_dropdown_roles, except it returns. */
+function mcm_dropdown_roles( $selected = false ) {
+	$p = '';
+	$r = '';
+	
+	$editable_roles = array_reverse( get_editable_roles() );
+	
+	foreach ( $editable_roles as $role => $details ) {
+		$name = translate_user_role( $details['name'] );
+		if ( $selected == $role ) {
+			$p = "\n\t<option selected='selected' value='" . esc_attr($role) . "'>$name</option>";
+		} else {
+			$r .= "\n\t<option value='" . esc_attr($role) . "'>$name</option>";
+		}
+	}
+	return $p . $r;
+}
+
+function mcm_user_type_relation( $key, $choices ) {
+	$list = mcm_dropdown_roles( $choices );
+	$output = "
+	<select id='mcm_field_options$key' name='mcm_field_options[]'>
+		<option value=''> -- </option>
+		$list
+	</select>";
 	return $output;
 }
 
@@ -1174,7 +1248,7 @@ function mcm_get_fieldset( $fieldset=false ) {
 		$fieldset_title = '';
 	}
 	$form = $fieldset_title.'<table class="widefat"><thead><tr><th scope="col">'.__('Move','my-content-management').'</th><th scope="col">'.__('Field Label','my-content-management').'</th><th scope="col">'.__('Input Type','my-content-management').'</th><th scope="col">Description/Options</th><th scope="col">'.__('Repeatable','my-content-management').'</th><th scope="col">'.__('Delete','my-content-management').'</th></tr></thead><tbody>';
-	$odd = 'odd'; 
+	$odd = 'odd';
 	if ( isset( $option['fields'][$fieldset] ) ) {
 		$fields = ( $fieldset )?$option['fields'][urldecode($fieldset)]:'';
 	}
@@ -1191,7 +1265,8 @@ function mcm_get_fieldset( $fieldset=false ) {
 			'time'=>__('Time / HTML5','my-content-management'),
 			'url'=>__('URL / HTML5','my-content-management'),
 			'email'=>__('Email / HTML5','my-content-management'),
-			'post-relation'=>__( 'Related Posts', 'my-content-management' )
+			'post-relation'=>__( 'Related Posts', 'my-content-management' ),
+			'user-relation'=>__( 'Related Users', 'my-content-management' )
 		);	
 	if ( $fieldset && isset( $option['fields'][$fieldset] ) ) {
 		if ( count( $fields ) > 0 ) {
@@ -1212,6 +1287,9 @@ function mcm_get_fieldset( $fieldset=false ) {
 				} else if ( $value[3] == 'post-relation' ) { 
 					$labeled = __( "Related post type", 'my-content-management' );
 					$choice_field = mcm_post_type_relation( $key, $choices );
+				} else if ( $value[3] == 'user-relation' ) { 
+					$labeled = __( "Related user", 'my-content-management' );
+					$choice_field = mcm_user_type_relation( $key, $choices );
 				} else {
 					$labeled = __( "Additional Text",'my-content-management' ); 
 					$choice_field = "<input type='text' name='mcm_field_options[]' id='mcm_field_options$key' value='$choices' />";

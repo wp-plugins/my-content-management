@@ -3,7 +3,7 @@ Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebars, content management
 Requires at least: 3.7.0
-Tested up to: 4.0
+Tested up to: 4.1.1
 License: GPLv2 or later
 Text domain: my-content-management
 Stable tag: 1.4.15
@@ -15,9 +15,13 @@ My Content Management creates a set of custom post types, each with a custom tax
 
 In addition to the default post types and field groups, you can create new custom post types, create new groups of custom fields, and edit the post types and custom field groups that are built in.
 
-[Purchase the User's Guide](http://www.joedolson.com/my-content-management/guide/), which offers 25+ pages of detailed information on how to set up, use, and customize My Content Management.
-
 There's no default styling in My Content Management, so you won't have any problems with conflicts between the plug-in and your theme. There is default HTML, but it can be 100% replaced through the included templating system, or by creating your own theme template documents to display these specific content types. 
+
+= Help Support Future Development! =
+
+[Buy the User's Guide](http://www.joedolson.com/my-content-management/guide/), which offers 25+ pages of detailed information on how to set up, use, and customize My Content Management.
+
+= How to Use My Content Management =
 
 All content can be displayed using the shortcode [my_content type='custom_post_type']. Other supported attributes include:
 
@@ -63,6 +67,21 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 = 1.5.0 =
 
 * Feature: repeatable field groups [todo]
+* Feature: Save post meta in revisions: https://johnblackbourn.com/post-meta-revisions-wordpress [todo]
+* Feature: Add user and post template tags to pick up data from related posts/users [todo]
+
+= 1.4.16 =
+
+* Updated translation: French
+* Added size-specific classes to templated images
+* Bug fix: properly escape attributes in select dropdowns generated in custom field manager.
+* Bug fix: sort post relations by post title.
+* Bug fix: Could not set empty value for post relations.
+* New filter: 'mcm_post_relations' to alter argument values for list of posts.
+* New feature: related user to relate a user ID to a post.
+* Rewrite major function arguments to use arrays instead of individual variables.
+* Add filter to before arguments passed to WP_Query 'mcm_pre_query_args'.
+* Changed related users and related posts to autocomplete fields to better handle large data sets.
 
 = 1.4.15 =
 
