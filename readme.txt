@@ -6,7 +6,7 @@ Requires at least: 3.7.0
 Tested up to: 4.1.1
 License: GPLv2 or later
 Text domain: my-content-management
-Stable tag: 1.4.15
+Stable tag: 1.4.16
 
 Creates common custom post types for advanced content management: FAQ, Testimonials, people (staff, contributors, etc.), and others!
 
@@ -407,4 +407,4 @@ I removed the Glossary Filter plug-in from the My Content Management package in 
 
 == Upgrade Notice ==
 
-* 1.4.11: Bug fix in widget
+* 1.4.16: New field: related user.
