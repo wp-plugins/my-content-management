@@ -93,7 +93,20 @@ class mcm_posts_widget extends WP_Widget {
 		} else {
 			$template = $wrapper = $unwrapper = '';
 		}
-		$custom = mcm_get_show_posts( $post_type, $display, $taxonomy, $term, $count, $order, $direction, '', $template, false, false, false, 'div', '','IN' );
+		$args = array( 
+					'type' => $post_type, 
+					'display' => $display, 
+					'taxonomy' => $taxonomy, 
+					'term' => $term, 
+					'count' => $count, 
+					'order' => $order, 
+					'direction' => $direction, 
+					'template' => $template, 
+					'custom_wrapper' => 'div', 
+					'operator' => 'IN'
+				);
+		$args = apply_filters( 'mcm_custom_posts_widget_args', $args );
+		$custom = mcm_get_show_posts( $args );
 		echo $before_widget;
 		echo $widget_title;
 		echo $wrapper;
@@ -134,23 +147,23 @@ class mcm_posts_widget extends WP_Widget {
 		</p>	
 		<p>
 		<label for="<?php echo $this->get_field_id('display'); ?>"><?php _e('Template','my-content-management'); ?></label> <select id="<?php echo $this->get_field_id('display'); ?>" name="<?php echo $this->get_field_name('display'); ?>">
-			<option value='list'<?php echo ($display == 'list')?' selected="selected"':''; ?>><?php _e('List','my-content-management'); ?></option>
-			<option value='excerpt'<?php echo ($display == 'excerpt')?' selected="selected"':''; ?>><?php _e('Excerpt','my-content-management'); ?></option>
-			<option value='full'<?php echo ($display == 'full')?' selected="selected"':''; ?>><?php _e('Full','my-content-management'); ?></option>
-			<option value='custom'<?php echo ($display == 'custom')?' selected="selected"':''; ?>><?php _e('Custom','my-content-management'); ?></option>
+			<option value='list'<?php selected( $display, 'list' ); ?>><?php _e('List','my-content-management'); ?></option>
+			<option value='excerpt'<?php selected( $display, 'excerpt' ); ?>><?php _e('Excerpt','my-content-management'); ?></option>
+			<option value='full'<?php selected( $display, 'full' ); ?>><?php _e('Full','my-content-management'); ?></option>
+			<option value='custom'<?php selected( $display, 'custom' ); ?>><?php _e('Custom','my-content-management'); ?></option>
 		</select>
 		</p>
 		<p>
 		<label for="<?php echo $this->get_field_id('order'); ?>"><?php _e('Display order','my-content-management'); ?></label> <select id="<?php echo $this->get_field_id('order'); ?>" name="<?php echo $this->get_field_name('order'); ?>">
-			<option value='menu_order'<?php echo ($order == 'menu_order')?' selected="selected"':''; ?>><?php _e('Menu Order','my-content-management'); ?></option>
-			<option value='none'<?php echo ($order == 'none')?' selected="selected"':''; ?>><?php _e('None','my-content-management'); ?></option>
-			<option value='ID'<?php echo ($order == 'ID')?' selected="selected"':''; ?>><?php _e('Post ID','my-content-management'); ?></option>
-			<option value='author'<?php echo ($order == 'author')?' selected="selected"':''; ?>><?php _e('Author','my-content-management'); ?></option>
-			<option value='title'<?php echo ($order == 'title')?' selected="selected"':''; ?>><?php _e('Post Title','my-content-management'); ?></option>
-			<option value='date'<?php echo ($order == 'date')?' selected="selected"':''; ?>><?php _e('Post Date','my-content-management'); ?></option>
-			<option value='modified'<?php echo ($order == 'modified')?' selected="selected"':''; ?>><?php _e('Post Modified Date','my-content-management'); ?></option>
-			<option value='rand'<?php echo ($order == 'rand')?' selected="selected"':''; ?>><?php _e('Random','my-content-management'); ?></option>
-			<option value='comment_count'<?php echo ($order == 'comment_count')?' selected="selected"':''; ?>><?php _e('Number of comments','my-content-management'); ?></option>	
+			<option value='menu_order'<?php selected( $order, 'menu_order' ); ?>><?php _e('Menu Order','my-content-management'); ?></option>
+			<option value='none'<?php selected( $order, 'none' ); ?>><?php _e('None','my-content-management'); ?></option>
+			<option value='ID'<?php selected( $order, 'id' ); ?>><?php _e('Post ID','my-content-management'); ?></option>
+			<option value='author'<?php selected( $order, 'author' ); ?>><?php _e('Author','my-content-management'); ?></option>
+			<option value='title'<?php selected( $order, 'title' ); ?>><?php _e('Post Title','my-content-management'); ?></option>
+			<option value='date'<?php selected( $order, 'date' ); ?>><?php _e('Post Date','my-content-management'); ?></option>
+			<option value='modified'<?php selected( $order, 'modified' ); ?>><?php _e('Post Modified Date','my-content-management'); ?></option>
+			<option value='rand'<?php selected( $order, 'rand' ); ?>><?php _e('Random','my-content-management'); ?></option>
+			<option value='comment_count'<?php selected( $order, 'comment_count' ); ?>><?php _e('Number of comments','my-content-management'); ?></option>	
 		</select>
 		</p>
 		<p>

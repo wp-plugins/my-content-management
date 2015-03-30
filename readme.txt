@@ -70,6 +70,10 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 * Feature: Save post meta in revisions: https://johnblackbourn.com/post-meta-revisions-wordpress [todo]
 * Feature: Add user and post template tags to pick up data from related posts/users [todo]
 
+= 1.4.17 =
+
+* Bug fix: broken posts widget in 1.4.16; change in major function arguments not applied in widget.
+
 = 1.4.16 =
 
 * Updated translation: French
