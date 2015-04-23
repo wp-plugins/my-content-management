@@ -3,7 +3,7 @@ Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebars, content management
 Requires at least: 3.7.0
-Tested up to: 4.1.1
+Tested up to: 4.2
 License: GPLv2 or later
 Text domain: my-content-management
 Stable tag: 1.4.17
@@ -69,6 +69,12 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 * Feature: repeatable field groups [todo]
 * Feature: Save post meta in revisions: https://johnblackbourn.com/post-meta-revisions-wordpress [todo]
 * Feature: Add user and post template tags to pick up data from related posts/users [todo]
+
+= 1.4.18 =
+
+* Fix to issues with [my_archive] shortcode.
+* Add option to disable post filters in [my_content] and [my_archive] shortcode. (Attribute: post_filters=true).
+* Disabled post filters by default in [my_archive] shortcode for major speed increase.
 
 = 1.4.17 =
 

@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/my-content-management/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.4.17
+Version: 1.4.18
 */
 /*  Copyright 2011-2014  Joe Dolson (email : joe@joedolson.com)
 
@@ -25,7 +25,7 @@ Version: 1.4.17
 */
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-$mcm_version = '1.4.17';
+$mcm_version = '1.4.18';
 // Enable internationalisation
 load_plugin_textdomain( 'my-content-management', false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
 
@@ -144,52 +144,74 @@ function mcm_post_edit_form_tag() {
 }
 
 function mcm_show_archive($atts) {
-	extract(shortcode_atts(array(
-				'type' => false,
-				'display' => 'list',
-				'taxonomy' => false,
-				'count' => -1,
-				'order' => 'menu_order',
-				'direction' => 'DESC',
-				'meta_key' => '',
-				'exclude' => '',
-				'include' => '',
-				'template' => '',
-				'offset' => '',
-				'cache' => false,
-				'show_links' => false,
-				'custom_wrapper' => 'div',
-				'custom' => false,
-				'year' => '',
-				'month' => '',
-				'week' => '',
-				'day' => ''
-			), $atts, 'my_archive' ) );
-			if ( !$type || !$taxonomy ) return;
-		$args = apply_filters( 'mcm_archive_taxonomies', array(), $atts );
-		$terms = get_terms( $taxonomy, $args );
-		$output = '';
-		$linker = "<ul class='archive-links'>";
-		$exclude = explode(',',$exclude);
-		$include = explode(',',$include);
-		if ( is_array($terms) ) {
-			foreach ( $terms as $term ) {
-				$taxo = $term->name;
-				$tax = $term->slug;
-				$tax_class = sanitize_title($tax);
-				if ( (!empty($exclude) && $exclude[0] != '' && !in_array( $tax, $exclude ))
-					|| (!empty($include) && $include[0]!='' && in_array($tax, $include))
-					|| $exclude[0]=='' && $include[0]=='' ) {
-					$linker .= "<li><a href='#$tax_class'>$taxo</a></li>";
-					$output .= "\n<div class='archive-group'>";
-					$output .= "<h2 class='$tax_class' id='$tax_class'>$taxo</h2>";
-					$output .= mcm_get_show_posts( $type, $display, $taxonomy, $tax, $count, $order, $direction, $meta_key, $template, $cache, $offset, false, $custom_wrapper, $custom, 'IN', $year, $month, $week, $day );
-					$output .= "</div>\n";
-				}
+	extract( shortcode_atts( array(
+			'type' => false,
+			'display' => 'list',
+			'taxonomy' => false,
+			'count' => -1,
+			'order' => 'menu_order',
+			'direction' => 'DESC',
+			'meta_key' => '',
+			'exclude' => '',
+			'include' => '',
+			'template' => '',
+			'offset' => '',
+			'cache' => false,
+			'show_links' => false,
+			'custom_wrapper' => 'div',
+			'custom' => false,
+			'year' => '',
+			'month' => '',
+			'week' => '',
+			'day' => ''
+		), $atts, 'my_archive' ) );
+	if ( !$type || !$taxonomy ) return;
+	$args = apply_filters( 'mcm_archive_taxonomies', array(), $atts );
+	$terms = get_terms( $taxonomy, $args );
+	$output = '';
+	$linker = "<ul class='archive-links'>";
+	$exclude = explode(',',$exclude);
+	$include = explode(',',$include);
+	if ( is_array($terms) ) {
+		foreach ( $terms as $term ) {
+			$taxo = $term->name;
+			$tax = $term->slug;
+			$tax_class = sanitize_title($tax);
+			if ( (!empty($exclude) && $exclude[0] != '' && !in_array( $tax, $exclude ))
+				|| (!empty($include) && $include[0]!='' && in_array($tax, $include))
+				|| $exclude[0]=='' && $include[0]=='' ) {
+				$linker .= "<li><a href='#$tax_class'>$taxo</a></li>";
+				$output .= "\n<div class='archive-group'>";
+				$output .= "<h2 class='$tax_class' id='$tax_class'>$taxo</h2>";
+				$args = array(
+					'type' => $type,
+					'display' => $display,
+					'taxonomy' => $taxonomy,
+					'term' => $tax,
+					'count' => $count,
+					'order' => $order,
+					'direction' => $direction,
+					'meta_key' => $meta_key,
+					'template' => $template,
+					'cache' => $cache, 
+					'offset' => $offset,
+					'id' => false,
+					'custom_wrapper' => $custom_wrapper,
+					'custom' => $custom,
+					'operator' => 'IN',
+					'year' => $year,
+					'month' => $month,
+					'week' => $week,
+					'day' => $day,
+					'post_filter' => false
+				);
+				$output .= mcm_get_show_posts( $args );
+				$output .= "</div>\n";
 			}
-		$linker .= "</ul>";
 		}
-		if ( $show_links == false ) { $linker = ''; } else { $linker = $linker; }
+	$linker .= "</ul>";
+	}
+	if ( $show_links == false ) { $linker = ''; } else { $linker = $linker; }
 	return $linker . $output;
 }
 

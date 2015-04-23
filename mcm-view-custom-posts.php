@@ -71,7 +71,8 @@ function mcm_get_show_posts( $atts ) {
 					'year'			=> '',
 					'month'			=> '',
 					'week'			=> '',
-					'day'			=> ''
+					'day'			=> '',
+					'post_filter'   => true
 				);
 	$atts = wp_parse_args( $atts, $defaults );
 	foreach ( $atts as $key => $att ) {
@@ -87,230 +88,232 @@ function mcm_get_show_posts( $atts ) {
 	if ( $the_cache ) {
 		return $the_cache;
 	} else {
-	$keys = array_keys($types);
-	$mcm = true;
-	// check if this post type is coming from MCM
-	$post_types = explode( ',', $type );
-	$types = array();
-	foreach ( $post_types as $t ) {
-		if ( !in_array( $t,$keys,true ) && in_array( 'mcm_'.$t,$keys,true ) ) {
-			$types[] = 'mcm_'.$t;
-		} else {
-			$types[] = $t;
-		}
-	}
-
-	if ($taxonomy != 'all') {
-		$taxonomies = explode( ',', $taxonomy );
-		$taxes = array();
-		foreach ( $taxonomies as $tax ) {
-			$search = array( 'category_' );
-			$tax_root = str_replace( $search,'',$taxonomy );
-			if ( in_array( $tax_root, $keys, true ) ) { 
-				$taxes[] = $tax; 
+		$keys = array_keys($types);
+		$mcm = true;
+		// check if this post type is coming from MCM
+		$post_types = explode( ',', $type );
+		$types = array();
+		foreach ( $post_types as $t ) {
+			if ( !in_array( $t,$keys,true ) && in_array( 'mcm_'.$t,$keys,true ) ) {
+				$types[] = 'mcm_'.$t;
 			} else {
-				if ( in_array( 'mcm_'.$tax_root,$keys,true ) ) {
-					$taxes[] = 'mcm_'.$tax;
+				$types[] = $t;
+			}
+		}
+
+		if ($taxonomy != 'all') {
+			$taxonomies = explode( ',', $taxonomy );
+			$taxes = array();
+			foreach ( $taxonomies as $tax ) {
+				$search = array( 'category_' );
+				$tax_root = str_replace( $search,'',$taxonomy );
+				if ( in_array( $tax_root, $keys, true ) ) { 
+					$taxes[] = $tax; 
 				} else {
-					$taxes[] = $tax;
+					if ( in_array( 'mcm_'.$tax_root,$keys,true ) ) {
+						$taxes[] = 'mcm_'.$tax;
+					} else {
+						$taxes[] = $tax;
+					}
 				}
 			}
 		}
-	}
-	$primary = $types[0];
-	if ( !in_array($primary,$keys,true) && !in_array('mcm_'.$primary,$keys,true ) ) {
-		$wrapper = ( $template != '' ) ? $template : 'mcm_people';
-		$mcm = false;
-	} else {
-		$wrapper = ( $template != '' ) ? $template : $primary;
-	}	
-	// get wrapper element
-	if ( $display == 'custom' ) {
-		$elem = '';
-		$wrapper = $template;
-	} else {
-		$elem = ( isset($templates[$wrapper]['wrapper']['list'][$display]) )?$templates[$wrapper]['wrapper']['list'][$display]:'div';	
-	}
-	$wrapper = trim( $wrapper );
-	$column = 'odd';
-	$return = '';
-	
-	if ( $id == false ) {
-		// set up arguments for loop
-		wp_reset_query();
-		$args = array( 'post_type' => $types, 'posts_per_page'=>$count, 'orderby'=>$order, 'order'=>$direction );
-		if ( $year != '' ) { $args['year'] = (int) $year; }
-		if ( $month != '' ) { $args['monthnum'] = (int) $month; }
-		if ( $day != '' ) { $args['day'] = (int) $day; }
-		if ( $week != '' ) { $args['w'] = (int) $week; }
-		if ( $offset != false ) { $args['offset']= (int) $offset; }
-		// if there is a taxonomy, and there's a term, but just one taxonomy
-		if ($taxonomy != 'all' && strpos( $taxonomy, ',') === false ) {
-			if ( $term == '' ) {
-				// don't include the query if no terms
-			} else {
-				if ( strpos($term, ',' ) !== false ) {
-					$term = explode( ',',$term );
-				}
-				if ( $term == 'null' ) { $term = array(null); }
-				$args['tax_query'] = array( array( 'taxonomy' => $taxes[0], 'field' => 'slug', 'terms' => $term, 'operator'=>$operator ) ); 
-			}
-		}
-		// if there are multiple taxonomies and multiple terms
-		if ( strpos( $taxonomy, ',' ) !== false && strpos($term, ',' ) !== false ) {
-			$terms = explode( ',', $term );
-			$i = 0;
-			$tax_query = array();
-			foreach ( $taxes as $t ) {
-				$array = array( 'taxonomy' => $t, 'field' => 'slug', 'terms' => $terms[$i], 'operator'=>$operator );
-				$tax_query[] = $array;
-				$i++;
-			}
-			$tax_query['relation']='AND';
-			$args['tax_query'] = $tax_query; 
-		}
-		// if there's a single taxonomy and multiple terms
-		if ( strpos( $taxonomy, ',' ) === false && ( is_array( $term ) || strpos($term, ',' ) !== false ) ) {
-			if ( !is_array( $term ) ) { $terms = explode( ',', $term ); } else { $terms = $term; }
-			$i = 0;
-			$tax_query = array();
-			foreach ( $terms as $t ) {
-				$array = array( 'taxonomy' => $taxonomy, 'field' => 'slug', 'terms' => $terms[$i], 'operator'=>$operator );
-				$tax_query[] = $array;
-				$i++;
-			}
-			$tax_query['relation']='AND';
-			$args['tax_query'] = $tax_query;
-		}		
-
-		if ( $order == 'meta_value' || $order == 'meta_value_num' ) { $args['meta_key'] = $meta_key; }
-		
-		$debug = false;
-		if ( $debug ) {
-			echo "<pre>";
-			print_r( $args );
-			echo "</pre>";
-		}
-		$args = apply_filters( 'mcm_pre_query_args', $args, $atts );
-		$loop = new WP_Query( $args );
-		$last_term = false;
-		$last_post = false;
-		$first = true;
-		while ( $loop->have_posts() ) : $loop->the_post();
-			global $post;
-			$p = array();
-			$id = get_the_ID();
-			$p['id'] = $id;
-			$p['slug'] = $post->post_name;
-			$p['post_type'] = get_post_type( $id );
-			$p['permalink'] = get_permalink();
-			$p['link_title'] = "<a href='".get_permalink()."'>".get_the_title()."</a>";			
-			$p['title'] = get_the_title();			
-			$p['excerpt'] = wpautop( get_the_excerpt() );
-			$p['excerpt_raw'] = get_the_excerpt();
-			remove_filter('the_content','mcm_replace_content');
-			$p['content'] = apply_filters('the_content',get_the_content(), get_the_ID() );
-			add_filter('the_content','mcm_replace_content');
-			$p['content_raw'] = get_the_content();
-			$sizes = get_intermediate_image_sizes();
-			foreach ( $sizes as $size ) {
-				$p[$size] = get_the_post_thumbnail( get_the_ID(), $size, array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
-			}
-			$p['full'] = get_the_post_thumbnail( $id, 'full', array( 'class'=>'mcm_large', 'alt'=>trim( strip_tags( get_the_title( $id ) ) ), 'title'=>'' ) );
-			$p['shortlink'] = wp_get_shortlink();
-			$p['modified'] = get_the_modified_date();
-			$p['date'] = get_the_time( get_option('date_format') );
-			$p['fulldate'] = get_the_time( 'F j, Y' );
-			$p['author'] = get_the_author();
-			$p['edit_link'] = get_edit_post_link($id) ? "<a href='".get_edit_post_link($id)."'>".__( 'Edit', 'my-content-management' )."</a>" : "";	
-				$postclass = implode( ' ',get_post_class() );
-			$p['postclass'] = $postclass;
-			$p['terms'] = ($taxonomy != 'all')?get_the_term_list( $id, $taxonomy,'',', ','' ):get_the_term_list( $id, "mcm_category_$primary", '', ', ', '' );
-			$custom_fields = get_post_custom();
-			// use this filter to customize treatment of custom fields in MCM data array.
-			$p = apply_filters('mcm_custom_fields', $p, $custom_fields );
-			// use this filter to insert any additional custom template tags required		
-			$p = apply_filters('mcm_extend_posts', $p, $custom );
-			// This filter is used to insert alphabetical headings. You can probably find another use for it.
-			$return = apply_filters( 'mcm_filter_posts',$return, $p, $last_term, $elem, $type, $first, $last_post, $custom );
-			$first = false;
-			$last_term = get_the_title();
-			$last_post = $p;
-			$this_post = mcm_run_template( $p, $display, $column, $wrapper );
-			$return .= apply_filters('mcm_filter_post',$this_post, $p, $custom );
-			switch ($column) {
-				case 'odd':	$column = 'even';	break;
-				case 'even': $column = 'odd';	break;
-			}
-		endwhile;
-		wp_reset_postdata();
-	} else {
-		$ids = explode(",",$id);
-		foreach ( $ids as $v ) {
-			$the_post = get_post( $v );
-			$p['id'] = $the_post->ID;
-			$p['slug'] = $the_post->post_name;
-			$p['post_type'] = get_post_type( $the_post->ID );			
-			$p['excerpt'] = wpautop( $the_post->post_excerpt );
-			$p['excerpt_raw'] = $the_post->post_excerpt;
-			//$p['content'] = do_shortcode( wpautop( $the_post->post_content ) );
-			remove_filter('the_content','mcm_replace_content');
-			$p['content'] = apply_filters('the_content', $the_post->post_content, $the_post->ID );	
-			add_filter('the_content','mcm_replace_content');
-			$p['content_raw'] = $the_post->post_content;
-			$sizes = get_intermediate_image_sizes();
-			foreach ( $sizes as $size ) {
-				$class = sanitize_title( 'mcm-' . $size );
-				$p[$size] = get_the_post_thumbnail( $the_post->ID, $size, array( 'class'=>$class, 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
-			}
-			$p['full'] = get_the_post_thumbnail( $the_post->ID, 'full', array( 'class'=>'mcm-full', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
-			$p['permalink'] = get_permalink( $the_post->ID );
-			$p['link_title'] = "<a href='".get_permalink( $the_post->ID )."'>".$the_post->post_title."</a>";				
-			$p['title'] = $the_post->post_title;
-			$p['shortlink'] = wp_get_shortlink( $the_post->ID );
-			$p['modified'] = date( get_option('date_format'), strtotime( $the_post->post_modified ) );
-			$p['date'] = date( get_option('date_format'), strtotime( $the_post->post_date ) );
-			$p['fulldate'] = date( 'F j, Y', strtotime( $the_post->post_date ) );		
-			$p['author'] = get_the_author_meta( 'display_name', $the_post->post_author );
-			$p['edit_link'] = get_edit_post_link($the_post->ID) ? "<a href='".get_edit_post_link($the_post->ID)."'>".__( 'Edit', 'my-content-management' )."</a>" : "";
-			$postclass = implode( ' ',get_post_class( '',$the_post->ID ) );
-			$p['postclass'] = $postclass;				
-			$p['terms'] = ($taxonomy != 'all')?get_the_term_list( $the_post->ID, $taxonomy,'',', ','' ):get_the_term_list( $id, "mcm_category_$primary", '', ', ', '' );
-			$custom_fields = get_post_custom( $the_post->ID );
-			// use this filter to customize treatment of custom fields in MCM data array.
-			$p = apply_filters('mcm_custom_fields', $p, $custom_fields );
-			// use this filter to insert any additional custom template tags required		
-			$p = apply_filters('mcm_extend_posts', $p, $custom );		
-			$this_post = mcm_run_template( $p, $display, $column, $wrapper );			
-			$return .= apply_filters('mcm_filter_post',$this_post, $p, $custom );
-			switch ($column) {
-				case 'odd':	$column = 'even';	break;
-				case 'even': $column = 'odd';	break;
-			}
-		}
-	}
-	
-	if ( $elem != '' ) { $front = "<$elem class='list-wrapper'>"; $back = "</$elem>"; } else { $elem = $unelem = $front = $back = '';}
-	
-	if ( $return ) {
-		if ( $display != 'custom'  ) {
-		$return = "
-			<div class='mcm_posts $primary $display'>
-			$front
-				$return
-			$back
-			</div>";
+		$primary = $types[0];
+		if ( !in_array($primary,$keys,true) && !in_array('mcm_'.$primary,$keys,true ) ) {
+			$wrapper = ( $template != '' ) ? $template : 'mcm_people';
+			$mcm = false;
 		} else {
-			if ( $custom_wrapper != '' ) {
-				$return = "<$custom_wrapper class='mcm_posts $primary $display'>$return</$custom_wrapper>";
-			} else {
-				$return = $return;
+			$wrapper = ( $template != '' ) ? $template : $primary;
+		}	
+		// get wrapper element
+		if ( $display == 'custom' ) {
+			$elem = '';
+			$wrapper = $template;
+		} else {
+			$elem = ( isset($templates[$wrapper]['wrapper']['list'][$display]) )?$templates[$wrapper]['wrapper']['list'][$display]:'div';	
+		}
+		$wrapper = trim( $wrapper );
+		$column = 'odd';
+		$return = '';
+	
+		if ( $id == false ) {
+			// set up arguments for loop
+			wp_reset_query();
+			$args = array( 'post_type' => $types, 'posts_per_page'=>$count, 'orderby'=>$order, 'order'=>$direction );
+			if ( $year != '' ) { $args['year'] = (int) $year; }
+			if ( $month != '' ) { $args['monthnum'] = (int) $month; }
+			if ( $day != '' ) { $args['day'] = (int) $day; }
+			if ( $week != '' ) { $args['w'] = (int) $week; }
+			if ( $offset != false ) { $args['offset']= (int) $offset; }
+			// if there is a taxonomy, and there's a term, but just one taxonomy
+			if ($taxonomy != 'all' && strpos( $taxonomy, ',') === false ) {
+				if ( $term == '' ) {
+					// don't include the query if no terms
+				} else {
+					if ( strpos($term, ',' ) !== false ) {
+						$term = explode( ',',$term );
+					}
+					if ( $term == 'null' ) { $term = array(null); }
+					$args['tax_query'] = array( array( 'taxonomy' => $taxes[0], 'field' => 'slug', 'terms' => $term, 'operator'=>$operator ) ); 
+				}
+			}
+			// if there are multiple taxonomies and multiple terms
+			if ( strpos( $taxonomy, ',' ) !== false && strpos($term, ',' ) !== false ) {
+				$terms = explode( ',', $term );
+				$i = 0;
+				$tax_query = array();
+				foreach ( $taxes as $t ) {
+					$array = array( 'taxonomy' => $t, 'field' => 'slug', 'terms' => $terms[$i], 'operator'=>$operator );
+					$tax_query[] = $array;
+					$i++;
+				}
+				$tax_query['relation']='AND';
+				$args['tax_query'] = $tax_query; 
+			}
+			// if there's a single taxonomy and multiple terms
+			if ( strpos( $taxonomy, ',' ) === false && ( is_array( $term ) || strpos($term, ',' ) !== false ) ) {
+				if ( !is_array( $term ) ) { $terms = explode( ',', $term ); } else { $terms = $term; }
+				$i = 0;
+				$tax_query = array();
+				foreach ( $terms as $t ) {
+					$array = array( 'taxonomy' => $taxonomy, 'field' => 'slug', 'terms' => $terms[$i], 'operator'=>$operator );
+					$tax_query[] = $array;
+					$i++;
+				}
+				$tax_query['relation']='AND';
+				$args['tax_query'] = $tax_query;
+			}		
+
+			if ( $order == 'meta_value' || $order == 'meta_value_num' ) { $args['meta_key'] = $meta_key; }
+			
+			$debug = false;
+			if ( $debug ) {
+				echo "<pre>";
+				print_r( $args );
+				echo "</pre>";
+			}
+			$args = apply_filters( 'mcm_pre_query_args', $args, $atts );
+			$loop = new WP_Query( $args );
+			$last_term = false;
+			$last_post = false;
+			$first = true;
+			while ( $loop->have_posts() ) : $loop->the_post();
+				global $post;
+				$p = array();
+				$id = get_the_ID();
+				$p['id'] = $id;
+				$p['slug'] = $post->post_name;
+				$p['post_type'] = get_post_type( $id );
+				$p['permalink'] = get_permalink();
+				$p['link_title'] = "<a href='".get_permalink()."'>".get_the_title()."</a>";			
+				$p['title'] = get_the_title();			
+				$p['excerpt'] = wpautop( get_the_excerpt() );
+				$p['excerpt_raw'] = get_the_excerpt();
+				remove_filter('the_content','mcm_replace_content');
+				$p['content'] = apply_filters('the_content',get_the_content(), get_the_ID() );
+				add_filter('the_content','mcm_replace_content');
+				$p['content_raw'] = get_the_content();
+				$sizes = get_intermediate_image_sizes();
+				foreach ( $sizes as $size ) {
+					$p[$size] = get_the_post_thumbnail( get_the_ID(), $size, array( 'class'=>'', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
+				}
+				$p['full'] = get_the_post_thumbnail( $id, 'full', array( 'class'=>'mcm_large', 'alt'=>trim( strip_tags( get_the_title( $id ) ) ), 'title'=>'' ) );
+				$p['shortlink'] = wp_get_shortlink();
+				$p['modified'] = get_the_modified_date();
+				$p['date'] = get_the_time( get_option('date_format') );
+				$p['fulldate'] = get_the_time( 'F j, Y' );
+				$p['author'] = get_the_author();
+				$p['edit_link'] = get_edit_post_link($id) ? "<a href='".get_edit_post_link($id)."'>".__( 'Edit', 'my-content-management' )."</a>" : "";	
+					$postclass = implode( ' ',get_post_class() );
+				$p['postclass'] = $postclass;
+				$p['terms'] = ($taxonomy != 'all')?get_the_term_list( $id, $taxonomy,'',', ','' ):get_the_term_list( $id, "mcm_category_$primary", '', ', ', '' );
+				$custom_fields = get_post_custom();
+				// use this filter to customize treatment of custom fields in MCM data array.
+				$p = apply_filters('mcm_custom_fields', $p, $custom_fields );
+				// use this filter to insert any additional custom template tags required		
+				$p = apply_filters('mcm_extend_posts', $p, $custom );
+				// This filter is used to insert alphabetical headings. You can probably find another use for it.
+				if ( $post_filter == true ) {
+					$return = apply_filters( 'mcm_filter_posts',$return, $p, $last_term, $elem, $type, $first, $last_post, $custom );
+				}
+				$first = false;
+				$last_term = get_the_title();
+				$last_post = $p;
+				$this_post = mcm_run_template( $p, $display, $column, $wrapper );
+				$return .= apply_filters('mcm_filter_post',$this_post, $p, $custom );
+				switch ($column) {
+					case 'odd':	$column = 'even';	break;
+					case 'even': $column = 'odd';	break;
+				}
+			endwhile;
+			wp_reset_postdata();
+		} else {
+			$ids = explode(",",$id);
+			foreach ( $ids as $v ) {
+				$the_post = get_post( $v );
+				$p['id'] = $the_post->ID;
+				$p['slug'] = $the_post->post_name;
+				$p['post_type'] = get_post_type( $the_post->ID );			
+				$p['excerpt'] = wpautop( $the_post->post_excerpt );
+				$p['excerpt_raw'] = $the_post->post_excerpt;
+				//$p['content'] = do_shortcode( wpautop( $the_post->post_content ) );
+				remove_filter('the_content','mcm_replace_content');
+				$p['content'] = apply_filters('the_content', $the_post->post_content, $the_post->ID );	
+				add_filter('the_content','mcm_replace_content');
+				$p['content_raw'] = $the_post->post_content;
+				$sizes = get_intermediate_image_sizes();
+				foreach ( $sizes as $size ) {
+					$class = sanitize_title( 'mcm-' . $size );
+					$p[$size] = get_the_post_thumbnail( $the_post->ID, $size, array( 'class'=>$class, 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
+				}
+				$p['full'] = get_the_post_thumbnail( $the_post->ID, 'full', array( 'class'=>'mcm-full', 'alt'=>trim( strip_tags( get_the_title() ) ), 'title'=>'' ) );
+				$p['permalink'] = get_permalink( $the_post->ID );
+				$p['link_title'] = "<a href='".get_permalink( $the_post->ID )."'>".$the_post->post_title."</a>";				
+				$p['title'] = $the_post->post_title;
+				$p['shortlink'] = wp_get_shortlink( $the_post->ID );
+				$p['modified'] = date( get_option('date_format'), strtotime( $the_post->post_modified ) );
+				$p['date'] = date( get_option('date_format'), strtotime( $the_post->post_date ) );
+				$p['fulldate'] = date( 'F j, Y', strtotime( $the_post->post_date ) );		
+				$p['author'] = get_the_author_meta( 'display_name', $the_post->post_author );
+				$p['edit_link'] = get_edit_post_link($the_post->ID) ? "<a href='".get_edit_post_link($the_post->ID)."'>".__( 'Edit', 'my-content-management' )."</a>" : "";
+				$postclass = implode( ' ',get_post_class( '',$the_post->ID ) );
+				$p['postclass'] = $postclass;				
+				$p['terms'] = ($taxonomy != 'all')?get_the_term_list( $the_post->ID, $taxonomy,'',', ','' ):get_the_term_list( $id, "mcm_category_$primary", '', ', ', '' );
+				$custom_fields = get_post_custom( $the_post->ID );
+				// use this filter to customize treatment of custom fields in MCM data array.
+				$p = apply_filters('mcm_custom_fields', $p, $custom_fields );
+				// use this filter to insert any additional custom template tags required		
+				$p = apply_filters('mcm_extend_posts', $p, $custom );		
+				$this_post = mcm_run_template( $p, $display, $column, $wrapper );		
+				$return .= apply_filters( 'mcm_filter_post', $this_post, $p, $custom );
+				switch ($column) {
+					case 'odd':	$column = 'even';	break;
+					case 'even': $column = 'odd';	break;
+				}
 			}
 		}
-		$return = str_replace("\r\n",'',$return);
-	}
+	
+		if ( $elem != '' ) { $front = "<$elem class='list-wrapper'>"; $back = "</$elem>"; } else { $elem = $unelem = $front = $back = '';}
+		
+		if ( $return ) {
+			if ( $display != 'custom'  ) {
+			$return = "
+				<div class='mcm_posts $primary $display'>
+				$front
+					$return
+				$back
+				</div>";
+			} else {
+				if ( $custom_wrapper != '' ) {
+					$return = "<$custom_wrapper class='mcm_posts $primary $display'>$return</$custom_wrapper>";
+				} else {
+					$return = $return;
+				}
+			}
+			$return = str_replace("\r\n",'',$return);
+		}
 		if ( $cache != false ) { 
-			$time = (is_numeric($cache ) ) ? $cache:24;
+			$time = ( is_numeric($cache ) ) ? $cache:24;
 			set_transient( "mcm_$cache_key", $return, 60*60*$time );
 		} 
 	}
