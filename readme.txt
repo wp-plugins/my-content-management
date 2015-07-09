@@ -64,7 +64,7 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 
 == Changelog ==
 
-= 1.5.0 =
+= Future =
 
 * Feature: repeatable field groups [todo]
 * Feature: Add user and post template tags to pick up data from related posts/users [todo]
