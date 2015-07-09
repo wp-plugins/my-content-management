@@ -2,8 +2,8 @@
 Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebars, content management
-Requires at least: 3.7.0
-Tested up to: 4.2
+Requires at least: 4.0
+Tested up to: 4.2.2
 License: GPLv2 or later
 Text domain: my-content-management
 Stable tag: 1.4.18
@@ -67,8 +67,17 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 = 1.5.0 =
 
 * Feature: repeatable field groups [todo]
-* Feature: Save post meta in revisions: https://johnblackbourn.com/post-meta-revisions-wordpress [todo]
 * Feature: Add user and post template tags to pick up data from related posts/users [todo]
+* Feature: Add event post type to integrate with My Tickets.
+
+= 1.4.19 =
+
+* Feature: Save post meta in revisions when revisioning enabled for post type.
+* Bug fix: fallback template, if no valid template set, should just show post content, not default Full template.
+* Bug fix: Update class constructors to PHP 5 syntax.
+* Bug fix: Improved textdomain loading.
+* Made revisions supported by default for new installations.
+* Dropped support for WP 3.7 - 3.9
 
 = 1.4.18 =
 
@@ -417,4 +426,4 @@ I removed the Glossary Filter plug-in from the My Content Management package in 
 
 == Upgrade Notice ==
 
-* 1.4.16: New field: related user.
+* 1.4.19: Support for post meta fields in revisions.

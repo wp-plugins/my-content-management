@@ -4,8 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 add_action( 'widgets_init', create_function('', 'return register_widget("mcm_search_widget");') );
 
 class mcm_search_widget extends WP_Widget {
-	function mcm_search_widget() {
-		parent::WP_Widget( false,$name=__('Custom Post Search','my-content-management') );
+	function __construct() {
+		parent::__construct( false,$name=__('Custom Post Search','my-content-management') );
 	}
 
 	function widget($args, $instance) {
@@ -59,8 +59,8 @@ class mcm_search_widget extends WP_Widget {
 add_action( 'widgets_init', create_function('', 'return register_widget("mcm_posts_widget");') );
 
 class mcm_posts_widget extends WP_Widget {
-	function mcm_posts_widget() {
-		parent::WP_Widget( false,$name=__('Custom Post List','my-content-management') );
+	function __construct() {
+		parent::__construct( false,$name=__('Custom Post List','my-content-management') );
 	}
 
 	function widget($args, $instance) {

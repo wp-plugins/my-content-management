@@ -454,12 +454,8 @@ function mcm_rich_text_area ( $args ) {
 /* When the post is saved, saves our custom data */
 add_action( 'save_post', 'mcm_save_postdata', 1, 2 );
 function mcm_save_postdata( $post_id, $post ) {
-	if ( 
-		empty( $_POST ) || 
-		( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) || 
-		wp_is_post_revision( $post_id ) || 
-		isset( $_POST['_inline_edit'] ) 
-		) { return; }
+	$parent_id = wp_is_post_revision( $post_id );
+	if ( empty( $_POST ) || ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) || 	isset( $_POST['_inline_edit'] ) ) { return; }
 	global $mcm_fields;
 	$fields = $mcm_fields;
 	// verify this came from our screen and with proper authorization,
@@ -496,7 +492,15 @@ function mcm_save_postdata( $post_id, $post ) {
 				if ( in_array( $custom_field_name, $these_fields ) && in_array( $set, $_POST['mcm_fieldsets'] ) ) {
 					if ( isset( $_POST[$custom_field_name] ) && !$repeatable ) {
 						$this_value = apply_filters( 'mcm_filter_saved_data', $_POST[$custom_field_name], $custom_field_name, $custom_field_type );
-						update_post_meta( $post->ID, $custom_field_name, $this_value );
+						if ( $parent_id ) {
+							$parent = get_post( $parent_id );
+							$test_meta = get_post_meta( $parent->ID, $custom_field_name, true );
+							if ( $test_meta !== false ) {
+								add_metadata( 'post', $post_id, $custom_field_name, $this_value );
+							}
+						} else {
+							update_post_meta( $post->ID, $custom_field_name, $this_value );
+						}
 					}
 					if ( isset( $_POST[$custom_field_name] ) && $repeatable ) {
 						if ( $_POST[$custom_field_name] != '' ) {
@@ -522,9 +526,25 @@ function mcm_save_postdata( $post_id, $post ) {
 							$attach_id = wp_insert_attachment($attachment, $upload['file']);
 							$url = wp_get_attachment_url( $attach_id );
 							if ( !$repeatable ) {
-								update_post_meta( $post->ID, $custom_field_name, $url );
-							} else {							
-								add_post_meta( $post->ID, $custom_field_name, $url );
+								if ( $parent_id ) {
+									$parent = get_post( $parent_id );
+									$test_meta = get_post_meta( $parent->ID, $custom_field_name, true );
+									if ( $test_meta !== false ) {
+										add_metadata( 'post', $post_id, $custom_field_name, $url );
+									}
+								} else {								
+									update_post_meta( $post->ID, $custom_field_name, $url );
+								}
+							} else {
+								if ( $parent_id ) {
+									$parent = get_post( $parent_id );
+									$test_meta = get_post_meta( $parent->ID, $custom_field_name, true );
+									if ( $test_meta !== false ) {
+										add_metadata( 'post', $post_id, $custom_field_name, $url );
+									}
+								} else {
+									add_post_meta( $post->ID, $custom_field_name, $url );
+								}
 							}
 						}
 					}
@@ -549,6 +569,48 @@ function mcm_save_postdata( $post_id, $post ) {
 		}		
 	}
 }
+
+add_action( 'wp_restore_post_revision', 'mcm_restore_revision', 10, 2 );
+function mcm_restore_revision( $post_id, $revision_id ) {
+	$post     = get_post( $post_id );
+	$revision = get_post( $revision_id );
+	$meta_fields  = get_metadata( 'post', $revision->ID );
+	
+	if ( is_array( $meta_fields ) ) {
+		foreach( $meta_fields as $this_field => $this_value ) {
+			if ( !empty( $this_value ) ) {
+				delete_post_meta( $post_id, $this_field );
+				foreach ( $this_value as $value ) {
+					add_post_meta( $post_id, $this_field, $value );
+				}
+			} else {
+				delete_post_meta( $post_id, $this_field );
+			}
+		}
+	}
+}
+
+
+add_filter( '_wp_post_revision_fields', 'mcm_revision_fields' );
+function mcm_revision_fields( $fields ) {
+	global $mcm_fields;
+	foreach ( $mcm_fields as $set => $field ) {
+		foreach ( $field as $key=>$value ) {
+			$custom_field_name = $value[0];
+			$custom_field_label = $value[1];			
+			$fields[$custom_field_name] = $custom_field_label;
+		}
+	}
+
+	return $fields;
+}
+
+add_filter( '_wp_post_revision_field_my_meta', 'mcm_revision_field', 10, 2 );
+function mcm_revision_field( $value, $field ) {
+	global $revision;
+	return get_metadata( 'post', $revision->ID, $field, true );
+}
+
 
 function mcm_is_repeatable( $value ) {
 	if ( is_array( $value ) ) {
@@ -626,7 +688,7 @@ $d_mcm_args = array(
 				'show_ui' => true, 
 				'menu_icon' => null,
 				'hierarchical'=>true,
-				'supports' => array('title','editor','author','thumbnail','excerpt','custom-fields'),
+				'supports' => array( 'title','editor','author','thumbnail','excerpt','custom-fields','revisions' ),
 				'slug' => ''
 			);
 

@@ -27,7 +27,10 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 $mcm_version = '1.4.18';
 // Enable internationalisation
-load_plugin_textdomain( 'my-content-management', false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
+add_action( 'init', 'mcm_load_textdomain' );
+function mcm_load_textdomain() {
+	load_plugin_textdomain( 'my-content-management', false, dirname( plugin_basename( __FILE__ ) ) . '/lang' ); 
+}
 
 include(dirname(__FILE__).'/mcm-custom-posts.php' );
 include(dirname(__FILE__).'/mcm-view-custom-posts.php' );
@@ -809,7 +812,7 @@ function mcm_updater() {
 					}
 					$return .= "</select></p>";
 				} else {
-					$defaults = array( 'mcm_faqs','mcm_people','mcm_testimonials','mcm_locations','mcm_quotes','mcm_glossary','mcm_portfolio','mcm_resources');
+					$defaults = array( 'mcm_faqs','mcm_people','mcm_testimonials','mcm_locations','mcm_quotes','mcm_glossary','mcm_portfolio','mcm_resources' );
 					if ( !$value && in_array( $type, $defaults ) && $key=='menu_icon' ) { $value = plugins_url( 'images',__FILE__ )."/$type.png"; }
 					$return .= "<p><label for='$key'>".ucwords(str_replace('_',' ',$key))."</label> <input type='text' name='${type}[$key]' size='32' value='$value' /></p>";				
 				}

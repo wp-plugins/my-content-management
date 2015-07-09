@@ -120,7 +120,7 @@ function mcm_get_show_posts( $atts ) {
 		}
 		$primary = $types[0];
 		if ( !in_array($primary,$keys,true) && !in_array('mcm_'.$primary,$keys,true ) ) {
-			$wrapper = ( $template != '' ) ? $template : 'mcm_people';
+			$wrapper = ( $template != '' ) ? $template : false;
 			$mcm = false;
 		} else {
 			$wrapper = ( $template != '' ) ? $template : $primary;
@@ -130,9 +130,9 @@ function mcm_get_show_posts( $atts ) {
 			$elem = '';
 			$wrapper = $template;
 		} else {
-			$elem = ( isset($templates[$wrapper]['wrapper']['list'][$display]) )?$templates[$wrapper]['wrapper']['list'][$display]:'div';	
+			$elem = ( $wrapper && isset( $templates[$wrapper]['wrapper']['list'][$display] ) ) ? $templates[$wrapper]['wrapper']['list'][$display] : 'div';	
 		}
-		$wrapper = trim( $wrapper );
+		$wrapper = ( $wrapper ) ? trim( $wrapper ) : 'mcm_no_wrapper';
 		$column = 'odd';
 		$return = '';
 	
@@ -371,6 +371,9 @@ global $mcm_templates, $mcm_types; $templates = $mcm_templates;
 			$type = $post_type;
 		}
 	}
+	if ( !$wrapper ) {
+		return $post['content'];
+	}
 	$return = '';
 	$post['column'] = $column;
 	$postclass = $post['postclass'];
@@ -387,10 +390,7 @@ global $mcm_templates, $mcm_types; $templates = $mcm_templates;
 				".mcm_draw_template($post,$templates[$type]['full'])."
 				$posttag";
 			} else {
-				$return .= "
-					<h2>$post[title]</h2>
-					$post[content]
-					<p>$post[link_title]</p>";
+				$return .= "$post[content]";
 			}
 		break;
 		case 'excerpt':
