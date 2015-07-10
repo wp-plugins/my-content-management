@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/my-content-management/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.4.19
+Version: 1.4.20
 */
 /*  Copyright 2011-2014  Joe Dolson (email : joe@joedolson.com)
 
@@ -25,7 +25,7 @@ Version: 1.4.19
 */
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-$mcm_version = '1.4.19';
+$mcm_version = '1.4.20';
 // Enable internationalisation
 add_action( 'init', 'mcm_load_textdomain' );
 function mcm_load_textdomain() {

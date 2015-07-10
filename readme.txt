@@ -70,6 +70,10 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 * Feature: Add user and post template tags to pick up data from related posts/users [todo]
 * Feature: Add event post type to integrate with My Tickets.
 
+= 1.4.20 =
+
+* Mis-named variable in 1.4.19 broke some templates.
+
 = 1.4.19 =
 
 * Feature: Save post meta in revisions when revisioning enabled for post type.

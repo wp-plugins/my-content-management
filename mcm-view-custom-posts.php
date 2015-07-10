@@ -371,7 +371,7 @@ global $mcm_templates, $mcm_types; $templates = $mcm_templates;
 			$type = $post_type;
 		}
 	}
-	if ( !$wrapper ) {
+	if ( !$type ) {
 		return $post['content'];
 	}
 	$return = '';
