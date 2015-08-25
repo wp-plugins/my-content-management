@@ -3,7 +3,7 @@ Contributors: joedolson
 Donate link: http://www.joedolson.com/donate.php
 Tags: custom post types, post types, faq, testimonials, staff, glossary, sidebars, content management
 Requires at least: 4.0
-Tested up to: 4.2.2
+Tested up to: 4.3.0
 License: GPLv2 or later
 Text domain: my-content-management
 Stable tag: 1.4.20
