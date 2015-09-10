@@ -499,7 +499,7 @@ function mcm_draw_template( $array=array(), $template='' ) {
 							}
 							if ( is_array( $value ) ) {
 								foreach ( $value as $val ) {
-									if ( $is_chooser && !empty($value) ) { if ( is_numeric( $val ) ) { $val = wp_get_attachment_link( $val, $size ); } }
+									if ( $is_chooser && !empty($val) ) { if ( is_numeric( $val ) ) { $val = wp_get_attachment_link( $val, $size ); } }
 									$fb = ( $fallback != '' && $val == '' )?$before.$fallback.$after:'';
 									if ( $richtext ) { $value = wpautop($value); }
 									$output .= ( $val == '' )?$fb:$before.$val.$after;
