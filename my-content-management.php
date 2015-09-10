@@ -966,7 +966,9 @@ function mcm_template_setter() {
 				<li><strong>".__('Feature','my-content-management').":</strong> ".__('Adds links throughout content for each term in your glossary.','my-content-management')."</li>
 				<li><strong>".__('Feature','my-content-management').":</strong> ".__('Adds character headings to each section of your glossary list.','my-content-management')."</li>
 				</ul>"; }
-				$show_fields = ($show_fields != '')?"<div class='extra_fields'><h4>".__('Added custom fields:','my-content-management')."</h4>$show_fields</div>":'';
+				$show_attributes='<h4>'.__('Fields attributes:','my-content-management').'</h4><p><code>before</code>: '.__('Add text before field','my-content-management').'</p><p><code>after</code>: '.__('Add text after field','my-content-management').'</p><p>Sample: <code>{_field before=">>" after="<<"}</code></p>';
+				$show_fields .= $show_attributes;
+				$show_fields = "<div class='extra_fields'><h4>".__('Added custom fields:','my-content-management')."</h4>$show_fields</div>";
 				$extension = ($extension != '')?"<div class='extra_fields'>$extension</div>":'';
 				$return .= "
 			<div id='$value-container' class='wptab'>
