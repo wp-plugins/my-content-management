@@ -99,18 +99,28 @@ function mcm_taxonomies() {
 }
 
 function mcm_add_custom_boxes() {
-global $mcm_fields, $mcm_extras;
-$fields = $mcm_fields; $extras = $mcm_extras;
+	global $mcm_fields, $mcm_extras;
+	$fields = $mcm_fields; $extras = $mcm_extras;
 	if ( is_array($fields) ) {
 		foreach ( $fields as $key=>$value ) {
-			if ( isset($extras[$key]) && is_array( $extras[$key][0] ) ) {
+			if ( isset( $extras[$key] ) && is_array( $extras[$key][0] ) ) {
 				foreach ( $extras[$key][0] as $k ) {
-					mcm_add_custom_box( array($key=>$value), $k, $extras[$key][1] );
+					$fields = array( $key => $value );
+					$post_type = $k;
+					$location  = $extras[$key][1];
+					$show      = isset( $extras[$key][2] ) ? $extras[$key][2] : true;
+					$show      = mcm_test_context( $show );
+					mcm_add_custom_box( $fields, $post_type, $location, $show );
 				} 
 			} else {
 				if ( isset( $extras[$key] ) ) {
 					if ( !empty( $extras[$key][0] ) ) {
-						mcm_add_custom_box( array($key=>$value), $extras[$key][0], $extras[$key][1] );
+						$fields = array( $key => $value );
+						$post_type = $extras[$key][0];
+						$location  = $extras[$key][1];
+						$show      = isset( $extras[$key][2] ) ? $extras[$key][2] : true;
+						$show      = mcm_test_context( $show );
+						mcm_add_custom_box( $fields, $post_type, $location, $show );
 					}
 				}
 			}
@@ -119,18 +129,36 @@ $fields = $mcm_fields; $extras = $mcm_extras;
 }
 
 
-function mcm_add_custom_box( $fields, $post_type='post',$location='side' ) {
+function mcm_add_custom_box( $fields, $post_type='post',$location='side', $show = true ) {
     if ( function_exists( 'add_meta_box' ) ) {
 		$location = apply_filters( 'mcm_set_location', $location, $fields, $post_type );
 		$priority = apply_filters( 'mcm_set_priority', 'default', $fields, $post_type );
         foreach ( array_keys( $fields ) as $field ) {
 			$id = sanitize_title( $field );
 			$field = stripslashes( $field );
-			if ( apply_filters( 'mcm_filter_meta_box', true, $post_type, $id ) ) {
+			if ( apply_filters( 'mcm_filter_meta_box', $show, $post_type, $id ) ) {
 				add_meta_box( $id, $field, 'mcm_build_custom_box', $post_type, $location, $priority, $fields );
 			}
         }
     }
+}
+
+function mcm_test_context( $show ) {
+	if ( $show === true || $show === '' ) {
+		return true;
+	} else {
+		$contexts = explode( ',', $show );
+		$contexts = array_map( 'trim', $contexts );
+		foreach ( $contexts as $show ) {
+			if ( is_numeric( $show ) ) {
+				if ( isset( $_GET['post'] ) && $_GET['post'] == $show ) {
+					return true;
+				} 
+			}
+		}
+	}
+	
+	return false;
 }
 
 function mcm_build_custom_box( $post, $fields ) {

@@ -499,13 +499,27 @@ function mcm_draw_template( $array=array(), $template='' ) {
 							}
 							if ( is_array( $value ) ) {
 								foreach ( $value as $val ) {
-									if ( $is_chooser ) { if ( is_numeric( $val ) ) { $val = wp_get_attachment_link( $val, $size ); } }
+									if ( $is_chooser && !empty( $val ) ) {
+										if ( is_numeric( $val ) ) { 
+											if ( $size != '' ) {
+												$val = wp_get_attachment_link( $val, $size ); 
+											} else {
+												$val = wp_get_attachment_url( $val ); 
+											}
+										} 
+									}
 									$fb = ( $fallback != '' && $val == '' )?$before.$fallback.$after:'';
 									if ( $richtext ) { $value = wpautop($value); }
 									$output .= ( $val == '' )?$fb:$before.$val.$after;
 								}
 							} else {
-								if ( $is_chooser ) { $value = wp_get_attachment_link( $value, $size ); }
+								if ( $is_chooser && !empty( $value ) ) { 
+									if ( $size != '' ) {
+										$value = wp_get_attachment_link( $value, $size ); 
+									} else {
+										$value = wp_get_attachment_url( $value ); 
+									}							
+								}
 								$fb = ( $fallback != '' && $value == '' )?$before.$fallback.$after:'';
 								if ( $richtext ) { $value = wpautop($value); }								
 								$output = ( $value == '' )?$fb:$before.$value.$after;

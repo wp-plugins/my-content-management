@@ -5,7 +5,7 @@
 .mcm_edit_post_type p { line-height: 1.2; margin: 4px 0!important;}
 #support { text-align: center; }
 .buy a { padding: 6px; display:block;border-radius: 4px; box-shadow: 1px 1px 2px #666; font-weight: 700; display: block; background: #fefdaa; font-size: 1.1em;line-height: 1.5; }
-#mcm-settings legend { display: block; float: left; padding: 0; width: 12.5em; font-weight: 400;  font-size: 1em;  }
+#mcm-settings legend { display: block; padding: 0; width: 12.5em; font-weight: 400;  font-size: 1em;  }
 .buy strong { display: block; }
 .mcm_customfields li { margin: 0 0 2px; background: #f3f3f3; padding: 3px 0; }
 .mcm-settings .postbox { margin: 10px 10px 0 0;	}
@@ -28,3 +28,5 @@
 
 .mcm-notice { border-left: 4px solid #dd3d36; background: #f8f8f8; box-shadow: 0 1px 1px 0 rgba( 0,0,0,.1 ); padding: 1px 12px; margin: 8px 0; }
 .mcm-notice p { margin: .5em 0; padding: 2px; }
+
+.mcm_fieldset_options { background-color: rgba( 240,240,240,.8 ); padding: .5em 1em; border: 1px solid #ddd; border-bottom: 0px; }

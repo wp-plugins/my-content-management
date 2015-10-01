@@ -5,7 +5,7 @@ Plugin URI: http://www.joedolson.com/my-content-management/
 Description: Creates a set of common custom post types for extended content management: FAQ, Testimonials, people lists, term lists, etc.
 Author: Joseph C Dolson
 Author URI: http://www.joedolson.com
-Version: 1.4.20
+Version: 1.4.21
 */
 /*  Copyright 2011-2014  Joe Dolson (email : joe@joedolson.com)
 
@@ -25,7 +25,7 @@ Version: 1.4.20
 */
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-$mcm_version = '1.4.20';
+$mcm_version = '1.4.21';
 // Enable internationalisation
 add_action( 'init', 'mcm_load_textdomain' );
 function mcm_load_textdomain() {
@@ -370,14 +370,14 @@ function mcm_upgrade_plugin() {
 	if ( $mcm_version == $from ) { return; }
 	switch ( $from ) {
 		case version_compare( $from, '1.2.0', '<' ):
-			$options = get_option('mcm_options');
-			$options['types'][]=$default_mcm_types;
-			$options['fields']=$default_mcm_fields;
-			$options['extras']=$default_mcm_extras;
+			$options            = get_option('mcm_options');
+			$options['types'][] = $default_mcm_types;
+			$options['fields']  = $default_mcm_fields;
+			$options['extras']  = $default_mcm_extras;
 			update_option( 'mcm_options', $options );
 		break;
 		case version_compare( $from, '1.4.0', '<' ):
-			$options = get_option( 'mcm_options' );
+			$options    = get_option( 'mcm_options' );
 			$mcm_fields = $options['fields'];
 			$simplified = array();
 			if ( is_array( $mcm_fields ) ) {
@@ -576,7 +576,7 @@ function mcm_settings_page() {
 				<div>
 				<?php mcm_enabler(); ?>
 				<p>
-					<input type='submit' value='<?php _e('Enable Selected Post Types','my-content-management'); ?>' name='mcm_enabler' class='button-primary' /> <a href="<?php echo admin_url('options-general.php?page=my-content-management/my-content-management.php&mcm_add=new'); ?>"><?php _e('Add new post type','my-content-management'); ?></a>
+					<input type='submit' value='<?php _e('Update Enabled Post Types','my-content-management'); ?>' name='mcm_enabler' class='button-primary' /> <a href="<?php echo admin_url('options-general.php?page=my-content-management/my-content-management.php&mcm_add=new'); ?>"><?php _e('Add new post type','my-content-management'); ?></a>
 				</p>
 				</div>
 			</form>
@@ -966,8 +966,10 @@ function mcm_template_setter() {
 				<li><strong>".__('Feature','my-content-management').":</strong> ".__('Adds links throughout content for each term in your glossary.','my-content-management')."</li>
 				<li><strong>".__('Feature','my-content-management').":</strong> ".__('Adds character headings to each section of your glossary list.','my-content-management')."</li>
 				</ul>"; }
-				$show_fields = ($show_fields != '')?"<div class='extra_fields'><h4>".__('Added custom fields:','my-content-management')."</h4>$show_fields</div>":'';
-				$extension = ($extension != '')?"<div class='extra_fields'>$extension</div>":'';
+				$show_attributes = '<h4>' . __('Fields attributes:','my-content-management').'</h4><p><code>before</code>: '.__('Add text before field','my-content-management').'</p><p><code>after</code>: '.__('Add text after field','my-content-management').'</p><p>Sample: <code>{_field before=">>" after="<<"}</code></p>';
+				$show_fields .= $show_attributes;
+				$show_fields = "<div class='extra_fields'><h4>".__('Added custom fields:','my-content-management')."</h4>$show_fields</div>";
+								$extension = ($extension != '')?"<div class='extra_fields'>$extension</div>":'';
 				$return .= "
 			<div id='$value-container' class='wptab'>
 			<h4>".sprintf(__('%s Templates', 'my-content-management'),$types[$value][2] )."</h4>
@@ -1135,8 +1137,8 @@ function mcm_assign_custom_fields() {
 
 function mcm_add_custom_field_support( $fieldset, $post_type ) {
 	$option = get_option('mcm_options');
-	$array = $option['extras'][$fieldset][0];
-	if ( is_string($array) ) { $array = array( $array ); }
+	$array = isset( $option['extras'][$fieldset][0] ) ? $options['extras'][$fieldset][0] : array();
+	if ( !is_array($array) ) { $array = array( $array ); }
 	if ( !in_array( $post_type, $array ) ) { array_push( $array, $post_type ); }
 	$option['extras'][$fieldset][0] = $array;
 	update_option( 'mcm_options', $option );
@@ -1260,19 +1262,63 @@ function mcm_user_type_relation( $key, $choices ) {
 
 function mcm_get_fieldset( $fieldset=false ) {
 	$option = get_option( 'mcm_options' );
+	$posts = get_post_types( array( 'public'=>'true' ) ,'object' );
+	$post_types = '';
+
+	if ( $fieldset ) {
+		$location = ( isset( $option['extras'][$fieldset][1] ) ) ? $option['extras'][$fieldset][1] : 'side';
+		$context = ( isset( $option['extras'][$fieldset][2] ) ) ? $option['extras'][$fieldset][2] : '';		
+	} else {
+		$location = 'side';
+		$context = '';
+	}
+	
+	$options = 
+			"<p>
+				<label for='mcm_fieldset_context'>" . __( 'Restrict by IDs', 'my-content-management' ) . "</label> <input class='narrow' type='text' id='mcm_fieldset_context' name='mcm_fieldset_context' aria-describedby='mcm_context_description' value='$context' /> <em id='mcm_context_descrition'>Comma-separated list of post IDs</em>
+			</p>
+			<p>
+				<label for='mcm_fieldset_location'>" . __( 'Fieldset Location', 'my-content-management' ) . "</label> <select id='mcm_fieldset_location' name='mcm_fieldset_location' />
+					<option value='side'" . selected( $location, 'side', false ) . ">" . __( 'Side', 'my-content-management' ) . "</option>
+					<option value='normal'" . selected( $location, 'normal', false ) . ">" . __( 'Normal', 'my-content-management' ) . "</option>
+					<option value='advanced'" . selected( $location, 'advanced', false ) . ">" . __( 'Advanced', 'my-content-management' ) . "</option>
+				</select>
+			</p>";
+	
 	if ( !$fieldset ) {
-		$posts = get_post_types( array( 'public'=>'true' ) ,'object' );
-		$post_types = '';
 		foreach ( $posts as $value ) {
 			$name = $value->name;
 			$label = $value->labels->name;
-			$post_types .= "<option value='$name'>$label</option>\n";
+			if ( $fieldset ) {
+				$checked = ( in_array( $name, $types ) ) ? ' checked="checked"' : '';
+			} else {
+				$checked = '';
+			}
+			$post_types .= "<input type='checkbox' value='$name' name='mcm_assign_to' id='mcm_post_type_$name'> <label for='mcm_post_type_$name'>$label</label>\n";
 		}
-		$fieldset_title = "<p><label for='mcm_new_fieldset'><strong>".__('New Fieldset Title','my-content-management')."</strong></label> <input type='text' id='mcm_new_fieldset' name='mcm_new_fieldset' /><span id='warning' aria-live='assertive'></span></p><p><label for='mcm_assign_to'><strong>".__('Attach to','my-content-management')."</strong></label><br /><select name='mcm_assign_to' id='mcm_assign_to' multiple='multiple'>$post_types</select></p>";
+		$fieldset_title = "
+			<p>
+				<label for='mcm_new_fieldset'>".__('New Fieldset Title','my-content-management')."</label> <input type='text' id='mcm_new_fieldset' name='mcm_new_fieldset' /><span id='warning' aria-live='assertive'></span>
+			</p>
+			$options
+			<fieldset>
+				<legend>".__('Attach to','my-content-management')."</legend>
+				<p>
+				$post_types
+				</p>
+			</fieldset>";
 	} else {
-		$fieldset_title = '';
+		$fieldset_title = $options;
 	}
-	$form = $fieldset_title.'<table class="widefat"><thead><tr><th scope="col">'.__('Move','my-content-management').'</th><th scope="col">'.__('Field Label','my-content-management').'</th><th scope="col">'.__('Input Type','my-content-management').'</th><th scope="col">Description/Options</th><th scope="col">'.__('Repeatable','my-content-management').'</th><th scope="col">'.__('Delete','my-content-management').'</th></tr></thead><tbody>';
+	$form = "<div class='mcm_fieldset_options'>
+				$fieldset_title
+			</div>" . 
+			'<table class="widefat">
+				<thead>
+					<tr><th scope="col">'.__('Move','my-content-management').'</th><th scope="col">'.__('Field Label','my-content-management').'</th><th scope="col">'.__('Input Type','my-content-management').'</th><th scope="col">Description/Options</th><th scope="col">'.__('Repeatable','my-content-management').'</th><th scope="col">'.__('Delete','my-content-management').'</th>
+				</tr>
+				</thead>
+				<tbody>';
 	$odd = 'odd';
 	if ( isset( $option['fields'][$fieldset] ) ) {
 		$fields = ( $fieldset )?$option['fields'][urldecode($fieldset)]:'';
@@ -1413,38 +1459,46 @@ function mcm_update_custom_fieldset( $post ) {
 	}
 	if ( isset( $post['mcm_new_fieldset'] ) ) { 
 		$mcm_assign_to = isset( $post['mcm_assign_to'] ) ? $post['mcm_assign_to'] : array(); 
-		$option['extras'][$fieldset] = array( $mcm_assign_to, 'side' ); 
-	}	
-		for ( $i=0; $i<$count; $i++ ) {
-			if ( in_array( $i, $delete ) ) { } else {
-				$repetition = ( isset( $repeatable[$i] ) )?'true':'';
-				if ( $keys[$i] != '' ) {
-					if ( $types[$i] == 'select' ) { $opt = explode( ',', $options[$i] ); } else { $opt = $options[$i]; }
-					$array[$i] = array( 
-						$keys[$i], 
-						$labels[$i], 
-						$opt, 
-						$types[$i],
-						$repetition
-					);
-					// for now, this is secondary. Prep for simplifying and fixing data format.
-					$simplified[] = array( 'key'=>$keys[$i], 'label'=>$labels[$i], 'description'=>$opt, 'type'=>$types[$i], 'repetition'=>$repetition, 'fieldset'=>$fieldset );
-				} else if ( $labels[$i] != '' ) {
-					if ( $types[$i] == 'select' ) { $opt = explode( ',', $options[$i] ); } else { $opt = $options[$i]; }		
-					$k = '_'.sanitize_title($labels[$i]);
-					$array[$i] = array( 
-						$k, 
-						$labels[$i], 
-						$opt, 
-						$types[$i],
-						$repetition
-					);
-					$simplified[] = array( 'key'=>$k, 'label'=>$labels[$i], 'description'=>$opt, 'type'=>$types[$i], 'repetition'=>$repetition, 'fieldset'=>$fieldset );				
-				} else {
-					continue;
-				}
+		$mcm_location  = isset( $post['mcm_fieldset_location'] ) ? $post['mcm_fieldset_location'] : 'side';				
+		$mcm_context   = isset( $post['mcm_fieldset_context'] ) ? $post['mcm_fieldset_context'] : true;
+		$option['extras'][$fieldset] = array( $mcm_assign_to, $mcm_location, $mcm_context ); 
+	} else {
+		$mcm_assign_to = $option['extras'][$fieldset][0];
+		$mcm_location  = isset( $post['mcm_fieldset_location'] ) ? $post['mcm_fieldset_location'] : $option['extras'][$fieldset][1];		
+		$mcm_context   = isset( $post['mcm_fieldset_context'] ) ? $post['mcm_fieldset_context'] : $option['extras'][$fieldset][2];
+		$option['extras'][$fieldset] = array( $mcm_assign_to, $mcm_location, $mcm_context ); 		
+	}
+
+	for ( $i=0; $i<$count; $i++ ) {
+		if ( in_array( $i, $delete ) ) { } else {
+			$repetition = ( isset( $repeatable[$i] ) )?'true':'';
+			if ( $keys[$i] != '' ) {
+				if ( $types[$i] == 'select' ) { $opt = explode( ',', $options[$i] ); } else { $opt = $options[$i]; }
+				$array[$i] = array( 
+					$keys[$i], 
+					$labels[$i], 
+					$opt, 
+					$types[$i],
+					$repetition
+				);
+				// for now, this is secondary. Prep for simplifying and fixing data format.
+				$simplified[] = array( 'key'=>$keys[$i], 'label'=>$labels[$i], 'description'=>$opt, 'type'=>$types[$i], 'repetition'=>$repetition, 'fieldset'=>$fieldset );
+			} else if ( $labels[$i] != '' ) {
+				if ( $types[$i] == 'select' ) { $opt = explode( ',', $options[$i] ); } else { $opt = $options[$i]; }		
+				$k = '_'.sanitize_title($labels[$i]);
+				$array[$i] = array( 
+					$k, 
+					$labels[$i], 
+					$opt, 
+					$types[$i],
+					$repetition
+				);
+				$simplified[] = array( 'key'=>$k, 'label'=>$labels[$i], 'description'=>$opt, 'type'=>$types[$i], 'repetition'=>$repetition, 'fieldset'=>$fieldset );				
+			} else {
+				continue;
 			}
 		}
+	}
 	$simple = ( isset( $option['simplified'] ) ) ? $option['simplified'] : array();
 	$simplified = (array) $simplified + (array) $simple;
 	$option['simplified'] = $simplified;
@@ -1464,12 +1518,15 @@ function mcm_update_custom_fieldset( $post ) {
 // Add the administrative settings to the "Settings" menu.
 function mcm_add_support_page() {
     if ( function_exists( 'add_options_page' ) ) {
-		 $plugin_page = add_options_page( 'My Content Management', 'My Content Management', 'manage_options', __FILE__, 'mcm_settings_page' );
-		 add_action( 'admin_head-'. $plugin_page, 'mcm_styles' );
-		 add_action('admin_print_styles-'. $plugin_page, 'mcm_add_scripts');
-		 $plugin_page = add_options_page( 'My Custom Fields', 'My Custom Fields', 'manage_options', 'mcm_custom_fields', 'mcm_configure_custom_fields' );
-		 add_action( 'admin_head-'. $plugin_page, 'mcm_styles' );
-		 add_action('admin_print_styles-'. $plugin_page, 'mcm_add_scripts'); 
+		// use this filter to disable all access to admin pages.
+		if ( apply_filters( 'mcm_show_administration_pages', true ) ) {
+			$plugin_page = add_options_page( 'My Content Management', 'My Content Management', 'manage_options', __FILE__, 'mcm_settings_page' );
+			add_action( 'admin_head-'. $plugin_page, 'mcm_styles' );
+			add_action('admin_print_styles-'. $plugin_page, 'mcm_add_scripts');
+			$plugin_page = add_options_page( 'My Custom Fields', 'My Custom Fields', 'manage_options', 'mcm_custom_fields', 'mcm_configure_custom_fields' );
+			add_action( 'admin_head-'. $plugin_page, 'mcm_styles' );
+			add_action('admin_print_styles-'. $plugin_page, 'mcm_add_scripts'); 
+		}
 	}
 }
 

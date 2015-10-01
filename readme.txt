@@ -70,6 +70,16 @@ Translating my plug-ins is always appreciated. Visit <a href="http://translate.j
 * Feature: Add user and post template tags to pick up data from related posts/users [todo]
 * Feature: Add event post type to integrate with My Tickets.
 
+= 1.4.21 =
+
+* Bug fix: Chooser input types with parameters returned link; returned URL without. Now return link only if 'size' parameter defined.
+* Bug fix: Avoid output if chooser value not set. props <a href="https://wordpress.org/support/topic/avoid-attachment-missing-output-if-attachment-omitted?replies=2#post-7444956">@NotDifficult</a>
+* Documentation: Add support for template tag attributes to editor. props <a href="https://wordpress.org/support/topic/add-inline-help-for-field-attributes?replies=2#post-7444974">@NotDifficult</a>
+* Feature: Ability to limit custom fieldsets from appearing only on specific posts.
+* Feature: Ability to set default location of fieldset
+* UI change: Use checkboxes instead of multiselect to display field options.
+* Filter: 'mcm_show_administration_pages' to disable all access to admin pages.
+
 = 1.4.20 =
 
 * Mis-named variable in 1.4.19 broke some templates.
